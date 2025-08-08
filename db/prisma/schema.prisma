@@ -1,0 +1,89 @@
+generator client_backend {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  password      String // для аутентификации (хеш)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdDeals  Deal[]   @relation("DealsCreatedByUser")
+  assignedDeals Deal[]   @relation("DealsAssignedToUser")
+  notes         Note[]
+}
+
+model Contact {
+  id           String   @id @default(uuid())
+  clientName   String
+  organization String?
+  email        String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deals        Deal[]
+}
+
+model Deal {
+  id        String  @id @default(uuid())
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
+
+  creatorId  String
+  creator    User    @relation("DealsCreatedByUser", fields: [creatorId], references: [id])
+  assigneeId String?
+  assignee   User?   @relation("DealsAssignedToUser", fields: [assigneeId], references: [id])
+
+  productInterest String?
+  potentialValue  Float?
+  status          DealStatus @default(ACTIVE)
+  stage           DealStage  @default(LEAD)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  notes        Note[]
+  appointments Appointment[]
+}
+
+enum DealStage {
+  LEAD
+  QUALIFIED
+  CONTACTED
+  DEMO_SCHEDULED
+  PROPOSAL_SENT
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum DealStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  creatorId String
+  creator   User     @relation(fields: [creatorId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dealId    String
+  deal      Deal     @relation(fields: [dealId], references: [id])
+}
+
+model Appointment {
+  id       String   @id @default(uuid())
+  datetime DateTime
+  type     String // "call" или "meeting"
+  notes    String?
+  dealId   String
+  deal     Deal     @relation(fields: [dealId], references: [id])
+}
