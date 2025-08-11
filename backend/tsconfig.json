@@ -11,10 +11,11 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@generated": ["generated/*"]
-    }
+      "@/*": ["./src/*"],
+      "@/generated": ["./generated/*"]
+    },
+    "sourceMap": true
   },
-  "include": ["src/**/*", "generated/**/*"],
+  "include": ["./src/**/*", "./generated/**/*"],
   "exclude": ["node_modules", "dist"]
 }
