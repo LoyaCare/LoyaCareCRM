@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "generate": "prisma generate && cp -R ./prisma/client.ts ../backend/src/prisma && cp -R ./generated/prisma-client/* ../frontend/src/shared/generated/prisma-client/ && cp -R ./generated/prisma-client/* ../backend/generated/prisma-client/",
+    "generate": "prisma generate && -R ./generated/prisma-client/* ../frontend/src/shared/generated/prisma-client/ && cp -R ./generated/prisma-client/* ../backend/generated/prisma-client/",
     "generate_": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio"
