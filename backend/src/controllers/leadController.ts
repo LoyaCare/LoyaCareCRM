@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
 import {
-  shouldAllLinkedDatelsIncluded,
   getDealByIdBase,
   createDealBase,
   deleteDeal,
   updateDeal,
   getAllLeadsBase,
 } from "./dealController";
-
-import { Note, Appointment } from "../../generated/prisma-client";
 
 export const getAllLeads = async (_req: Request, res: Response) =>
   await getAllLeadsBase(_req, res, "LEAD");
