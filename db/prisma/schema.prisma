@@ -12,7 +12,7 @@ model User {
   id            String   @id @default(uuid())
   email         String   @unique
   name          String
-  password      String // для аутентификации (хеш)
+  password      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   createdDeals  Deal[]   @relation("DealsCreatedByUser")
@@ -22,7 +22,7 @@ model User {
 
 model Contact {
   id           String   @id @default(uuid())
-  clientName   String
+  name         String
   organization String?
   email        String?
   phone        String?
@@ -82,7 +82,7 @@ model Note {
 model Appointment {
   id       String   @id @default(uuid())
   datetime DateTime
-  type     String // "call" или "meeting"
+  type     String // "call" oder "meeting"
   notes    String?
   dealId   String
   deal     Deal     @relation(fields: [dealId], references: [id])
