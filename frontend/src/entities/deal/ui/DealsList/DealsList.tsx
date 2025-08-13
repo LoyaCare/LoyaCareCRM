@@ -1,7 +1,8 @@
 "use client";
-import { DealExt } from "@/entities/deal/model/types";
+
 import { useEffect } from "react";
-import { useGetDealsQuery } from "../../model/api";
+import { DealExt } from "@/features/deal/model/types";
+import { useGetDealsQuery } from "@/features/deal/model/api";
 import { formatDate } from "@/shared/lib/formatDate";
 
 export const DealsList = ({
@@ -9,7 +10,10 @@ export const DealsList = ({
 }: {
   initialDeals: DealExt[];
 }) => {
-  const { data: deals = initialDeals, isFetching } = useGetDealsQuery();
+  const skipFetch = Boolean(initialDeals);
+  const { data: deals = initialDeals, isFetching } = useGetDealsQuery(undefined, {
+    skip: skipFetch,
+  });
 
   useEffect(() => {
     console.log("Deals uploaded:", deals);
@@ -29,7 +33,7 @@ export const DealsList = ({
               <p>Creator Email: {deal.creator.email}</p>
               <p>Status: {deal.status}</p>
               <p>PotentialValue: {deal.potentialValue}</p>
-              <p>Contact name: {deal.contact.clientName}</p>
+              <p>Contact name: {deal.contact.name}</p>
               <p>Contact email: {deal.contact.email}</p>
               <p>Contact phone: {deal.contact.phone}</p>
               <ul className="mt-2">

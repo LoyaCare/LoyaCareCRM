@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { dealApi } from "@/entities/deal/model/api";
-import { leadApi } from "@/entities/lead/model/api";
+import { dealApi } from "@/features/deal/model/api";
+import { leadApi } from "@/features/lead/model/api";
 
 export const store = configureStore({
   reducer: {
