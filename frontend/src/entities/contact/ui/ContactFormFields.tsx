@@ -51,36 +51,46 @@ export const ContactFormFields: React.FC<ContactFormFieldsProps> = ({
   }, []);
 
   return (
-      <Box sx={{ '& > *:not(:last-child)': { mb: 3 } }}>
-          <TextField
-            label="Client Name"
-            name="name"
-            value={form?.name || ""}
-            onChange={handleChange}
-            placeholder="Client Name"
-            required
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Organization"
-            name="organization"
-            value={form?.organization || ""}
-            onChange={handleChange}
-            placeholder="Organization"
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={form?.email || ""}
-            onChange={handleChange}
-            placeholder="Email"
-            type="email"
-            size="small"
-            fullWidth
-          />
-      </Box>
+    <Box sx={{ "& > *:not(:last-child)": { mb: 3 } }}>
+      <TextField
+        label="Client Name"
+        name="name"
+        value={form?.name || ""}
+        onChange={handleChange}
+        placeholder="Client Name"
+        required
+        size="small"
+        fullWidth
+      />
+      <TextField
+        label="Organization"
+        name="organization"
+        value={form?.organization || ""}
+        onChange={handleChange}
+        placeholder="Organization"
+        size="small"
+        fullWidth
+      />
+      <TextField
+        label="Email"
+        name="email"
+        value={form?.email || ""}
+        onChange={handleChange}
+        placeholder="Email"
+        type="email"
+        size="small"
+        fullWidth
+      />
+      <TextField
+        label="Phone"
+        name="phone"
+        value={form?.phone || ""}
+        onChange={handleChange}
+        placeholder="Phone"
+        type="tel"
+        size="small"
+        fullWidth
+      />
+    </Box>
   );
 };
