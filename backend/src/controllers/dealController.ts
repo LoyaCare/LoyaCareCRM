@@ -7,6 +7,7 @@ export const shouldAllLinkedDatelsIncluded = {
   creator: true,
   notes: true,
   assignee: true,
+  appointments: true,
 };
 
 export const getAllLeadsBase = async (
@@ -44,6 +45,7 @@ export const createDealBase = async (
   const { creator, contact, notes, appointments, assignee, ...dealData } =
     req.body;
 
+  const creatorEmail = creator?.email || "hans.schmidt@example.com";
   const deal = await prisma.deal.create({
     data: {
       ...dealData,
@@ -51,21 +53,25 @@ export const createDealBase = async (
       creator: creator
         ? {
             connectOrCreate: {
-              where: { email: creator.email },
+              where: { email: creatorEmail },
               create: creator,
             },
           }
-        : undefined,
+        : { connect: { email: creatorEmail } },
+
       contact: contact
         ? contact.id
           ? { connnect: contact.id }
           : { create: contact }
         : undefined,
+
       notes: notes && notes.length > 0 ? { create: notes } : undefined,
+
       appointments:
         appointments && appointments.length
           ? { create: appointments }
           : undefined,
+
       assignee: assignee
         ? {
             connectOrCreate: {
@@ -95,13 +101,22 @@ export const updateDeal = async (req: Request, res: Response) => {
   } = req.body;
 
   // Split notes into update and create
-  const notesToUpdate = notes.filter((note: Note) => note.id);
+  const notesToUpdate = notes
+    .filter((note: Note) => note.id)
+    .map((note: Note) => ({
+      ...note,
+      creatorId: undefined, // CreatorId is not updated, only the content
+      dealId: undefined, // dealId is not uodated, only the content
+    }));
   const notesToCreate = notes.filter((note: Note) => !note.id);
 
   // Split appointments into update and create
-  const appointmentsToUpdate = appointments.filter(
-    (app: Appointment) => app.id
-  );
+  const appointmentsToUpdate = appointments
+    .filter((app: Appointment) => app.id)
+    .map((app: Appointment) => ({
+      ...app,
+      dealId: undefined, // dealId is not updated, only the content
+    }));
   const appointmentsToCreate = appointments.filter(
     (app: Appointment) => !app.id
   );
@@ -130,26 +145,30 @@ export const updateDeal = async (req: Request, res: Response) => {
     },
     data: {
       ...dealData,
-      contact: contact
-        ? {
-            connectOrCreate: {
-              where: { id: contact.id },
-              contact,
-            },
-          }
-        : undefined,
+
+      contact: contact?.id
+          ? {
+              update: {
+                where: { id: contact.id },
+                data: contact,
+              },
+            }
+          : contact
+          ? { create: contact }
+          : undefined,
+
       assignee: assignee
         ? {
             connectOrCreate: {
               where: { id: assignee.id },
-              assignee,
+              create: assignee,
             },
           }
         : undefined,
       notes: notes.length > 0 ? notesNested : undefined,
       appointments: appointments.length > 0 ? appointmentsNested : undefined,
-      include: shouldAllLinkedDatelsIncluded,
     },
+    include: shouldAllLinkedDatelsIncluded,
   });
 
   res.json(deal);

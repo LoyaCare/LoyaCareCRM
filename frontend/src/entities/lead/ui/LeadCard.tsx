@@ -6,8 +6,8 @@
 import React, { useEffect } from "react";
 import { LeadCard as LeadCartEntity } from "@/features/lead/ui/LeadCard";
 
-import { useGetLeadByIdQuery } from "@/features/lead/model/api";
-import { LeadExt } from "@/features/lead/model/types";
+import { useGetLeadByIdQuery } from "@/entities/lead/model/api";
+import { LeadExt } from "@/entities/lead/model/types";
 
 type LeadFormProps = {
   initialLeadData: LeadExt;

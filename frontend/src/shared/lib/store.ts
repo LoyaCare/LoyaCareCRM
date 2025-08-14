@@ -1,17 +1,31 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { dealApi } from "@/features/deal/model/api";
-import { leadApi } from "@/features/lead/model/api";
+import { dealApi } from "@/entities/deal/model/api";
+import { leadApi } from "@/entities/lead/model/api";
+import { contactApi } from "@/entities/contact/model/api";
+import { userApi } from "@/entities/user/model/api";
+import { noteApi } from "@/entities/note/model/api";
+import { appointmentApi } from "@/entities/appointment/model/api";
+
+// Configure the Redux store with the APIs
 
 export const store = configureStore({
   reducer: {
     [dealApi.reducerPath]: dealApi.reducer,
     [leadApi.reducerPath]: leadApi.reducer,
+    [contactApi.reducerPath]: contactApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
+    [noteApi.reducerPath]: noteApi.reducer,
+    [appointmentApi.reducerPath]: appointmentApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(dealApi.middleware)
-      .concat(leadApi.middleware),
+      .concat(leadApi.middleware)
+      .concat(contactApi.middleware)
+      .concat(userApi.middleware)
+      .concat(noteApi.middleware)
+      .concat(appointmentApi.middleware),
   devTools: process.env.NODE_ENV !== "production",
 });
 

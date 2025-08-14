@@ -1,6 +1,6 @@
 import { LeadsTable } from "@/entities/lead/ui/LeadsTable";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { LeadExt } from "@/features/lead/model/types";
+import { LeadExt } from "@/entities/lead/model/types";
 
 
 export default async function LeadsPage() {

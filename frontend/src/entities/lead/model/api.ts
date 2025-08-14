@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { Lead, LeadExt, CreateLeadDTO, UpdateLeadDTO } from "@/features/lead/model/types";
+import { Lead, LeadExt, CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
 
 export const leadApiReducerPath = "leadApi";
 

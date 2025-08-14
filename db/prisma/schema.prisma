@@ -82,8 +82,14 @@ model Note {
 model Appointment {
   id       String   @id @default(uuid())
   datetime DateTime
-  type     String // "call" oder "meeting"
-  notes    String?
+  type     AppointmentType?
+  note     String?
   dealId   String
   deal     Deal     @relation(fields: [dealId], references: [id])
+}
+
+enum AppointmentType {
+  CALL
+  MEETING
+  LUNCH
 }

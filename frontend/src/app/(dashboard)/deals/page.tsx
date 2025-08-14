@@ -1,5 +1,5 @@
 import { DealsList } from "@/entities/deal/ui/DealsList";
-import { DealExt } from "@/features/deal/model/types";
+import { DealExt } from "@/entities/deal/model/types";
 import { BACKEND_API_URL } from "@/shared/config/urls";
 
 export default async function DealsPage() {
