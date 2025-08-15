@@ -14,7 +14,7 @@ export const dealApi = createApi({
       query: () => "deals",
       providesTags: ["Deals"],
     }),
-    getDealById: build.query<Deal, string>({
+    getDealById: build.query<DealExt, string>({
       query: (id) => `deals/${id}`,
       providesTags: (_result, _err, id) => [{ type: "Deals", id }],
     }),

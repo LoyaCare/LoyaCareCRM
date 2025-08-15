@@ -39,5 +39,6 @@ export const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "",
     width: 48,
+    sortable: false
   },
 ];

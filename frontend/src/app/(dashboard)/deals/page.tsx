@@ -1,16 +1,19 @@
-import { DealsList } from "@/entities/deal/ui/DealsList";
+import { DealsTable } from "@/features/deal/ui/DealsTable";
 import { DealExt } from "@/entities/deal/model/types";
-import { BACKEND_API_URL } from "@/shared/config/urls";
+import { NEXT_PUBLIC_API_URL, BACKEND_API_URL } from "@/shared/config/urls";
 
 export default async function DealsPage() {
-  const deals = (await fetch(`${BACKEND_API_URL}/deals`).then((res) =>
+  const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/deals/api`).then((res) =>
     res.json()
   )) as DealExt[];
+  // const deals = (await fetch(`${BACKEND_API_URL}/deals`).then((res) =>
+  //   res.json()
+  // )) as DealExt[];
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Deals</h1>
-      <DealsList initialDeals={deals} />
+    <main>
+      <h1>Deals</h1>
+      {<DealsTable initialData={deals} />}
     </main>
   );
 }

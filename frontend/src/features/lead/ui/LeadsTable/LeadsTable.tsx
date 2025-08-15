@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import { formatDate } from "@/shared/lib/formatDate";
+import { useCallback } from "react";
 import { LeadExt } from "@/entities/lead/model/types";
 import { useGetLeadsQuery, leadApi } from "@/entities/lead/model/api";
 import { useDispatch } from "react-redux";
@@ -27,7 +26,6 @@ import {
   Order,
   SortableLeadFields,
   getComparator,
-  headCells,
   EnhancedTableHead,
   EnhancedTableToolbar,
   convertLeadsToLeadRows,
@@ -35,24 +33,28 @@ import {
 
 const LeadEditDialog = dynamic(
   () =>
-    import("@/features/lead/ui/LeadEditDailog").then(
-      (mod) => mod.LeadEditDialog
+    import("@/features/deal/ui/DealEditDialog").then(
+      (mod) => mod.DealEditDialog
     ),
   { ssr: false }
 );
 
-
-interface LeadsTableProps {
-  initialLeads: LeadExt[];
+interface TableProps<T> {
+  initialData: T;
+  invalidate?: () => void;
 }
 
-export function LeadsTable({ initialLeads }: LeadsTableProps) {
+export function LeadsTable<T extends LeadExt[]>({
+  initialData,
+  invalidate = () => {},
+}: TableProps<T>) {
   const dispatch = useDispatch();
-  const { data: leads = initialLeads } = useGetLeadsQuery();
+  const { data: leads = initialData } = useGetLeadsQuery();
 
   const refreshLeads = useCallback(() => {
-    dispatch(leadApi.util.invalidateTags(["Leads"]));
-  }, [dispatch]);
+    invalidate?.();
+    // dispatch(leadApi.util.invalidateTags(["Leads"]));
+  }, [invalidate]);
 
   // Initialize rows state with initialLeads, then update with leads from query
   const [rows, setRows] = React.useState<LeadData[]>(() =>
@@ -84,7 +86,7 @@ export function LeadsTable({ initialLeads }: LeadsTableProps) {
   }, []);
 
   const handleRequestSort = useCallback(
-    (event: React.MouseEvent<unknown>, property: keyof LeadData) => {
+    (_: React.MouseEvent<unknown>, property: keyof LeadData) => {
       const isAsc = orderBy === property && order === "asc";
       setOrder(isAsc ? "desc" : "asc");
       setOrderBy(property as SortableLeadFields);
@@ -105,7 +107,7 @@ export function LeadsTable({ initialLeads }: LeadsTableProps) {
   );
 
   const handleClick = useCallback(
-    (event: React.MouseEvent<unknown>, id: string) => {
+    (_: React.MouseEvent<unknown>, id: string) => {
       const selectedIndex = selected.indexOf(id);
       let newSelected: readonly string[] = [];
 
@@ -263,7 +265,7 @@ export function LeadsTable({ initialLeads }: LeadsTableProps) {
       </Box>
       {(clickedLeadId || isCreateDialogOpen) && (
         <LeadEditDialog
-          leadId={clickedLeadId || undefined}
+          dealId={clickedLeadId || undefined}
           open={!!clickedLeadId || !!isCreateDialogOpen}
           onClose={() => {
             setClickedLeadId(null);

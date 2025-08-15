@@ -4,7 +4,7 @@ export default function DealsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="max-w-7xl mx-auto">
+    <section>
       {children}
     </section>
   );
