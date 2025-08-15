@@ -6,20 +6,38 @@ import {
 } from "@/shared/generated/prisma-client";
 
 type DealWithCreatorContact = Prisma.DealGetPayload<{
-  include: { creator: true; contact: true };
+  include: {
+    creator: true;
+    contact: true;
+    notes: true;
+    assignee: true;
+    appointments: true;
+  };
 }>;
 
 type DealExt = Prisma.DealGetPayload<{
-  include: { creator: true; contact: true; notes: true; assignee: true };
+  include: {
+    creator: true;
+    contact: true;
+    notes: true;
+    assignee: true;
+    appointments: true;
+  };
 }>;
 
+export type Lead = Deal;
+
 export type {
-  Deal as Lead,
   DealWithCreatorContact,
   DealExt as LeadExt,
   DealStage as LeadStage,
   DealStatus as LeadStatus,
 };
 
-export type CreateLeadDTO = Omit<Deal, "id" | "createdAt" | "updatedAt">;
+export type LeadCardType = Omit<
+  Lead,
+  "creatorId" | "contactId" | "assigneeId" | "updatedAt"
+>;
+
+export type CreateLeadDTO = Omit<DealExt, "id" | "createdAt" | "updatedAt">;
 export type UpdateLeadDTO = Partial<CreateLeadDTO>;

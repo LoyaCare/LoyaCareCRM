@@ -1,13 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
-import { Lead, LeadExt, CreateLeadDTO, UpdateLeadDTO } from "./types";
+import { BACKEND_API_URL } from "@/shared/config/urls";
+import { Lead, LeadExt, CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
 
 export const leadApiReducerPath = "leadApi";
 
 export const leadApi = createApi({
-  reducerPath: "leadsApi",
+  reducerPath: "leadApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: NEXT_PUBLIC_API_URL,
+    baseUrl: BACKEND_API_URL,
     credentials: "include",
   }),
   tagTypes: ["Leads"],
@@ -16,7 +16,7 @@ export const leadApi = createApi({
       query: () => "leads",
       providesTags: ["Leads"],
     }),
-    getLeadById: build.query<Lead, string>({
+    getLeadById: build.query<LeadExt, string>({
       query: (id) => `leads/${id}`,
       providesTags: (_result, _err, id) => [{ type: "Leads", id }],
     }),

@@ -37,3 +37,10 @@
 # typescript
 **/*.tsbuildinfo
 **/next-env.d.ts
+    
+**/*storybook.log
+**/storybook-static
+
+**/.nvmrc
+
+db/prisma/migrations

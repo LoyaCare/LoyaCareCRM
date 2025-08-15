@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
-import { Deal, DealExt, CreateDealDTO, UpdateDealDTO } from "./types";
+import { BACKEND_API_URL } from "@/shared/config/urls";
+import { Deal, DealExt, CreateDealDTO, UpdateDealDTO } from "@/entities/deal/model/types";
 
 export const dealApi = createApi({
   reducerPath: "dealApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: NEXT_PUBLIC_API_URL,
+    baseUrl: BACKEND_API_URL,
     credentials: "include",
   }),
   tagTypes: ["Deals"],
