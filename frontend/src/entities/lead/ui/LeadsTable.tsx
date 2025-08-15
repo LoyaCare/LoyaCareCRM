@@ -3,7 +3,8 @@
 import { useEffect, useCallback, useState } from "react";
 import { formatDate } from "@/shared/lib/formatDate";
 import { LeadExt } from "@/entities/lead/model/types";
-import { useGetLeadsQuery } from "@/entities/lead/model/api";
+import { useGetLeadsQuery, leadApi } from "@/entities/lead/model/api";
+import { useDispatch } from "react-redux";
 
 import * as React from "react";
 import Box from "@mui/material/Box";
@@ -182,9 +183,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               ? { style: { maxWidth: headCell.maxWidth } }
               : {})}
           >
-            {headCell.id === 'actions' ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SettingsIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            {headCell.id === "actions" ? (
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <SettingsIcon
+                  fontSize="small"
+                  sx={{ color: "text.secondary" }}
+                />
               </Box>
             ) : (
               <TableSortLabel
@@ -195,7 +199,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                 {headCell.label}
                 {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
-                    {order === "desc" ? "sorted descending" : "sorted ascending"}
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
                   </Box>
                 ) : null}
               </TableSortLabel>
@@ -209,9 +215,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
   onCreateClick: () => void;
+  onRefreshClick: () => void;
 }
+import RefreshIcon from '@mui/icons-material/Refresh';
+
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, onCreateClick } = props;
+  const { numSelected, onCreateClick, onRefreshClick } = props;
 
   return (
     <Toolbar
@@ -274,45 +283,49 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
-export const LeadsTable = ({ initialLeads }: { initialLeads: LeadExt[] }) => {
-  const skipFetch = Boolean(initialLeads);
-  const { data: leads = initialLeads, isFetching } = useGetLeadsQuery(
-    undefined,
-    {
-      skip: skipFetch,
+const covertLeadsToLeadRows = (leads: LeadExt[]) =>
+  leads.map((lead) => ({
+    id: lead.id,
+    creatorName: lead.creator.name,
+    clientName: lead.contact.name,
+    clientPhone: lead.contact.phone || "",
+    clientEmail: lead.contact.email || "",
+    createdAt: formatDate(lead.createdAt),
+    productInterest: lead.productInterest || "",
+    actions: "",
+  }));
+
+export const LeadsTable = ({ initialLeads }: { initialLeads?: LeadExt[] }) => {
+
+  const { data: leads = initialLeads, isFetching } = useGetLeadsQuery(undefined, {
+    refetchOnMountOrArgChange: true
+  });
+
+  const dispatch = useDispatch();
+  
+  // Function to manually invalidate leads cache
+  const refreshLeads = useCallback(() => {
+    dispatch(leadApi.util.invalidateTags(['Leads']));
+  }, [dispatch]);
+
+  // Update rows when leads data changes
+  React.useEffect(() => {
+    if (leads) {
+      setRows(covertLeadsToLeadRows(leads));
     }
-  );
-
-  const leadRows = React.useMemo(() => {
-    const rows = leads.map((lead) => ({
-      id: lead.id,
-      creatorName: lead.creator.name,
-      clientName: lead.contact.name,
-      clientPhone: lead.contact.phone || "",
-      clientEmail: lead.contact.email || "",
-      createdAt: formatDate(lead.createdAt),
-      productInterest: lead.productInterest || "",
-      actions: "", // Placeholder for actions column
-    }));
-    return rows;
-  }, [leads, formatDate]);
-
-  useEffect(() => {
-    console.log("Leads uploaded:", leads);
-    setRows(leadRows);
   }, [leads]);
 
-  // const onClick = (leadId: string) => {
-  //   // alert(leadId);
-  //   setSelectedLeadId(leadId)
-  // };
-  const [rows, setRows] = React.useState<LeadData[]>(leadRows);
+  // Initialize rows state with initialLeads, then update with leads from query
+  const [rows, setRows] = React.useState<LeadData[]>(() =>
+    covertLeadsToLeadRows(leads || [])
+  );
+
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof LeadData>("createdAt");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [clickedLeadId, setClickedLeadId] = React.useState<string | null>(null);
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
@@ -414,6 +427,7 @@ export const LeadsTable = ({ initialLeads }: { initialLeads: LeadExt[] }) => {
           <EnhancedTableToolbar
             numSelected={selected.length}
             onCreateClick={handleCreateClick}
+            onRefreshClick={refreshLeads}
           />
           <TableContainer>
             <Table

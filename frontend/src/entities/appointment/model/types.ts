@@ -12,3 +12,4 @@ export type { Appointment, AppointmentExt, AppointmentType };
 export const appointmentTypes = Object.values(AppointmentType); 
 export type CreateAppointmentDTO = Omit<AppointmentExt, "id">;
 export type UpdateAppointmentDTO = Partial<CreateAppointmentDTO>;
+export type DeleteAppointmentDTO = Partial<Appointment>;

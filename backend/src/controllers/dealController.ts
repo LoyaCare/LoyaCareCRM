@@ -112,14 +112,29 @@ export const updateDeal = async (req: Request, res: Response) => {
 
   // Split appointments into update and create
   const appointmentsToUpdate = appointments
-    .filter((app: Appointment) => app.id)
+    .filter((app: Appointment) => app.id && app.dealId !== "REMOVED")
     .map((app: Appointment) => ({
       ...app,
       dealId: undefined, // dealId is not updated, only the content
     }));
   const appointmentsToCreate = appointments.filter(
     (app: Appointment) => !app.id
-  );
+  )
+      .map((app: Appointment) => ({
+      ...app,
+      dealId: undefined,
+    }));
+
+
+  const appointmentsToDelete = appointments
+    .filter(
+      (app: Appointment) =>
+        app.id && app.dealId && !app.datetime && !app.note && !app.type
+    )
+    .map((app: Appointment) => ({
+      ...app,
+      dealId: undefined, // dealId is not updated, only the content
+    }));
 
   // Form a nested object for notes
   const notesNested = {
@@ -137,6 +152,7 @@ export const updateDeal = async (req: Request, res: Response) => {
       data: app,
     })),
     create: appointmentsToCreate,
+    delete: appointmentsToDelete,
   };
 
   const deal = await prisma.deal.update({
@@ -147,15 +163,15 @@ export const updateDeal = async (req: Request, res: Response) => {
       ...dealData,
 
       contact: contact?.id
-          ? {
-              update: {
-                where: { id: contact.id },
-                data: contact,
-              },
-            }
-          : contact
-          ? { create: contact }
-          : undefined,
+        ? {
+            update: {
+              where: { id: contact.id },
+              data: contact,
+            },
+          }
+        : contact
+        ? { create: contact }
+        : undefined,
 
       assignee: assignee
         ? {

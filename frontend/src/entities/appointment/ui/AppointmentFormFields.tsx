@@ -14,27 +14,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import dayjs from "dayjs";
 import {
-  AppointmentExt,
+  Appointment,
   AppointmentType,
-  appointmentTypes,
-  CreateAppointmentDTO,
-  UpdateAppointmentDTO,
+  appointmentTypes
 } from "@/entities/appointment/model/types";
 import { useGetAppointmentByIdQuery } from "@/entities/appointment/model/api";
 
 type AppointmentFormFieldsProps = {
-  initialData?: AppointmentExt;
+  initialData?: Appointment;
   appoinintmentId?: string;
-  onSubmit?: (form: CreateAppointmentDTO | UpdateAppointmentDTO) => void;
+  onChange?: (form: Appointment) => void;
 };
 
 export const AppointmentFormFields: React.FC<AppointmentFormFieldsProps> = ({
   initialData,
   appoinintmentId,
-  onSubmit,
+  onChange,
 }) => {
   // Skip the initial fetch if we already have data from SSR
-  const skipFetch = !!initialData || !appoinintmentId && !initialData;
+  const skipFetch = !!initialData || (!appoinintmentId && !initialData);
 
   const {
     data: appointmentData = initialData || undefined,
@@ -45,24 +43,29 @@ export const AppointmentFormFields: React.FC<AppointmentFormFieldsProps> = ({
   });
 
   // Initialize form state with normalized data
-  const [form, setForm] = useState<CreateAppointmentDTO | UpdateAppointmentDTO>(
-    appointmentData as CreateAppointmentDTO | UpdateAppointmentDTO
-  );
+  const [form, setForm] = useState<Appointment>(appointmentData as Appointment);
 
   useEffect(() => {
-    onSubmit?.(form);
+    setForm(appointmentData as Appointment);
+  }, [appointmentData]);
+
+  useEffect(() => {
+    onChange?.(form);
   }, [form]);
 
-  const handleChange = useCallback((
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  }, []);
+  const handleChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
+      setForm((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+      }));
+    },
+    []
+  );
 
   const handleTypeChange = useCallback((e: SelectChangeEvent) => {
     setForm((prev) => ({
@@ -74,7 +77,7 @@ export const AppointmentFormFields: React.FC<AppointmentFormFieldsProps> = ({
   const handleDateChange = useCallback((value: dayjs.Dayjs | null) => {
     setForm((prev) => ({
       ...prev,
-      datetime: value ? value.toDate() : undefined,
+      datetime: value ? value.toDate() : prev.datetime,
     }));
   }, []);
 

@@ -1,11 +1,14 @@
 // src/features/lead/edit/ui/LeadEditDialog.tsx
 import React from "react";
+import { useDispatch } from "react-redux";
+
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { LeadUpsertForm } from "./LeadUpsertForm";
 import {
   useGetLeadByIdQuery,
   useUpdateLeadMutation,
   useCreateLeadMutation,
+  leadApi,
 } from "@/entities/lead/model/api";
 import type { CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
 
@@ -23,11 +26,13 @@ export function LeadEditDialog({
   });
   const [updateLead] = useUpdateLeadMutation();
   const [createLead] = useCreateLeadMutation();
+  const dispatch = useDispatch();
 
   const handleSubmit = React.useCallback(
     async (values: CreateLeadDTO | UpdateLeadDTO, shouldCreate?: boolean) => {
       if (!leadId || shouldCreate) {
         await createLead(values as CreateLeadDTO);
+        dispatch(leadApi.util.invalidateTags(["Leads"]));
         onClose();
         return;
       }
@@ -36,7 +41,6 @@ export function LeadEditDialog({
         return;
       }
       // Update the lead with the provided values
-      console.log("Updating lead with ID:", leadId, "and values:", values);
       // Assuming the API expects an object with an id and the updated values
       if (typeof values?.potentialValue === "string") {
         values.potentialValue = parseFloat(values.potentialValue);
@@ -55,7 +59,7 @@ export function LeadEditDialog({
       }
 
       await updateLead({ id: leadId, body: values as UpdateLeadDTO });
-      console.log("Lead updated successfully", values);
+      dispatch(leadApi.util.invalidateTags(["Leads"]));
       onClose();
     },
     [leadId, data, updateLead, createLead, onClose]
@@ -71,7 +75,7 @@ export function LeadEditDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Lead edit</DialogTitle>
+      <DialogTitle>{leadId ? "Lead edit" : "Lead create"}</DialogTitle>
       <DialogContent>
         <LeadUpsertForm initialData={data} onSubmit={handleSubmit} />
       </DialogContent>

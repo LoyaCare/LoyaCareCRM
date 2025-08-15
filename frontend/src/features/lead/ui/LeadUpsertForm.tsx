@@ -51,16 +51,6 @@ export const LeadUpsertForm: React.FC<LeadFormProps> = ({
   const [form, setForm] = useState<CreateLeadDTO | UpdateLeadDTO>(
     initialData as CreateLeadDTO | UpdateLeadDTO
   );
-
-  useEffect(() => {
-    if (leadData && !initialData) {
-      setForm(leadData);
-    }
-  }, [leadData, initialData]);
-
-  useEffect(() => {   
-    console.log("Form updated:", form);
-  }, [form]);
   
   const handleChange = React.useCallback(
     (
