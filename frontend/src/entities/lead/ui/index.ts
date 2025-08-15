@@ -1,2 +1,3 @@
 export { LeadsList } from './LeadsList';
-export { LeadForm } from './LeadFormFields';
+export { LeadFormFields } from './LeadFormFields';
+export { LeadsTable } from './LeadsTable';
