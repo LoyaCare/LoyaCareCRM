@@ -1,26 +1,25 @@
 "use client";
 import dynamic from "next/dynamic";
+import { DealExt } from "@/entities/deal/model/types";
 import {
   EntitiesTable,
   EntitiesTableProps,
   DealData,
   SortableFields,
 } from "@/features/EntitiesTable";
-import { leadApi } from "@/entities/lead/model/api";
-import { useGetLeadsQuery } from "@/entities/lead/model/api";
-import { LeadExt } from "@/entities/lead/model/types";
+import { dealApi, useGetDealsQuery } from "@/entities/deal/model/api";
 
-const invalidateLeads = () => leadApi.util.invalidateTags(["Leads"]);
+const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
 const EditDialog = dynamic(
   () =>
-    import("@/features/lead/ui/LeadEditDialog").then(
-      (mod) => mod.LeadEditDialog
+    import("@/features/deal/ui/DealEditDialog").then(
+      (mod) => mod.DealEditDialog
     ),
   { ssr: false }
 );
 
-export function LeadsTable<T extends LeadExt, TTableData extends DealData>({
+export function DealsTable<T extends DealExt, TTableData extends DealData>({
   initialData,
   order = "asc",
   orderBy = "createdAt" as SortableFields<TTableData>,
@@ -32,12 +31,12 @@ export function LeadsTable<T extends LeadExt, TTableData extends DealData>({
       order={order}
       orderBy={orderBy}
       getInitData={() => {
-        const { data } = useGetLeadsQuery();
+        const { data } = useGetDealsQuery();
         return data as T[];
       }}
-      invalidate={invalidateLeads}
+      invalidate={invalidateDeals}
       EditDialogComponent={EditDialogComponent}
-      toolbarTitle="Leads"
+      toolbarTitle="Deals"
     />
   );
 }

@@ -1,4 +1,5 @@
-import { DealsTable } from "@/features/deal/ui/DealsTable";
+// Update the import path to the correct location of DealsTable
+import { DealsTable } from "@/features";
 import { DealExt } from "@/entities/deal/model/types";
 import { NEXT_PUBLIC_API_URL, BACKEND_API_URL } from "@/shared/config/urls";
 

@@ -13,16 +13,20 @@ import {
 import type { CreateDealDTO, UpdateDealDTO } from "@/entities/deal/model/types";
 
 export function DealEditDialog({
-  dealId,
+  id,
+  titleEdit = "Edit Deal",
+  titleCreate = "Create Deal",
   open,
   onClose,
 }: {
-  dealId: string | undefined;
-  open: boolean;
-  onClose: () => void;
+  id?: string;
+  titleEdit?: string;
+  titleCreate?: string;
+  open?: boolean;
+  onClose?: () => void;
 }) {
-  const { data, isLoading } = useGetDealByIdQuery(dealId || "", {
-    skip: !dealId,
+  const { data, isLoading } = useGetDealByIdQuery(id || "", {
+    skip: !id,
   });
   const [updateDeal] = useUpdateDealMutation();
   const [createDeal] = useCreateDealMutation();
@@ -30,13 +34,13 @@ export function DealEditDialog({
 
   const handleSubmit = React.useCallback(
     async (values: CreateDealDTO | UpdateDealDTO, shouldCreate?: boolean) => {
-      if (!dealId || shouldCreate) {
+      if (!id || shouldCreate) {
         await createDeal(values as CreateDealDTO);
         dispatch(dealApi.util.invalidateTags(["Deals"]));
-        onClose();
+        onClose?.();
         return;
       }
-      if (!data) {
+      if (!values) {
         console.error("No deal data found for update");
         return;
       }
@@ -48,21 +52,15 @@ export function DealEditDialog({
       if (values.creatorId !== undefined) {
         values.creatorId = undefined;
       }
-      if (values.assigneeId !== undefined) {
-        values.assigneeId = undefined;
-      }
       if (values.contactId !== undefined) {
         values.contactId = undefined;
       }
-      if (values.assigneeId !== undefined) {
-        values.assigneeId = undefined;
-      }
 
-      await updateDeal({ id: dealId, body: values as UpdateDealDTO });
+      await updateDeal({ id: id, body: values as UpdateDealDTO });
       dispatch(dealApi.util.invalidateTags(["Deals"]));
-      onClose();
+      onClose?.();
     },
-    [dealId, data, updateDeal, createDeal, onClose]
+    [id, data, updateDeal, createDeal, onClose]
   );
 
   if (!open) return null;
@@ -75,9 +73,9 @@ export function DealEditDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{dealId ? "Deal edit" : "Deal create"}</DialogTitle>
+      <DialogTitle>{id ? titleEdit : titleCreate}</DialogTitle>
       <DialogContent>
-        <DealUpsertForm initialData={data} dealId={dealId} onSubmit={handleSubmit} />
+        <DealUpsertForm initialData={data} dealId={id} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   );

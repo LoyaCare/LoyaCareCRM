@@ -12,7 +12,7 @@ import Box from "@mui/material/Box";
 import { EnhancedTableToolbarProps } from "./types";
 
 export function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, onCreateClick, onRefreshClick } = props;
+  const { numSelected, onCreateClick, onRefreshClick, title } = props;
 
   return (
     <Toolbar
@@ -49,7 +49,7 @@ export function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             id="tableTitle"
             component="div"
           >
-            Leads
+            {title}
           </Typography>
         )}
         {numSelected > 0 ? (

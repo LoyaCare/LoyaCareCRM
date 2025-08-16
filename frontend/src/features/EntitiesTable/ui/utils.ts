@@ -13,7 +13,10 @@ export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-export function getComparator<T extends DealData, Key extends keyof SortableFields<T>>(
+export function getComparator<
+  T extends DealData,
+  Key extends keyof SortableFields<T>,
+>(
   order: Order,
   orderBy: Key
 ): (
@@ -33,10 +36,14 @@ export function convertDealsToDealRows<
     (deal) =>
       ({
         id: deal.id,
+        title: deal?.title,
+        potentialValue: deal?.potentialValue,
         creatorName: deal.creator.name,
+        assigneeName: deal.assignee?.name,
         clientName: deal.contact?.name,
         clientPhone: deal.contact?.phone,
         clientEmail: deal.contact?.email,
+        clientOrganization: deal.contact?.organization,
         createdAt: formatDate(deal.createdAt),
         productInterest: deal.productInterest,
         actions: undefined,

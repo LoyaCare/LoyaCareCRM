@@ -42,7 +42,7 @@ export const createDealBase = async (
   res: Response,
   stage: DealStage = "QUALIFIED"
 ) => {
-  const { creator, contact, notes, appointments, assignee, ...dealData } =
+  const { creator, contact, notes, appointments, assigneeId, ...dealData } =
     req.body;
 
   const creatorEmail = creator?.email || "hans.schmidt@example.com";
@@ -72,12 +72,9 @@ export const createDealBase = async (
           ? { create: appointments }
           : undefined,
 
-      assignee: assignee
+      assignee: assigneeId
         ? {
-            connectOrCreate: {
-              where: { email: assignee.email },
-              create: assignee,
-            },
+            connect: { id: assigneeId },
           }
         : undefined,
     },
@@ -93,12 +90,14 @@ export const createDeal = async (req: Request, res: Response) =>
 export const updateDeal = async (req: Request, res: Response) => {
   const {
     creator,
+    assignee,
+    assigneeId,
     contact,
     notes = [],
     appointments = [],
-    assignee,
     ...dealData
   } = req.body;
+  console.log("Updating deal assigneeId:", assigneeId);
 
   // Split notes into update and create
   const notesToUpdate = notes
@@ -173,14 +172,12 @@ export const updateDeal = async (req: Request, res: Response) => {
         ? { create: contact }
         : undefined,
 
-      assignee: assignee
+      assignee: assigneeId
         ? {
-            connectOrCreate: {
-              where: { id: assignee.id },
-              create: assignee,
-            },
+            connect: { id: assigneeId },
           }
         : undefined,
+      
       notes: notes.length > 0 ? notesNested : undefined,
       appointments: appointments.length > 0 ? appointmentsNested : undefined,
     },

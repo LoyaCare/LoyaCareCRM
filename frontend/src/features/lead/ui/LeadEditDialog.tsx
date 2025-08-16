@@ -13,16 +13,20 @@ import {
 import type { CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
 
 export function LeadEditDialog({
-  leadId,
+  id,
+  titleEdit = "Edit Lead",
+  titleCreate = "Create Lead",
   open,
   onClose,
 }: {
-  leadId: string | undefined;
-  open: boolean;
-  onClose: () => void;
+  id?: string;
+  titleEdit?: string;
+  titleCreate?: string;
+  open?: boolean;
+  onClose?: () => void;
 }) {
-  const { data, isLoading } = useGetLeadByIdQuery(leadId || "", {
-    skip: !leadId,
+  const { data, isLoading } = useGetLeadByIdQuery(id || "", {
+    skip: !id,
   });
   const [updateLead] = useUpdateLeadMutation();
   const [createLead] = useCreateLeadMutation();
@@ -30,13 +34,13 @@ export function LeadEditDialog({
 
   const handleSubmit = React.useCallback(
     async (values: CreateLeadDTO | UpdateLeadDTO, shouldCreate?: boolean) => {
-      if (!leadId || shouldCreate) {
+      if (!id || shouldCreate) {
         await createLead(values as CreateLeadDTO);
         dispatch(leadApi.util.invalidateTags(["Leads"]));
-        onClose();
+        onClose?.();
         return;
       }
-      if (!data) {
+      if (!values) {
         console.error("No lead data found for update");
         return;
       }
@@ -48,21 +52,15 @@ export function LeadEditDialog({
       if (values.creatorId !== undefined) {
         values.creatorId = undefined;
       }
-      if (values.assigneeId !== undefined) {
-        values.assigneeId = undefined;
-      }
       if (values.contactId !== undefined) {
         values.contactId = undefined;
       }
-      if (values.assigneeId !== undefined) {
-        values.assigneeId = undefined;
-      }
 
-      await updateLead({ id: leadId, body: values as UpdateLeadDTO });
+      await updateLead({ id: id, body: values as UpdateLeadDTO });
       dispatch(leadApi.util.invalidateTags(["Leads"]));
-      onClose();
+      onClose?.();
     },
-    [leadId, data, updateLead, createLead, onClose]
+    [id, data, updateLead, createLead, onClose]
   );
 
   if (!open) return null;
@@ -75,9 +73,13 @@ export function LeadEditDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{leadId ? "Lead edit" : "Lead create"}</DialogTitle>
+      <DialogTitle>{id ? titleEdit : titleCreate}</DialogTitle>
       <DialogContent>
-        <LeadUpsertForm initialData={data} onSubmit={handleSubmit} />
+        <LeadUpsertForm
+          initialData={data}
+          leadId={id}
+          onSubmit={handleSubmit}
+        />
       </DialogContent>
     </Dialog>
   );
