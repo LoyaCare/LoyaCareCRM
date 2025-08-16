@@ -1,11 +1,11 @@
 "use client";
 import dynamic from "next/dynamic";
 import {
-  EntitiesTable,
-  EntitiesTableProps,
+  BaseTable,
+  BaseTableProps,
   DealData,
   SortableFields,
-} from "@/features/EntitiesTable";
+} from "@/features/BaseTable";
 import { leadApi } from "@/entities/lead/model/api";
 import { useGetLeadsQuery } from "@/entities/lead/model/api";
 import { LeadExt } from "@/entities/lead/model/types";
@@ -25,9 +25,9 @@ export function LeadsTable<T extends LeadExt, TTableData extends DealData>({
   order = "asc",
   orderBy = "createdAt" as SortableFields<TTableData>,
   EditDialogComponent = EditDialog,
-}: EntitiesTableProps<T, TTableData>) {
+}: BaseTableProps<T, TTableData>) {
   return (
-    <EntitiesTable
+    <BaseTable
       initialData={initialData}
       order={order}
       orderBy={orderBy}

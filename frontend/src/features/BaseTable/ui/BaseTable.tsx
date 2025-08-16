@@ -2,7 +2,6 @@
 
 import { useCallback } from "react";
 import { DealExt } from "@/entities/deal/model/types";
-import { useGetDealsQuery, dealApi } from "@/entities/deal/model/api";
 import { useDispatch } from "react-redux";
 
 import * as React from "react";
@@ -21,51 +20,49 @@ import {
   Order,
   SortableFields,
   getComparator,
-  EnhancedTableHead,
-  EnhancedTableToolbar,
+  BaseTableHead,
+  BaseTableToolbar,
   convertDealsToDealRows,
 } from "../index";
-import { EnhancedTableProps, EnhancedTableToolbarProps } from "./types";
-import { EntitiesTablePagination } from "./TablePagination";
+import { BaseTableHeadProps, BaseTableToolbarProps } from "./types";
+import { BaseTablePagination } from "./BaseTablePagination";
 import TableRow from "@mui/material/TableRow";
 import { TablePaginationComponent, TEditDialogComponent } from "./types";
 import { UnknownAction } from "@reduxjs/toolkit";
 
-// const EditDialog = dynamic(
-//   () =>
-//     import("@/features/deal/ui/DealEditDialog").then(
-//       (mod) => mod.DealEditDialog
-//     ),
-//   { ssr: false }
-// );
-
-export interface EntitiesTableProps<T extends DealExt, TTableData extends DealData> {
+export interface BaseTableProps<
+  T extends DealExt,
+  TTableData extends DealData,
+> {
   initialData?: T[];
   order?: Order;
   orderBy?: SortableFields<TTableData>;
   invalidate?: () => UnknownAction;
   getInitData?: () => T[];
-  EnhancedTableHeadComponent?: React.FC<EnhancedTableProps<TTableData>>;
-  EnhancedTableToolbarComponent?: React.FC<
-    EnhancedTableToolbarProps
-  >;
+  TableHeadComponent?: React.FC<BaseTableHeadProps<TTableData>>;
+  TableToolbarComponent?: React.FC<BaseTableToolbarProps>;
   TablePaginationComponent?: TablePaginationComponent;
   EditDialogComponent?: TEditDialogComponent;
   toolbarTitle?: string | React.ReactElement;
+  comparatorBuilder?: (
+    order: Order,
+    orderBy: SortableFields<TTableData>
+  ) => (a: TTableData, b: TTableData) => number;
 }
 
-export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
+export function BaseTable<T extends DealExt, TTableData extends DealData>({
   initialData,
   order: defaultOrder = "asc",
   orderBy: defaultOrderBy = "createdAt" as SortableFields<TTableData>,
   invalidate,
   getInitData,
-  EnhancedTableHeadComponent = EnhancedTableHead,
-  EnhancedTableToolbarComponent = EnhancedTableToolbar,
-  TablePaginationComponent = EntitiesTablePagination,
+  TableHeadComponent = BaseTableHead,
+  TableToolbarComponent = BaseTableToolbar,
+  TablePaginationComponent = BaseTablePagination,
   EditDialogComponent,
   toolbarTitle,
-}: EntitiesTableProps<T, TTableData>) {
+  comparatorBuilder = getComparator<Order, TTableData>
+}: BaseTableProps<T, TTableData>) {
   const dispatch = useDispatch();
 
   const deals = getInitData ? getInitData() : initialData;
@@ -169,7 +166,7 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
   const visibleRows = React.useMemo(
     () =>
       rows
-        // .sort(getComparator<TTableData>(order as Order, orderBy as SortableFields<TTableData>))
+        .sort(comparatorBuilder(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage, rows]
   );
@@ -191,8 +188,8 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
     <>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
-          {EnhancedTableToolbarComponent && (
-            <EnhancedTableToolbarComponent
+          {TableToolbarComponent && (
+            <TableToolbarComponent
               numSelected={selected.length}
               onCreateClick={handleCreateClick}
               onRefreshClick={refreshDeals}
@@ -201,7 +198,7 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
           )}
           <TableContainer>
             <Table
-              stickyHeader
+              stickyHeader={true}
               sx={{
                 minWidth: 750,
                 borderCollapse: "collapse",
@@ -222,8 +219,8 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
               aria-labelledby="tableTitle"
               size="small"
             >
-              {EnhancedTableHeadComponent && (
-                <EnhancedTableHeadComponent
+              {TableHeadComponent && (
+                <TableHeadComponent
                   numSelected={selected.length}
                   order={order}
                   orderBy={orderBy as string}
@@ -261,7 +258,14 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
                         {row.title}
                       </TableCell>
                       <TableCell>{row.clientOrganization}</TableCell>
-                      <TableCell align="right">{row.potentialValue}</TableCell>
+                      <TableCell align="right">
+                        {row.potentialValue
+                          ? new Intl.NumberFormat("de-DE", {
+                              style: "currency",
+                              currency: "EUR",
+                            }).format(row.potentialValue)
+                          : null}
+                      </TableCell>
                       <TableCell>{row.clientName}</TableCell>
                       <TableCell>{row.createdAt}</TableCell>
                       <TableCell>{row.productInterest}</TableCell>
@@ -284,7 +288,7 @@ export function EntitiesTable<T extends DealExt, TTableData extends DealData>({
                       // height: (dense ? 33 : 53) * emptyRows,
                     }}
                   >
-                    <TableCell colSpan={6} />
+                    <TableCell colSpan={9} />
                   </TableRow>
                 )}
               </TableBody>

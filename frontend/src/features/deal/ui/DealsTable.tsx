@@ -2,11 +2,11 @@
 import dynamic from "next/dynamic";
 import { DealExt } from "@/entities/deal/model/types";
 import {
-  EntitiesTable,
-  EntitiesTableProps,
+  BaseTable,
+  BaseTableProps,
   DealData,
   SortableFields,
-} from "@/features/EntitiesTable";
+} from "@/features/BaseTable";
 import { dealApi, useGetDealsQuery } from "@/entities/deal/model/api";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
@@ -24,9 +24,9 @@ export function DealsTable<T extends DealExt, TTableData extends DealData>({
   order = "asc",
   orderBy = "createdAt" as SortableFields<TTableData>,
   EditDialogComponent = EditDialog,
-}: EntitiesTableProps<T, TTableData>) {
+}: BaseTableProps<T, TTableData>) {
   return (
-    <EntitiesTable
+    <BaseTable
       initialData={initialData}
       order={order}
       orderBy={orderBy}

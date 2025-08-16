@@ -2,7 +2,7 @@ import React from "react";
 import TablePagination from "@mui/material/TablePagination";
 import { TablePaginationComponent, TablePaginationComponentProps } from "./types"; 
 
-interface TablePaginationProps {
+interface BaseTablePaginationProps {
   count: number;
   page: number;
   rowsPerPage: number;
@@ -11,7 +11,7 @@ interface TablePaginationProps {
   rowsPerPageOptions?: number[];
 }
 
-export const EntitiesTablePagination: TablePaginationComponent = ({
+export const BaseTablePagination: TablePaginationComponent = ({
   count,
   page,
   rowsPerPage,

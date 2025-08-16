@@ -9,9 +9,9 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
-import { EnhancedTableToolbarProps } from "./types";
+import { BaseTableToolbarProps } from "./types";
 
-export function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
+export function BaseTableToolbar(props: BaseTableToolbarProps) {
   const { numSelected, onCreateClick, onRefreshClick, title } = props;
 
   return (

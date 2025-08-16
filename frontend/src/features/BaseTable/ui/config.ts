@@ -5,7 +5,7 @@ export const headCells: readonly HeadCell[] = [
     id: "title",
     disablePadding: false,
     label: "Titel",
-    // width: 100,
+    minWidth: 120,
   },
   {
     id: "clientOrganization",
@@ -48,8 +48,7 @@ export const headCells: readonly HeadCell[] = [
     id: "actions",
     disablePadding: false,
     label: "",
-    width: 48,
     sortable: false,
-    maxWidth: 48,
+    maxWidth: 30,
   },
 ];

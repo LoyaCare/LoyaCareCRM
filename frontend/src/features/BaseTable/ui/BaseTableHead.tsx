@@ -6,11 +6,13 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { EnhancedTableProps } from "./types";
+import { BaseTableHeadProps } from "./types";
 import { headCells } from "./config";
 import { DealData } from "./model";
 
-export function EnhancedTableHead<T extends DealData>(props: EnhancedTableProps<T>) {
+export { headCells };
+
+export function BaseTableHead<T extends DealData>(props: BaseTableHeadProps<T>) {
   const {
     onSelectAllClick,
     order,
@@ -21,9 +23,9 @@ export function EnhancedTableHead<T extends DealData>(props: EnhancedTableProps<
   } = props;
 
   const createSortHandler =
-    (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+    React.useCallback((property: keyof T) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
-    };
+    }, [onRequestSort]);
 
   return (
     <TableHead>

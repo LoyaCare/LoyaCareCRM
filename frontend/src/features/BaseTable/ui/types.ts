@@ -4,7 +4,7 @@ import { DealData } from "./model";
 export type Order = "asc" | "desc";
 
 //  Exclude field actions from the possible keys for sorting
-export type SortableFields<T extends DealData> = Exclude<keyof T, "actions">;
+export type SortableFields<T> = keyof T;
 
 export interface HeadCell {
   disablePadding: boolean;
@@ -17,7 +17,7 @@ export interface HeadCell {
   sortable?: boolean;
 }
 
-export interface EnhancedTableProps<T extends DealData> {
+export interface BaseTableHeadProps<T> {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -26,7 +26,7 @@ export interface EnhancedTableProps<T extends DealData> {
   rowCount: number;
 }
 
-export interface EnhancedTableToolbarProps {
+export interface BaseTableToolbarProps {
   numSelected: number;
   onCreateClick: () => void;
   onRefreshClick: () => void;

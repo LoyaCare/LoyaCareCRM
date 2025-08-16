@@ -1,4 +1,4 @@
-import { Order, SortableFields } from "./types";
+// import { Order } from "./types";
 import { formatDate } from "@/shared/lib/formatDate";
 import { DealExt } from "@/entities/deal/model/types";
 import { DealData } from "./model";
@@ -13,16 +13,10 @@ export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-export function getComparator<
-  T extends DealData,
-  Key extends keyof SortableFields<T>,
->(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
+export function getComparator<TO, T>(
+  order: TO,
+  orderBy: keyof T
+): (a: T, b: T) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
