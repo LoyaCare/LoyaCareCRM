@@ -1,54 +1,18 @@
-import { HeadCell } from "./types";
+import { BaseTableRowData } from "./model";
+import type { Column, TGetColumns } from "./types";
 
-export const headCells: readonly HeadCell[] = [
-  {
-    id: "title",
-    disablePadding: false,
-    label: "Titel",
-    minWidth: 120,
-  },
-  {
-    id: "clientOrganization",
-    disablePadding: false,
-    label: "Organisation",
-    width: 100,
-  },
-  {
-    id: "potentialValue",
-    disablePadding: false,
-    label: "Wert",
-    width: 70,
-    numeric: true,
-  },
-  {
-    id: "clientName",
-    disablePadding: false,
-    label: "Client Name",
-    width: 170,
-  },
-  {
-    id: "createdAt",
-    disablePadding: false,
-    label: "Lead erstellt",
-    width: 200,
-  },
-  {
-    id: "productInterest",
-    disablePadding: false,
-    label: "Product",
-    width: 200,
-  },
-  {
-    id: "creatorName",
-    disablePadding: false,
-    label: "Besitzer",
-    width: 200,
-  },
-  {
-    id: "actions",
-    disablePadding: false,
-    label: "",
-    sortable: false,
-    maxWidth: 30,
-  },
+// export const currencyFormatter = (value: any) =>
+//   value
+//     ? new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
+//     : null;
+
+export const defaultGetColumns: TGetColumns<BaseTableRowData> = () => {
+  return columns;
+}
+
+// Default columns for the table. This can be imported by BaseTable or overridden by callers.
+export const columns: Column<BaseTableRowData>[] = [
+  { label: "", isActions: true, maxWidth: 30 },
 ];
+
+export default columns;

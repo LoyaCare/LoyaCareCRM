@@ -6,14 +6,13 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { BaseTableHeadProps } from "./types";
-import { headCells } from "./config";
-import { DealData } from "./model";
+import { BaseTableHeadProps, TBaseColumnType, Column} from "./types";
 
-export { headCells };
-
-export function BaseTableHead<T extends DealData>(props: BaseTableHeadProps<T>) {
+export function BaseTableHead<T extends TBaseColumnType>(
+  props: BaseTableHeadProps<T>
+) {
   const {
+    columns,
     onSelectAllClick,
     order,
     orderBy,
@@ -22,11 +21,12 @@ export function BaseTableHead<T extends DealData>(props: BaseTableHeadProps<T>) 
     onRequestSort,
   } = props;
 
-  const createSortHandler =
-    React.useCallback((property: keyof T) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = React.useCallback(
+    (property: keyof T) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
-    }, [onRequestSort]);
-
+    },
+    [onRequestSort]
+  );
   return (
     <TableHead>
       <TableRow>
@@ -36,43 +36,47 @@ export function BaseTableHead<T extends DealData>(props: BaseTableHeadProps<T>) 
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all leads",
+            slotProps={{
+              input: {
+                "aria-label": "select all leads",
+              },
             }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-            style={{
-              width: headCell.width,
-              minWidth: headCell.minWidth,
-              maxWidth: headCell.maxWidth,
-            }}
-          >
-            {headCell.id !== "actions" ? (
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
-                onClick={createSortHandler(headCell.id)}
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === "desc"
-                      ? "sorted descending"
-                      : "sorted ascending"}
-                  </Box>
-                ) : null}
-              </TableSortLabel>
-            ) : (
-              headCell.label
-            )}
-          </TableCell>
-        ))}
+        {columns?.map((headCell) => {
+          const headCellId = (headCell as Column<T>).key as string;
+          return (
+            <TableCell
+              key={headCellId}
+              padding={headCell.padding || "normal"}
+              sortDirection={orderBy === headCellId ? order : false}
+              style={{
+                width: headCell.width,
+                minWidth: headCell.minWidth,
+                maxWidth: headCell.maxWidth,
+              }}
+            >
+              {headCell.sortable !== false ? (
+                <TableSortLabel
+                  active={orderBy === headCellId}
+                  direction={orderBy === headCellId ? order : "asc"}
+                  onClick={createSortHandler(headCellId as keyof T)}
+                >
+                  {headCell.label}
+                  {orderBy === headCellId ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              ) : (
+                headCell.label
+              )}
+            </TableCell>
+          );
+        })}
       </TableRow>
     </TableHead>
   );

@@ -4,8 +4,9 @@ import { NEXT_PUBLIC_API_URL, BACKEND_API_URL } from "@/shared/config/urls";
 
 import {
   BaseTableProps,
-  DealData,
+  BaseTableRowData,
 } from "@/features/BaseTable";
+import { LeadTableRowData } from "@/features/lead/ui/LeadsTable/model";
 
 export default async function LeadsPage() {
   const leads = (await fetch(`${NEXT_PUBLIC_API_URL}/leads/api`).then((res) =>
@@ -18,7 +19,7 @@ export default async function LeadsPage() {
   return (
     <main>
       <h1>Leads</h1>
-      {<LeadsTable<LeadExt, DealData> initialData={leads} />}
+      {<LeadsTable initialData={leads} />}
     </main>
   );
 }

@@ -1,6 +1,6 @@
 import { BaseTableRowData } from "@/features/BaseTable";
 
-export interface LeadTableRowData extends BaseTableRowData {
+export interface DealTableRowData extends BaseTableRowData {
   id: string;
   title: string;
   potentialValue: number;

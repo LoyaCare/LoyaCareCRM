@@ -2,13 +2,19 @@
 import dynamic from "next/dynamic";
 import {
   BaseTable,
+  BaseTableHeadProps,
   BaseTableProps,
-  DealData,
+  BaseTableRowData,
   SortableFields,
+  BaseTableHead,
+  Column,
 } from "@/features/BaseTable";
 import { leadApi } from "@/entities/lead/model/api";
 import { useGetLeadsQuery } from "@/entities/lead/model/api";
 import { LeadExt } from "@/entities/lead/model/types";
+import { columns } from "./config";
+import { LeadTableRowData } from "./model";
+import { convertLeadsToLeadRows } from './utils'
 
 const invalidateLeads = () => leadApi.util.invalidateTags(["Leads"]);
 
@@ -20,12 +26,26 @@ const EditDialog = dynamic(
   { ssr: false }
 );
 
-export function LeadsTable<T extends LeadExt, TTableData extends DealData>({
+const LeadsTableHead = <TTableData extends LeadTableRowData>(
+  props: BaseTableHeadProps<TTableData>
+) => {
+  // columns is typed for your Deal rows in ./config — assert to the generic Column<TTableData>[]
+  return (
+    <BaseTableHead
+      {...props}
+      columns={columns as unknown as Column<TTableData>[]}
+    />
+  );
+};
+
+export function LeadsTable<
+  T extends LeadExt,
+>({
   initialData,
   order = "asc",
-  orderBy = "createdAt" as SortableFields<TTableData>,
+  orderBy = "createdAt" as SortableFields<LeadTableRowData>,
   EditDialogComponent = EditDialog,
-}: BaseTableProps<T, TTableData>) {
+}: BaseTableProps<T, LeadTableRowData>) {
   return (
     <BaseTable
       initialData={initialData}
@@ -38,6 +58,9 @@ export function LeadsTable<T extends LeadExt, TTableData extends DealData>({
       invalidate={invalidateLeads}
       EditDialogComponent={EditDialogComponent}
       toolbarTitle="Leads"
+      TableHeadComponent={LeadsTableHead}
+      columnsConfig={columns}
+      rowConverter={convertLeadsToLeadRows}
     />
   );
 }

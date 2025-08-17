@@ -1,8 +1,5 @@
-// import { Order } from "./types";
-import { formatDate } from "@/shared/lib/formatDate";
-import { DealExt } from "@/entities/deal/model/types";
-import { DealData } from "./model";
-
+import { BaseTableRowData } from "./model";
+import { currencyFormatter as defaultCurrencyFormatter } from "@/shared/lib/formatCurrency";
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -22,25 +19,28 @@ export function getComparator<TO, T>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-export function convertDealsToDealRows<
-  T extends DealExt,
-  TTableData extends DealData,
->(deals: T[]): TTableData[] {
-  return deals.map(
-    (deal) =>
+export type TConvertSrcDataToDataRows<T, TTableData extends BaseTableRowData> = (
+  src: T[]
+) => TTableData[];
+
+export function defaultConvertSrcDataToDataRows<
+  T,
+  TTableData extends BaseTableRowData,
+>(src: T[]): TTableData[] {
+  return src.map(
+    (_) =>
       ({
-        id: deal.id,
-        title: deal?.title,
-        potentialValue: deal?.potentialValue,
-        creatorName: deal.creator.name,
-        assigneeName: deal.assignee?.name,
-        clientName: deal.contact?.name,
-        clientPhone: deal.contact?.phone,
-        clientEmail: deal.contact?.email,
-        clientOrganization: deal.contact?.organization,
-        createdAt: formatDate(deal.createdAt),
-        productInterest: deal.productInterest,
-        actions: undefined,
+        id: "defaultConvertSrcDataToDataRows should be implemented",
       }) as TTableData
   );
 }
+
+export const currencyFormatter = <T extends BaseTableRowData>(
+  value: any,
+  row: T,
+  currency: string = "EUR",
+  locale: string = "de-DE"
+): React.ReactNode =>
+  value
+    ? defaultCurrencyFormatter(value, currency, locale)
+    : null;

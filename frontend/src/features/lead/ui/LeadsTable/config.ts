@@ -1,44 +1,18 @@
-import { HeadCell } from "./types";
+import { LeadTableRowData } from "./model";
+import { Column, currencyFormatter } from "@/features/BaseTable";
 
-export const headCells: readonly HeadCell[] = [
+
+// Columns definition for the Leads table.
+export const columns: Column<LeadTableRowData>[] = [
+  { key: "title", label: "Title", padding: "none", minWidth: 120 },
   {
-    id: "creatorName",
-    disablePadding: true,
-    label: "Besitzer",
-    width: 100,
+    key: "potentialValue",
+    label: "Potential",
+    align: "right",
+    formatter: currencyFormatter,
+    minWidth: 70,
   },
-  {
-    id: "clientName",
-    disablePadding: false,
-    label: "Client Name",
-    width: 170,
-  },
-  {
-    id: "clientPhone",
-    numeric: true,
-    disablePadding: false,
-    label: "Client Phone",
-  },
-  {
-    id: "clientEmail",
-    disablePadding: false,
-    label: "Client Email",
-  },
-  {
-    id: "createdAt",
-    disablePadding: false,
-    label: "Lead erstellt",
-  },
-  {
-    id: "productInterest",
-    disablePadding: false,
-    label: "Product",
-  },
-  {
-    id: "actions",
-    disablePadding: false,
-    label: "",
-    width: 48,
-    sortable: false
-  },
+  { key: "clientName", label: "Client", minWidth: 170 },
+  { key: "assigneeName", label: "Assignee", minWidth: 200 },
+  { key: "actions", label: "", isActions: true, maxWidth: 30, sortable: false },
 ];

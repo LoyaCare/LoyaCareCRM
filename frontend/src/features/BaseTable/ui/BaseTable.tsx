@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback } from "react";
-import { DealExt } from "@/entities/deal/model/types";
 import { useDispatch } from "react-redux";
 
 import * as React from "react";
@@ -16,24 +15,33 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import {
-  DealData,
+  BaseTableRowData,
   Order,
   SortableFields,
   getComparator,
   BaseTableHead,
   BaseTableToolbar,
-  convertDealsToDealRows,
+  defaultConvertSrcDataToDataRows,
 } from "../index";
-import { BaseTableHeadProps, BaseTableToolbarProps } from "./types";
+import defaultColumnsConfig from "./config";
+import {
+  BaseTableHeadProps,
+  BaseTableToolbarProps,
+  Column,
+  TablePaginationComponent,
+  TEditDialogComponent,
+} from "./types";
 import { BaseTablePagination } from "./BaseTablePagination";
 import TableRow from "@mui/material/TableRow";
-import { TablePaginationComponent, TEditDialogComponent } from "./types";
 import { UnknownAction } from "@reduxjs/toolkit";
+import { TConvertSrcDataToDataRows } from "./utils";
 
 export interface BaseTableProps<
-  T extends DealExt,
-  TTableData extends DealData,
+  T,
+  TTableData extends BaseTableRowData,
 > {
+  /** Optional column configuration; if omitted, default config from ../config is used */
+  columnsConfig?: Column<TTableData>[];
   initialData?: T[];
   order?: Order;
   orderBy?: SortableFields<TTableData>;
@@ -44,13 +52,17 @@ export interface BaseTableProps<
   TablePaginationComponent?: TablePaginationComponent;
   EditDialogComponent?: TEditDialogComponent;
   toolbarTitle?: string | React.ReactElement;
+  rowConverter?: TConvertSrcDataToDataRows<T, TTableData>;
   comparatorBuilder?: (
     order: Order,
     orderBy: SortableFields<TTableData>
   ) => (a: TTableData, b: TTableData) => number;
 }
 
-export function BaseTable<T extends DealExt, TTableData extends DealData>({
+export function BaseTable<
+  T,
+  TTableData extends BaseTableRowData,
+>({
   initialData,
   order: defaultOrder = "asc",
   orderBy: defaultOrderBy = "createdAt" as SortableFields<TTableData>,
@@ -61,21 +73,26 @@ export function BaseTable<T extends DealExt, TTableData extends DealData>({
   TablePaginationComponent = BaseTablePagination,
   EditDialogComponent,
   toolbarTitle,
-  comparatorBuilder = getComparator<Order, TTableData>
-}: BaseTableProps<T, TTableData>) {
+  comparatorBuilder = getComparator<Order, TTableData>,
+  columnsConfig: columnsConfigProp,
+  rowConverter = defaultConvertSrcDataToDataRows<T, TTableData>,
+}: BaseTableProps<T, TTableData> & { columnsConfig?: Column<TTableData>[] }) {
   const dispatch = useDispatch();
 
-  const deals = getInitData ? getInitData() : initialData;
+  const columnsConfig: Column<any>[] =
+    (columnsConfigProp as any) || defaultColumnsConfig;
 
-  const refreshDeals = useCallback(() => {
+  const data = initialData || (getInitData ? getInitData() : []);
+
+  const refreshData = useCallback(() => {
     if (invalidate) {
       dispatch(invalidate());
     }
   }, [invalidate]);
 
-  // Initialize rows state with initialDeals, then update with deals from query
+  // Initialize rows state with initial data, then update with data from query
   const [rows, setRows] = React.useState<TTableData[]>(() =>
-    convertDealsToDealRows<T, TTableData>((deals as T[]) || [])
+    rowConverter?.((data as T[]) || [])
   );
 
   const [order, setOrder] = React.useState<Order>(defaultOrder);
@@ -87,12 +104,14 @@ export function BaseTable<T extends DealExt, TTableData extends DealData>({
   const [clickedId, setClickedId] = React.useState<string | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
 
-  // Update rows when deals data changes
+  // Update rows when data changes
   React.useEffect(() => {
-    if (deals && deals.length > 0) {
-      setRows(convertDealsToDealRows<T, TTableData>((deals as T[]) || []));
+    if (data && data.length > 0) {
+      setRows(
+        rowConverter?.((data as T[]) || [])
+      );
     }
-  }, [deals]);
+  }, [data]);
 
   const handleCreateClick = useCallback(() => {
     setIsCreateDialogOpen(true);
@@ -192,7 +211,7 @@ export function BaseTable<T extends DealExt, TTableData extends DealData>({
             <TableToolbarComponent
               numSelected={selected.length}
               onCreateClick={handleCreateClick}
-              onRefreshClick={refreshDeals}
+              onRefreshClick={refreshData}
               title={toolbarTitle}
             />
           )}
@@ -254,30 +273,51 @@ export function BaseTable<T extends DealExt, TTableData extends DealData>({
                           }}
                         />
                       </TableCell>
-                      <TableCell id={labelId} scope="row" padding="none">
-                        {row.title}
-                      </TableCell>
-                      <TableCell>{row.clientOrganization}</TableCell>
-                      <TableCell align="right">
-                        {row.potentialValue
-                          ? new Intl.NumberFormat("de-DE", {
-                              style: "currency",
-                              currency: "EUR",
-                            }).format(row.potentialValue)
-                          : null}
-                      </TableCell>
-                      <TableCell>{row.clientName}</TableCell>
-                      <TableCell>{row.createdAt}</TableCell>
-                      <TableCell>{row.productInterest}</TableCell>
-                      <TableCell>{row.assigneeName}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          style={{ height: "24px", width: "24px" }}
-                          onClick={(e) => handleEditDialogOpen(e, row.id)}
-                        >
-                          <MoreVertIcon height="16px" width="16px" />
-                        </IconButton>
-                      </TableCell>
+                      {columnsConfig.map(
+                        (col: Column<any>, colIndex: number) => {
+                          if (col.isActions) {
+                            return (
+                              <TableCell key={`col-${colIndex}`}>
+                                <IconButton
+                                  style={{ height: "24px", width: "24px" }}
+                                  onClick={(e) =>
+                                    handleEditDialogOpen(e, row.id)
+                                  }
+                                >
+                                  <MoreVertIcon height="16px" width="16px" />
+                                </IconButton>
+                              </TableCell>
+                            );
+                          }
+
+                          const value = col.key
+                            ? (row[col.key as keyof typeof row] as any)
+                            : undefined;
+                          const content = col.formatter
+                            ? col.formatter(value, row)
+                            : value;
+
+                          const key = `col-${colIndex}`;
+
+                          // If this is the first data column and padding is none, set id for aria
+                          const cellProps: any = {
+                            align: col.align || undefined,
+                          };
+
+                          if (col.padding === "none") {
+                            cellProps.padding = "none";
+                            // first data column should have the label id
+                            if (colIndex === 0) {
+                              cellProps.id = labelId;
+                              cellProps.scope = "row";
+                            }
+                          }
+
+                          return (
+                            <TableCell key={key} {...cellProps}>{content}</TableCell>
+                          );
+                        }
+                      )}
                     </TableRow>
                   );
                 })}
@@ -288,7 +328,7 @@ export function BaseTable<T extends DealExt, TTableData extends DealData>({
                       // height: (dense ? 33 : 53) * emptyRows,
                     }}
                   >
-                    <TableCell colSpan={9} />
+                    <TableCell colSpan={columnsConfig.length + 1} />
                   </TableRow>
                 )}
               </TableBody>
