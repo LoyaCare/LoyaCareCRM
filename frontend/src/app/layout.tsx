@@ -1,5 +1,8 @@
+
 import React from 'react';
 import { Providers } from "./store/Providers";
+import Box from "@mui/material/Box";
+import { SidebarDrawer } from "@/shared/ui/SidebarDrawer";
 
 import './globals.css'
  
@@ -8,6 +11,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // SidebarDrawer is a client component; it handles its own state
+
   return (
     <html lang="en">
       <head>
@@ -19,7 +24,12 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          {children}
+          <Box sx={{ display: "flex", height: "100vh" }}>
+            <SidebarDrawer />
+            <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: "background.default", minHeight: "100vh" }}>
+              {children}
+            </Box>
+          </Box>
         </Providers>
       </body>
     </html>
