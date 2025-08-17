@@ -1,23 +1,28 @@
 import React from "react";
-import { DealData } from "./model";
-
 export type Order = "asc" | "desc";
 
 //  Exclude field actions from the possible keys for sorting
 export type SortableFields<T> = keyof T;
 
-export interface HeadCell {
-  disablePadding: boolean;
-  id: keyof DealData;
+export type TBaseColumnType = { id: string }
+
+export type Column<T extends TBaseColumnType> = {
+  key?: keyof T;
   label: string;
-  numeric?: boolean;
+  align?: "left" | "right" | "center";
+  padding?: "normal" | "checkbox" | "none";
+  formatter?: (value: any, row: T) => React.ReactNode;
+  isActions?: boolean;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
   sortable?: boolean;
-}
+};
 
-export interface BaseTableHeadProps<T> {
+export type TGetColumns<T extends TBaseColumnType> = () => Column<T>[];
+
+export interface BaseTableHeadProps<T extends TBaseColumnType> {
+  columns?: Column<T>[];
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
