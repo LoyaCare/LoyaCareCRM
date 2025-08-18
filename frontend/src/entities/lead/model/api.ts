@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { Lead, LeadExt, CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
+import {
+  Lead,
+  LeadExt,
+  CreateLeadDTO,
+  UpdateLeadDTO,
+} from "@/entities/lead/model/types";
 
 export const leadApiReducerPath = "leadApi";
 
@@ -10,7 +15,7 @@ export const leadApi = createApi({
     baseUrl: BACKEND_API_URL,
     credentials: "include",
   }),
-  tagTypes: ["Leads"],
+  tagTypes: ["Leads", "Lead"],
   endpoints: (build) => ({
     getLeads: build.query<LeadExt[], void>({
       query: () => "leads",
@@ -18,7 +23,7 @@ export const leadApi = createApi({
     }),
     getLeadById: build.query<LeadExt, string>({
       query: (id) => `leads/${id}`,
-      providesTags: (_result, _err, id) => [{ type: "Leads", id }],
+      providesTags: (_result, _err, id) => [{ type: "Lead", id }],
     }),
     createLead: build.mutation<Lead, CreateLeadDTO>({
       query: (body) => ({
@@ -52,4 +57,5 @@ export const {
   useCreateLeadMutation,
   useUpdateLeadMutation,
   useDeleteLeadMutation,
+  useLazyGetLeadByIdQuery,
 } = leadApi;

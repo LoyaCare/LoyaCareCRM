@@ -1,18 +1,10 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "types": [
-      "react",
-      "react-dom",
-      "node"
-    ],
+    "types": ["react", "react-dom", "node"],
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -29,33 +21,20 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/app/*": [
-        "./src/app/*"
-      ],
-      "@/entities/*": [
-        "./src/entities/*"
-      ],
-      "@/features/*": [
-        "./src/features/*"
-      ],
-      "@/widgets/*": [
-        "./src/widgets/*"
-      ],
-      "@/shared/*": [
-        "./src/shared/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/entities/*": ["./src/entities/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/widgets/*": ["./src/widgets/*"],
+      "@/shared/*": ["./src/shared/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "src/features/lead/ui/LeadsTable/index.ts", "src/features/lead/ui/LeadsTable/LeadsTable.tsx.bak", "src/features/BaseTable/ui/config.ts.bak"  ],
-  "exclude": [
-    "node_modules"
-  ]
+    ".next/types/**/*.ts",
+    "src/features/lead/LeadsTable/index.ts"
+  ],
+  "exclude": ["node_modules"]
 }

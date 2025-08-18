@@ -6,7 +6,7 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { BaseTableHeadProps, TBaseColumnType, Column} from "./types";
+import { BaseTableHeadProps, TBaseColumnType, Column} from "../types";
 
 export function BaseTableHead<T extends TBaseColumnType>(
   props: BaseTableHeadProps<T>
