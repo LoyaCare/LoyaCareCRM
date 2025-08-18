@@ -14,7 +14,7 @@ import { useGetLeadsQuery } from "@/entities/lead/model/api";
 import { LeadExt } from "@/entities/lead/model/types";
 import { columns } from "../config";
 import { LeadTableRowData } from "../model";
-import { convertLeadsToLeadRows } from '../utils'
+import { convertLeadsToLeadRows } from "../utils";
 
 const invalidateLeads = () => leadApi.util.invalidateTags(["Leads"]);
 
@@ -38,17 +38,20 @@ const LeadsTableHead = <TTableData extends LeadTableRowData>(
   );
 };
 
-export function LeadsTable<
-  T extends LeadExt,
->({
+export function LeadsTable<T extends LeadExt>({
   initialData,
   order = "asc",
   orderBy = "createdAt" as SortableFields<LeadTableRowData>,
   EditDialogComponent = EditDialog,
 }: BaseTableProps<T, LeadTableRowData>) {
+  const { data: leads = initialData || [] } = useGetLeadsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
+
   return (
     <BaseTable
-      initialData={initialData}
+      initialData={leads}
       order={order}
       orderBy={orderBy}
       getInitData={() => {

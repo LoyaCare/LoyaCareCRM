@@ -11,15 +11,22 @@ import {
 } from "@/features/BaseTable";
 import { dealApi, useGetDealsQuery } from "@/entities/deal/model/api";
 import { BaseTableHead } from "@/features/BaseTable";
-import { columns } from '../config'
+import { columns } from "../config";
 import { DealTableRowData } from "../model";
 import { convertDealsToDealRows } from "../utils";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
-const DealsTableHead = <TTableData extends BaseTableRowData,>(props: BaseTableHeadProps<TTableData>) => {
+const DealsTableHead = <TTableData extends BaseTableRowData>(
+  props: BaseTableHeadProps<TTableData>
+) => {
   // columns is typed for your Deal rows in ./config — assert to the generic Column<TTableData>[]
-  return <BaseTableHead {...props} columns={columns as unknown as Column<TTableData>[]} />;
+  return (
+    <BaseTableHead
+      {...props}
+      columns={columns as unknown as Column<TTableData>[]}
+    />
+  );
 };
 
 const EditDialog = dynamic(
@@ -30,17 +37,20 @@ const EditDialog = dynamic(
   { ssr: false }
 );
 
-export function DealsTable<
-  T extends DealExt,
->({
+export function DealsTable<T extends DealExt>({
   initialData,
   order,
   orderBy = "createdAt" as SortableFields<DealTableRowData>,
   EditDialogComponent = EditDialog,
 }: BaseTableProps<T, DealTableRowData>) {
+  const { data: deals = initialData || [] } = useGetDealsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
+
   return (
     <BaseTable
-      initialData={initialData}
+      initialData={deals}
       order={order}
       orderBy={orderBy}
       getInitData={() => {
