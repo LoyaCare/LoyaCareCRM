@@ -26,10 +26,10 @@ type DealExt = Prisma.DealGetPayload<{
 }>;
 
 export type Lead = Deal;
+export type LeadExt = DealExt;
 
 export type {
   DealWithCreatorContact,
-  DealExt as LeadExt,
   DealStage as LeadStage,
   DealStatus as LeadStatus,
 };

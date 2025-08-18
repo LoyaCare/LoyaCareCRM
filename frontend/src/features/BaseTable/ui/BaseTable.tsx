@@ -35,12 +35,11 @@ import { BaseTablePagination } from "./BaseTablePagination";
 import TableRow from "@mui/material/TableRow";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { TConvertSrcDataToDataRows } from "../utils";
+import { useSelection } from "../hooks/useSelection";
+import { ActionCell } from "./ActionCell";
+import { ActionMenu, ActionMenuItemProps, ActionMenuProps } from "./ActionMenu";
 
-export interface BaseTableProps<
-  T,
-  TTableData extends BaseTableRowData,
-> {
-  /** Optional column configuration; if omitted, default config from ../config is used */
+export interface BaseTableProps<T, TTableData extends BaseTableRowData> {
   columnsConfig?: Column<TTableData>[];
   initialData?: T[];
   order?: Order;
@@ -52,17 +51,16 @@ export interface BaseTableProps<
   TablePaginationComponent?: TablePaginationComponent;
   EditDialogComponent?: TEditDialogComponent;
   toolbarTitle?: string | React.ReactElement;
+  rowActionMenuComponent?: React.FC<ActionMenuProps>;
   rowConverter?: TConvertSrcDataToDataRows<T, TTableData>;
+  rowActionMenuItems?: ActionMenuItemProps[];
   comparatorBuilder?: (
     order: Order,
     orderBy: SortableFields<TTableData>
   ) => (a: TTableData, b: TTableData) => number;
 }
 
-export function BaseTable<
-  T,
-  TTableData extends BaseTableRowData,
->({
+export function BaseTable<T, TTableData extends BaseTableRowData>({
   initialData,
   order: defaultOrder = "asc",
   orderBy: defaultOrderBy = "createdAt" as SortableFields<TTableData>,
@@ -76,6 +74,8 @@ export function BaseTable<
   comparatorBuilder = getComparator<Order, TTableData>,
   columnsConfig: columnsConfigProp,
   rowConverter = defaultConvertSrcDataToDataRows<T, TTableData>,
+  rowActionMenuComponent = ActionMenu,
+  rowActionMenuItems,
 }: BaseTableProps<T, TTableData> & { columnsConfig?: Column<TTableData>[] }) {
   const dispatch = useDispatch();
 
@@ -98,7 +98,7 @@ export function BaseTable<
   const [order, setOrder] = React.useState<Order>(defaultOrder);
   const [orderBy, setOrderBy] =
     React.useState<SortableFields<TTableData>>(defaultOrderBy);
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const { selected, isSelected, handleClick, handleSelectAll } = useSelection();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [clickedId, setClickedId] = React.useState<string | null>(null);
@@ -107,9 +107,7 @@ export function BaseTable<
   // Update rows when data changes
   React.useEffect(() => {
     if (data && data.length > 0) {
-      setRows(
-        rowConverter?.((data as T[]) || [])
-      );
+      setRows(rowConverter?.((data as T[]) || []));
     }
   }, [data]);
 
@@ -130,38 +128,11 @@ export function BaseTable<
     [orderBy, order]
   );
 
-  const handleSelectAllClick = useCallback(
+  const handleSelectAllClick = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.checked) {
-        const newSelected = rows.map((n) => n.id);
-        setSelected(newSelected);
-        return;
-      }
-      setSelected([]);
+      handleSelectAll(event.target.checked, rows);
     },
-    [rows]
-  );
-
-  const handleClick = useCallback(
-    (_: React.MouseEvent<unknown>, id: string) => {
-      const selectedIndex = selected.indexOf(id);
-      let newSelected: readonly string[] = [];
-
-      if (selectedIndex === -1) {
-        newSelected = newSelected.concat(selected, id);
-      } else if (selectedIndex === 0) {
-        newSelected = newSelected.concat(selected.slice(1));
-      } else if (selectedIndex === selected.length - 1) {
-        newSelected = newSelected.concat(selected.slice(0, -1));
-      } else if (selectedIndex > 0) {
-        newSelected = newSelected.concat(
-          selected.slice(0, selectedIndex),
-          selected.slice(selectedIndex + 1)
-        );
-      }
-      setSelected(newSelected);
-    },
-    [selected]
+    [handleSelectAll, rows]
   );
 
   const handleChangePage = useCallback((event: unknown, newPage: number) => {
@@ -175,8 +146,6 @@ export function BaseTable<
     },
     []
   );
-
-  const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -200,7 +169,7 @@ export function BaseTable<
       e.stopPropagation();
       setClickedId(id);
     },
-    []
+    [setClickedId]
   );
 
   return (
@@ -256,16 +225,18 @@ export function BaseTable<
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
+                      onDoubleClick={(event) =>
+                        handleEditDialogOpen(event, row.id)
+                      }
                       sx={{ cursor: "pointer" }}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
+                          onClick={(event) => handleClick(event, row.id)}
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
@@ -277,16 +248,13 @@ export function BaseTable<
                         (col: Column<any>, colIndex: number) => {
                           if (col.isActions) {
                             return (
-                              <TableCell key={`col-${colIndex}`}>
-                                <IconButton
-                                  style={{ height: "24px", width: "24px" }}
-                                  onClick={(e) =>
-                                    handleEditDialogOpen(e, row.id)
-                                  }
-                                >
-                                  <MoreVertIcon height="16px" width="16px" />
-                                </IconButton>
-                              </TableCell>
+                              <ActionCell
+                                key={`col-${colIndex}`}
+                                id={row.id}
+                                MenuComponent={rowActionMenuComponent || null}
+                                menuItems={rowActionMenuItems}
+                                onEdit={handleEditDialogOpen}
+                              />
                             );
                           }
 
@@ -296,8 +264,6 @@ export function BaseTable<
                           const content = col.formatter
                             ? col.formatter(value, row)
                             : value;
-
-                          const key = `col-${colIndex}`;
 
                           // If this is the first data column and padding is none, set id for aria
                           const cellProps: any = {
@@ -314,7 +280,9 @@ export function BaseTable<
                           }
 
                           return (
-                            <TableCell key={key} {...cellProps}>{content}</TableCell>
+                            <TableCell key={`col-${colIndex}`} {...cellProps}>
+                              {content}
+                            </TableCell>
                           );
                         }
                       )}

@@ -8,7 +8,7 @@ export const dealApi = createApi({
     baseUrl: BACKEND_API_URL,
     credentials: "include",
   }),
-  tagTypes: ["Deals"],
+  tagTypes: ["Deals", "Deal"],
   endpoints: (build) => ({
     getDeals: build.query<DealExt[], void>({
       query: () => "deals",
@@ -16,7 +16,7 @@ export const dealApi = createApi({
     }),
     getDealById: build.query<DealExt, string>({
       query: (id) => `deals/${id}`,
-      providesTags: (_result, _err, id) => [{ type: "Deals", id }],
+      providesTags: (_result, _err, id) => [{ type: "Deal", id }],
     }),
     createDeal: build.mutation<Deal, CreateDealDTO>({
       query: (body) => ({
@@ -50,4 +50,5 @@ export const {
   useCreateDealMutation,
   useUpdateDealMutation,
   useDeleteDealMutation,
+  useLazyGetDealByIdQuery,
 } = dealApi;

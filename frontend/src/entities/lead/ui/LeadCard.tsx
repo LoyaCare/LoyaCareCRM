@@ -4,10 +4,8 @@
 // It fetches the lead data by ID and renders the LeadCard component
 
 import React, { useEffect } from "react";
-import { LeadCard as LeadCartEntity } from "@/features/lead/ui/LeadCard";
-
-import { useGetLeadByIdQuery } from "@/entities/lead/model/api";
-import { LeadExt } from "@/entities/lead/model/types";
+import { LeadCard as LeadCartEntity } from "@/features/lead";
+import { useGetLeadByIdQuery, LeadExt } from "@/entities/lead";
 
 type LeadFormProps = {
   initialLeadData: LeadExt;
