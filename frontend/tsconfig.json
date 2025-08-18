@@ -54,7 +54,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/features/lead/ui/LeadsTable/index.ts", "src/features/lead/ui/LeadsTable/LeadsTable.tsx.bak", "src/features/BaseTable/ui/config.ts.bak"  ],
+, "src/features/lead/LeadsTable/index.ts", "src/features/lead/LeadsTable/LeadsTable.tsx.bak", "src/features/BaseTable/ui/config.ts.bak"  ],
   "exclude": [
     "node_modules"
   ]

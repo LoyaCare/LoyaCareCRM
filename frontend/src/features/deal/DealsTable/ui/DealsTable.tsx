@@ -11,9 +11,9 @@ import {
 } from "@/features/BaseTable";
 import { dealApi, useGetDealsQuery } from "@/entities/deal/model/api";
 import { BaseTableHead } from "@/features/BaseTable";
-import { columns } from './config'
-import { DealTableRowData } from "./model";
-import { convertDealsToDealRows } from "./utils";
+import { columns } from '../config'
+import { DealTableRowData } from "../model";
+import { convertDealsToDealRows } from "../utils";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 

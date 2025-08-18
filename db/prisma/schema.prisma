@@ -48,6 +48,7 @@ model Deal {
   stage           DealStage  @default(LEAD)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+  archivedAt      DateTime?
 
   notes        Note[]
   appointments Appointment[]
@@ -81,12 +82,12 @@ model Note {
 }
 
 model Appointment {
-  id       String   @id @default(uuid())
+  id       String           @id @default(uuid())
   datetime DateTime
   type     AppointmentType?
   note     String?
   dealId   String
-  deal     Deal     @relation(fields: [dealId], references: [id])
+  deal     Deal             @relation(fields: [dealId], references: [id])
 }
 
 enum AppointmentType {

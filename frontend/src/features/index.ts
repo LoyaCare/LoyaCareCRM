@@ -1,3 +1,3 @@
-export { DealEditDialog } from "./deal/ui/DealEditDialog";
-export { LeadsTable } from "./lead/ui/LeadsTable/LeadsTable";
-export { DealsTable } from "./deal/ui/DialsTable/DealsTable";
+export * from "./BaseTable";
+export * from "./lead";
+export * from "./deal";

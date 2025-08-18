@@ -12,9 +12,9 @@ import {
 import { leadApi } from "@/entities/lead/model/api";
 import { useGetLeadsQuery } from "@/entities/lead/model/api";
 import { LeadExt } from "@/entities/lead/model/types";
-import { columns } from "./config";
-import { LeadTableRowData } from "./model";
-import { convertLeadsToLeadRows } from './utils'
+import { columns } from "../config";
+import { LeadTableRowData } from "../model";
+import { convertLeadsToLeadRows } from '../utils'
 
 const invalidateLeads = () => leadApi.util.invalidateTags(["Leads"]);
 

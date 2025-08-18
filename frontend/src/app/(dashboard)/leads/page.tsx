@@ -6,7 +6,7 @@ import {
   BaseTableProps,
   BaseTableRowData,
 } from "@/features/BaseTable";
-import { LeadTableRowData } from "@/features/lead/ui/LeadsTable/model";
+import { LeadTableRowData } from "@/features/lead/LeadsTable/model";
 
 export default async function LeadsPage() {
   const leads = (await fetch(`${NEXT_PUBLIC_API_URL}/leads/api`).then((res) =>
