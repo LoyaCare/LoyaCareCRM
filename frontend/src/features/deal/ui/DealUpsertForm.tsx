@@ -49,6 +49,7 @@ export const DealUpsertForm: React.FC<DealFormProps> = ({
       onSubmit={onSubmit}
       titleCreate={titleCreate}
       titleUpdate={titleUpdate}
+      isDeal={true}
     />
   );
 };

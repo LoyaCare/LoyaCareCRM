@@ -34,6 +34,7 @@ export type BaseUpsertFormProps<TEntity, TState> = {
   titleCreate?: string;
   titleUpdate?: string;
   onSubmit?: (form: TState) => void;
+  isDeal?: boolean;
 };
 
 export const BaseUpsertForm = <
@@ -44,6 +45,7 @@ export const BaseUpsertForm = <
   titleCreate = "Create",
   titleUpdate = "Update",
   onSubmit,
+  isDeal = false,
 }: BaseUpsertFormProps<TEntity, TState>) => {
   const isNew = !initialData;
 
@@ -166,7 +168,7 @@ export const BaseUpsertForm = <
             {/* {(form?.stage !== 'LEAD') && ( */}
               <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
                 <DealStage
-                  stage={form?.stage || "QUALIFIED"}
+                  stage={form?.stage || (isDeal ? "QUALIFIED" : "LEAD")}
                   onChange={(stage) => setForm((prev) => ({ ...prev, stage }))}
                 />
               </Paper>

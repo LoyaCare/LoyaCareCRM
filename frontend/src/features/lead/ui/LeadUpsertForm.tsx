@@ -49,6 +49,7 @@ export const LeadUpsertForm: React.FC<LeadFormProps> = ({
       onSubmit={onSubmit}
       titleCreate={titleCreate}
       titleUpdate={titleUpdate}
+      isDeal={false}
     />
   );
 };
