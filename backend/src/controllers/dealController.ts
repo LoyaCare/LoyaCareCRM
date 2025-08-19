@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
-import { Note, Appointment, DealStage } from "../../generated/prisma-client";
+import {
+  Note,
+  Appointment,
+  DealStage,
+  DealStatus,
+} from "../../generated/prisma-client";
 
 export const shouldAllLinkedDatelsIncluded = {
   contact: true,
@@ -13,17 +18,27 @@ export const shouldAllLinkedDatelsIncluded = {
 export const getAllLeadsBase = async (
   _req: Request,
   res: Response,
-  stage: DealStage = "QUALIFIED"
+  stages?: DealStage[],
+  status?: DealStatus
 ) => {
   const leads = await prisma.deal.findMany({
-    where: { stage },
+    where: {
+      stage: stages ? { in: stages } : undefined,
+      status: status ?? undefined,
+    },
     include: shouldAllLinkedDatelsIncluded,
   });
   res.json(leads);
 };
 
 export const getAllDeals = async (_req: Request, res: Response) =>
-  getAllLeadsBase(_req, res);
+  getAllLeadsBase(_req, res, [
+    "CONTACTED",
+    "QUALIFIED",
+    "PROPOSAL_SENT",
+    "NEGOTIATION",
+    "DEMO_SCHEDULED",
+  ]);
 
 export const getDealByIdBase = async (id: string) =>
   await prisma.deal.findUnique({
@@ -116,14 +131,12 @@ export const updateDeal = async (req: Request, res: Response) => {
       ...app,
       dealId: undefined, // dealId is not updated, only the content
     }));
-  const appointmentsToCreate = appointments.filter(
-    (app: Appointment) => !app.id
-  )
-      .map((app: Appointment) => ({
+  const appointmentsToCreate = appointments
+    .filter((app: Appointment) => !app.id)
+    .map((app: Appointment) => ({
       ...app,
       dealId: undefined,
     }));
-
 
   const appointmentsToDelete = appointments
     .filter(
@@ -177,7 +190,7 @@ export const updateDeal = async (req: Request, res: Response) => {
             connect: { id: assigneeId },
           }
         : undefined,
-      
+
       notes: notes.length > 0 ? notesNested : undefined,
       appointments: appointments.length > 0 ? appointmentsNested : undefined,
     },

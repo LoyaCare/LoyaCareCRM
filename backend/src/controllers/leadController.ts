@@ -9,7 +9,7 @@ import {
 } from "./dealController";
 
 export const getAllLeads = async (_req: Request, res: Response) =>
-  await getAllLeadsBase(_req, res, "LEAD");
+  await getAllLeadsBase(_req, res, ["LEAD"]);
 
 export const getLeadById = async (req: Request, res: Response) => {
   const lead = await getDealByIdBase(req.params.id);
