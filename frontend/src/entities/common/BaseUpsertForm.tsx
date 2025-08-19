@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -32,21 +32,16 @@ import {
   LeadExt,
 } from "@/entities/lead/model/types";
 
-export type BaseUpsertFormProps<
-  TEntity,
-  TState,
-> = {
+export type BaseUpsertFormProps<TEntity, TState> = {
   initialData?: TEntity;
   titleCreate?: string;
   titleUpdate?: string;
-  onSubmit?: (
-    form: TState
-  ) => void;
+  onSubmit?: (form: TState) => void;
 };
 
 export const BaseUpsertForm = <
   TEntity extends DealExt | LeadExt,
-  TState extends CreateDealDTO | UpdateDealDTO | CreateLeadDTO | UpdateLeadDTO
+  TState extends CreateDealDTO | UpdateDealDTO | CreateLeadDTO | UpdateLeadDTO,
 >({
   initialData,
   titleCreate = "Create",
@@ -160,6 +155,15 @@ export const BaseUpsertForm = <
                     size="small"
                   />
                 </Stack>
+                <TextField
+                  label="Title"
+                  name="title"
+                  value={form?.title || ""}
+                  onChange={handleChange}
+                  placeholder="Title"
+                  size="small"
+                  fullWidth
+                />
               </Stack>
             </Paper>
 
