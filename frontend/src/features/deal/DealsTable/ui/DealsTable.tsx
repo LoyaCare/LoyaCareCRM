@@ -52,7 +52,7 @@ const EditDialog = dynamic(
 export function DealsTable<T extends DealExt>({
   initialData,
   order,
-  orderBy = "createdAt" as SortableFields<DealTableRowData>,
+  orderBy = "stage" as SortableFields<DealTableRowData>,
   EditDialogComponent = EditDialog,
 }: BaseTableProps<T, DealTableRowData>) {
   const dispatch = useDispatch();

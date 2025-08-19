@@ -1,5 +1,5 @@
 import { DealTableRowData } from "./model";
-import { currencyFormatter } from "@/features/BaseTable";
+import { currencyFormatter, stageToComponentFormatter } from "@/features/BaseTable";
 import type { Column, TGetColumns } from "@/features/BaseTable";
 
 // Columns definition for the Deals table.
@@ -8,8 +8,8 @@ export const columns: Column<DealTableRowData>[] = [
     key: "title",
     label: "Title",
     padding: "none",
-    minWidth: 120,
-    width: 120,
+    minWidth: 180,
+    width: 180,
     maxWidth: 200,
   },
   {
@@ -24,7 +24,9 @@ export const columns: Column<DealTableRowData>[] = [
     label: "Potential",
     align: "right",
     formatter: currencyFormatter,
-    minWidth: 70,
+    minWidth: 100,
+    width: 100,
+    maxWidth: 100,
   },
   {
     key: "clientName",
@@ -34,12 +36,20 @@ export const columns: Column<DealTableRowData>[] = [
     maxWidth: 200,
   },
   {
-    key: "createdAt",
-    label: "Created at",
-    minWidth: 200,
-    width: 200,
-    maxWidth: 300,
+    key: "stage",
+    label: "Stage",
+    minWidth: 100,
+    width: 100,
+    maxWidth: 100,
+    formatter: stageToComponentFormatter,
   },
+  // {
+  //   key: "createdAt",
+  //   label: "Created at",
+  //   minWidth: 200,
+  //   width: 200,
+  //   maxWidth: 300,
+  // },
   {
     key: "productInterest",
     label: "Product",
@@ -50,9 +60,9 @@ export const columns: Column<DealTableRowData>[] = [
   {
     key: "assigneeName",
     label: "Assignee",
-    minWidth: 200,
-    width: 200,
-    maxWidth: 300,
+    minWidth: 150,
+    width: 150,
+    maxWidth: 200,
   },
   {
     key: "actions",

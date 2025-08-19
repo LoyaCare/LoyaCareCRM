@@ -1,4 +1,4 @@
-import { DealExt, UpdateDealDTO } from "./types";
+import { UpdateDealDTO } from "./types";
 
 export const prepareToUpdate = (deal: UpdateDealDTO) => ({
   ...deal,

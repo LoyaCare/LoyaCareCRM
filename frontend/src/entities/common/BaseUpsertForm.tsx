@@ -13,24 +13,21 @@ import {
   DealExt,
   CreateDealDTO,
   UpdateDealDTO,
-} from "@/entities/deal/model/types";
+  DealStage,
+} from "@/entities/deal";
 import {
   AppointmentExt,
   CreateAppointmentDTO,
   UpdateAppointmentDTO,
-} from "@/entities/appointment/model/types";
-import { ContactFormFields } from "@/entities/contact/ui/ContactFormFields";
-import { AppointmentsFormFieldsSet } from "@/entities/appointment/ui/AppointmentsFormFieldsSet";
+  AppointmentsFormFieldsSet,
+} from "@/entities/appointment";
 import {
+  ContactFormFields,
   CreateContactDTO,
   UpdateContactDTO,
-} from "@/entities/contact/model/types";
+} from "@/entities/contact";
 import { UserSelect } from "@/entities/user";
-import {
-  CreateLeadDTO,
-  UpdateLeadDTO,
-  LeadExt,
-} from "@/entities/lead/model/types";
+import { CreateLeadDTO, UpdateLeadDTO, LeadExt } from "@/entities/lead";
 
 export type BaseUpsertFormProps<TEntity, TState> = {
   initialData?: TEntity;
@@ -166,7 +163,14 @@ export const BaseUpsertForm = <
                 />
               </Stack>
             </Paper>
-
+            {/* {(form?.stage !== 'LEAD') && ( */}
+              <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
+                <DealStage
+                  stage={form?.stage || "QUALIFIED"}
+                  onChange={(stage) => setForm((prev) => ({ ...prev, stage }))}
+                />
+              </Paper>
+            {/* )} */}
             {/* Contact Section */}
             <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
               <Stack spacing={1.5}>

@@ -1,5 +1,5 @@
 import { formatDate } from "@/shared/lib/formatDate";
-import { DealExt } from "@/entities/deal/model/types";
+import { DealExt, DealStage } from "@/entities/deal";
 import { DealTableRowData } from "./model"
 
 export function convertDealsToDealRows(deals: DealExt[]): DealTableRowData[] {
@@ -8,6 +8,7 @@ export function convertDealsToDealRows(deals: DealExt[]): DealTableRowData[] {
       ({
         id: deal.id,
         title: deal?.title,
+        stage: deal?.stage,
         potentialValue: deal?.potentialValue,
         creatorName: deal.creator.name,
         assigneeName: deal.assignee?.name,

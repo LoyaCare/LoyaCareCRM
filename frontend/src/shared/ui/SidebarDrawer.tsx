@@ -23,8 +23,8 @@ const drawerWidth = 220;
 const collapsedWidth = 60;
 
 const menuItems = [
-  { text: "Deals", href: "/deals", icon: <MonetizationOnIcon /> },
   { text: "Leads", href: "/leads", icon: <AssignmentIcon /> },
+  { text: "Deals", href: "/deals", icon: <MonetizationOnIcon /> },
   { text: "Users", href: "/users", icon: <PeopleIcon /> },
 ];
 
