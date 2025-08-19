@@ -17,6 +17,7 @@ export type Column<T extends TBaseColumnType> = {
   minWidth?: number;
   maxWidth?: number;
   sortable?: boolean;
+  isSticky?: boolean;
 };
 
 export type TGetColumns<T extends TBaseColumnType> = () => Column<T>[];

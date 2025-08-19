@@ -11,8 +11,6 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import {
   BaseTableRowData,
@@ -172,6 +170,17 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
     [setClickedId]
   );
 
+  // sticky styles for table header
+  const stickySx = React.useMemo(
+    () => ({
+      position: "sticky",
+      zIndex: (theme: any) => theme.zIndex.appBar + 2,
+      background: (theme: any) => theme.palette.background.paper,
+      boxSizing: "border-box",
+    }),
+    []
+  );
+
   return (
     <>
       <Box sx={{ width: "100%" }}>
@@ -184,11 +193,21 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
               title={toolbarTitle}
             />
           )}
-          <TableContainer>
+          <TableContainer
+            sx={{
+              overflowX: "auto",
+              // ограничиваем высоту контейнера, чтобы заголовок мог "прилипнуть"
+              // подберите значение под ваш layout, можно использовать vh и отступы под AppBar
+              maxHeight: "calc(100vh - 200px)",
+              overflowY: "auto",
+            }}
+          >
             <Table
-              stickyHeader={true}
+              // stickyHeader={true}
               sx={{
-                minWidth: 750,
+                width: "100%",
+                minWidth: "800px",
+                tableLayout: "fixed",
                 borderCollapse: "collapse",
                 "& th": {
                   border: "1px solid rgba(224, 224, 224, 1)",
@@ -196,12 +215,17 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                   height: "24px",
                   lineHeight: "1.2",
                   fontWeight: 700,
+                  boxShadow: "0 1px 0 rgba(0,0,0,0.04)",
                 },
                 "& td": {
                   border: "1px solid rgba(224, 224, 224, 1)",
                   padding: "6px",
                   height: "24px",
                   lineHeight: "1.2",
+                  minWidth: "800px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 },
               }}
               aria-labelledby="tableTitle"
@@ -215,6 +239,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                   onSelectAllClick={handleSelectAllClick}
                   onRequestSort={handleRequestSort}
                   rowCount={rows.length}
+                  columns={columnsConfig}
                 />
               )}
               <TableBody>
@@ -234,7 +259,10 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                       }
                       sx={{ cursor: "pointer" }}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell
+                        padding="checkbox"
+                        sx={{ ...stickySx, left: 0 }}
+                      >
                         <Checkbox
                           onClick={(event) => handleClick(event, row.id)}
                           color="primary"
@@ -246,7 +274,26 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                       </TableCell>
                       {columnsConfig.map(
                         (col: Column<any>, colIndex: number) => {
+                          const cellProps: any = {
+                            align: col.align || undefined,
+                            width: col.width || undefined,
+                          };
+                          const cellSxProps = {
+                            width: col.width || undefined,
+                            minWidth: col.minWidth || undefined,
+                            maxWidth: col.maxWidth || undefined,
+                          };
+
+                          if (col.padding === "none") {
+                            cellProps.padding = "none";
+                            if (colIndex === 0) {
+                              cellProps.id = labelId;
+                              cellProps.scope = "row";
+                            }
+                          }
+
                           if (col.isActions) {
+                            // pass styles in ActionCell
                             return (
                               <ActionCell
                                 key={`col-${colIndex}`}
@@ -254,6 +301,11 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                                 MenuComponent={rowActionMenuComponent || null}
                                 menuItems={rowActionMenuItems}
                                 onEdit={handleEditDialogOpen}
+                                cellSx={{
+                                  ...stickySx,
+                                  right: 0,
+                                  ...cellSxProps,
+                                }}
                               />
                             );
                           }
@@ -265,22 +317,12 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                             ? col.formatter(value, row)
                             : value;
 
-                          // If this is the first data column and padding is none, set id for aria
-                          const cellProps: any = {
-                            align: col.align || undefined,
-                          };
-
-                          if (col.padding === "none") {
-                            cellProps.padding = "none";
-                            // first data column should have the label id
-                            if (colIndex === 0) {
-                              cellProps.id = labelId;
-                              cellProps.scope = "row";
-                            }
-                          }
-
                           return (
-                            <TableCell key={`col-${colIndex}`} {...cellProps}>
+                            <TableCell
+                              key={`col-${colIndex}`}
+                              sx={{ ...cellSxProps, ...cellProps }}
+                              {...cellProps}
+                            >
                               {content}
                             </TableCell>
                           );
@@ -293,7 +335,6 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                   <TableRow
                     style={{
                       height: 20 * emptyRows,
-                      // height: (dense ? 33 : 53) * emptyRows,
                     }}
                   >
                     <TableCell colSpan={columnsConfig.length + 1} />

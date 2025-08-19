@@ -2,7 +2,7 @@ import React from "react";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { ActionMenu, ActionMenuItemProps, ActionMenuProps } from "./ActionMenu";
+import { ActionMenu, ActionMenuProps, ActionMenuItemProps } from "./ActionMenu";
 
 type Props = {
   id: string;
@@ -10,6 +10,7 @@ type Props = {
   className?: string;
   MenuComponent?: React.ComponentType<ActionMenuProps>;
   menuItems?: ActionMenuItemProps[];
+  cellSx?: any; // <- новый проп
 };
 
 export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
@@ -17,7 +18,8 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
   onEdit,
   className,
   MenuComponent = ActionMenu,
-  menuItems
+  menuItems,
+  cellSx,
 }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -43,7 +45,7 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
   );
 
   return (
-    <TableCell className={className} sx={{ width: 44 }}>
+    <TableCell className={className} sx={{ width: 44, ...cellSx }}>
       <IconButton
         size="small"
         onClick={handleOpenMenu}
@@ -58,12 +60,12 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
 
       <MenuComponent
         id={id}
+        menuItems={menuItems}
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
         onEdit={handleEdit}
         compact={true}
-        menuItems={menuItems}
       />
     </TableCell>
   );

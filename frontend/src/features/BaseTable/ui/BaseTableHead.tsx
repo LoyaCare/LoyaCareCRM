@@ -6,7 +6,7 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { BaseTableHeadProps, TBaseColumnType, Column} from "../types";
+import { BaseTableHeadProps, TBaseColumnType, Column } from "../types";
 
 export function BaseTableHead<T extends TBaseColumnType>(
   props: BaseTableHeadProps<T>
@@ -27,10 +27,27 @@ export function BaseTableHead<T extends TBaseColumnType>(
     },
     [onRequestSort]
   );
+
+  const stickySx: any = React.useMemo(
+    () => ({
+      position: "sticky",
+      top: 0,
+      zIndex: (theme: any) => theme.zIndex.appBar + 6, // header выше body
+      background: (theme: any) => theme.palette.background.paper,
+    }),
+    []
+  );
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
+        <TableCell
+          padding="checkbox"
+          sx={{
+            left: 0,
+            ...stickySx,
+            zIndex: (theme: any) => theme.zIndex.appBar + 7
+          }}
+        >
           <Checkbox
             color="primary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -44,16 +61,32 @@ export function BaseTableHead<T extends TBaseColumnType>(
           />
         </TableCell>
         {columns?.map((headCell) => {
-          const headCellId = (headCell as Column<T>).key as string;
+          const isSticky = !!headCell.isSticky;
+          const headCellId = headCell.key as string;
+          const cellStyle = {
+            width: `${headCell.width}px`,
+            minWidth: `${headCell.minWidth}px`,
+            maxWidth: `${headCell.maxWidth}px`,
+            ...(isSticky && {
+              borderLeft: "1px solid rgba(224, 224, 224, 1)",
+            })
+          };
+
+
           return (
             <TableCell
               key={headCellId}
               padding={headCell.padding || "normal"}
               sortDirection={orderBy === headCellId ? order : false}
-              style={{
-                width: headCell.width,
-                minWidth: headCell.minWidth,
-                maxWidth: headCell.maxWidth,
+              style={cellStyle}
+              sx={{
+                ...stickySx,
+                ...(isSticky
+                  ? {
+                      right: 0,
+                      zIndex: (theme: any) => theme.zIndex.appBar + 7,
+                    }
+                  : {})
               }}
             >
               {headCell.sortable !== false ? (
@@ -72,7 +105,7 @@ export function BaseTableHead<T extends TBaseColumnType>(
                   ) : null}
                 </TableSortLabel>
               ) : (
-                headCell.label
+                headCell.label || ""
               )}
             </TableCell>
           );

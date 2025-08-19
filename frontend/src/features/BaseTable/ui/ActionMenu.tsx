@@ -3,11 +3,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
 import EditIcon from "@mui/icons-material/Edit";
-import ArchiveIcon from "@mui/icons-material/Archive";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import { on } from "events";
 
 export type ActionMenuItemProps = {
   onClick?: (e: React.MouseEvent, id?: string) => void;
@@ -36,16 +32,16 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   menuItems,
   compact = true,
 }) => {
-    menuItems = [
-      {
-        onClick: (e) => {
-          onEdit(e);
-        },
-        icon: <EditIcon fontSize="small" />,
-        element: "Edit",
+  menuItems = [
+    {
+      onClick: (e) => {
+        onEdit(e);
       },
-      ...menuItems || [],
-    ];
+      icon: <EditIcon fontSize="small" />,
+      element: "Edit",
+    },
+    ...(menuItems || []),
+  ];
   return (
     <Menu
       id={`action-menu-${id}`}
@@ -71,13 +67,17 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
       }}
     >
       {menuItems?.map((item, index) => (
-        <MenuItem key={index} onClick={(e) => { item.onClick?.(e, id); onClose(); }}>
+        <MenuItem
+          key={index}
+          onClick={(e) => {
+            item.onClick?.(e, id);
+            onClose();
+          }}
+        >
           <ListItemIcon>{item.icon}</ListItemIcon>
           <ListItemText primary={item.element} />
         </MenuItem>
       ))}
-
-
     </Menu>
   );
 };

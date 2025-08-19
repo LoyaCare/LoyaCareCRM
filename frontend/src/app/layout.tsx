@@ -1,11 +1,10 @@
-
-import React from 'react';
+import React from "react";
 import { Providers } from "./store/Providers";
 import Box from "@mui/material/Box";
 import { SidebarDrawer } from "@/shared/ui/SidebarDrawer";
 
-import './globals.css'
- 
+import "./globals.css";
+
 export default function RootLayout({
   children,
 }: {
@@ -24,9 +23,27 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <Box sx={{ display: "flex", height: "100vh" }}>
+          <Box
+            sx={{
+              display: "flex",
+              minWidth: 0,
+              height: "100vh",
+              width: "100vw",
+              overflow: "hidden",
+            }}
+          >
             <SidebarDrawer />
-            <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: "background.default", minHeight: "100vh" }}>
+            <Box
+              component="main"
+              sx={{
+                flex: 1, 
+                minWidth: 0,
+                p: 2,
+                bgcolor: "background.default",
+                height: "100vh",
+                overflowY: "auto",
+              }}
+            >
               {children}
             </Box>
           </Box>
