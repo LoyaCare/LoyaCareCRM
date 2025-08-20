@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { formatDate } from "@/shared/lib/formatDate";
-import { LeadExt } from "@/entities/lead/model/types";
-import { useGetLeadsQuery } from "@/entities/lead/model/api";
+import { LeadExt } from "@/entities/lead/types";
+import { useGetLeadsQuery } from "@/entities/lead/api";
 
 import * as React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";

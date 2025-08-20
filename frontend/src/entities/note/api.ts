@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { NoteExt, CreateNoteDTO, UpdateNoteDTO } from "./types";
+import { NoteExt, CreateNoteDTO, UpdateNoteDTO } from "./model/types";
 import { BACKEND_API_URL } from "@/shared/config/urls";
 
 export const noteApi = createApi({

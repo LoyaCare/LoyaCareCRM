@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { dealApi } from "@/entities/deal/model/api";
-import { leadApi } from "@/entities/lead/model/api";
-import { contactApi } from "@/entities/contact/model/api";
-import { userApi } from "@/entities/user/model/api";
-import { noteApi } from "@/entities/note/model/api";
-import { appointmentApi } from "@/entities/appointment/model/api";
+import { dealApi } from "@/entities/deal/api";
+import { leadApi } from "@/entities/lead/api";
+import { contactApi } from "@/entities/contact/api";
+import { userApi } from "@/entities/user/api";
+import { noteApi } from "@/entities/note/api";
+import { appointmentApi } from "@/entities/appointment/api";
 
 // Configure the Redux store with the APIs
 

@@ -5,7 +5,7 @@ import {
   LeadExt,
   CreateLeadDTO,
   UpdateLeadDTO,
-} from "@/entities/lead/model/types";
+} from "@/entities/lead/types";
 
 export const leadApiReducerPath = "leadApi";
 

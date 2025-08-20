@@ -17,8 +17,8 @@ import {
   Appointment,
   AppointmentType,
   appointmentTypes
-} from "@/entities/appointment/model/types";
-import { useGetAppointmentByIdQuery } from "@/entities/appointment/model/api";
+} from "@/entities/appointment/types";
+import { useGetAppointmentByIdQuery } from "@/entities/appointment/api";
 
 type AppointmentFormFieldsProps = {
   initialData?: Appointment;

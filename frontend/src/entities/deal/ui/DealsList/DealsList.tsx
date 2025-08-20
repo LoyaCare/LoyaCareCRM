@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { DealExt } from "@/entities/deal/model/types";
-import { useGetDealsQuery } from "@/entities/deal/model/api";
+import { DealExt } from "@/entities/deal/types";
+import { useGetDealsQuery } from "@/entities/deal/api";
 import { formatDate } from "@/shared/lib/formatDate";
 
 export const DealsList = ({

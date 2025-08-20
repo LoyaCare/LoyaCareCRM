@@ -9,8 +9,8 @@ import {
   useUpdateDealMutation,
   useCreateDealMutation,
   dealApi,
-} from "@/entities/deal/model/api";
-import type { CreateDealDTO, UpdateDealDTO } from "@/entities/deal/model/types";
+} from "@/entities/deal/api";
+import type { CreateDealDTO, UpdateDealDTO } from "@/entities/deal/types";
 
 export function DealEditDialog({
   id,

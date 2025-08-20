@@ -9,8 +9,8 @@ import {
   useUpdateLeadMutation,
   useCreateLeadMutation,
   leadApi,
-} from "@/entities/lead/model/api";
-import type { CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/model/types";
+} from "@/entities/lead/api";
+import type { CreateLeadDTO, UpdateLeadDTO } from "@/entities/lead/types";
 
 export function LeadEditDialog({
   id,

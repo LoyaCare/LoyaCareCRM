@@ -1,5 +1,5 @@
 import { DealsTable } from "@/features";
-import { DealExt } from "@/entities/deal/model/types";
+import { DealExt } from "@/entities/deal/types";
 import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 import Container from "@mui/material/Container";
 

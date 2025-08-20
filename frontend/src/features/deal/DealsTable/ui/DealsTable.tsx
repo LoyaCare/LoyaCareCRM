@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 import dynamic from "next/dynamic";
-import { DealExt } from "@/entities/deal/model/types";
+import { DealExt } from "@/entities/deal/types";
 import {
   BaseTable,
   BaseTableHeadProps,

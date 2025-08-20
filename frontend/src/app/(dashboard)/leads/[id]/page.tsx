@@ -1,5 +1,5 @@
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { LeadExt } from "@/entities/lead/model/types";
+import { LeadExt } from "@/entities/lead/types";
 import LeadCardClient from "./LeadCardClient";
 
 export interface PageProps {

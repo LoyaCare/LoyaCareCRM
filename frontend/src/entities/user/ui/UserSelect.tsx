@@ -1,7 +1,7 @@
 import React, { use, useEffect } from "react";
 import { FormControl, InputLabel, Select, MenuItem, CircularProgress } from "@mui/material";
-import { useGetUsersQuery } from "@/entities/user/model/api";
-import type { UserExt } from "@/entities/user/model/types";
+import { useGetUsersQuery } from "@/entities/user/api";
+import type { UserExt } from "@/entities/user/types";
 
 interface UserSelectProps {
   value: string | null;

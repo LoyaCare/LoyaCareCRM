@@ -1,8 +1,8 @@
 "use client";
 
 import { LeadCard } from "@/entities/lead/ui/LeadCard";
-import { useGetLeadByIdQuery } from "@/entities/lead/model/api";
-import { LeadExt } from "@/entities/lead/model/types";
+import { useGetLeadByIdQuery } from "@/entities/lead/api";
+import { LeadExt } from "@/entities/lead/types";
 
 type Props = {
   id: string;

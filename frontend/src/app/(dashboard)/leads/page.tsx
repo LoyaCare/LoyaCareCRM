@@ -1,5 +1,5 @@
 import { LeadsTable } from "@/features";
-import { LeadExt } from "@/entities/lead/model/types";
+import { LeadExt } from "@/entities/lead/types";
 import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 import Container from "node_modules/@mui/material/esm/Container/Container";
 

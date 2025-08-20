@@ -4,8 +4,8 @@ import {
   Contact,
   CreateContactDTO,
   UpdateContactDTO,
-} from "@/entities/contact/model/types";
-import { useGetContactByIdQuery } from "@/entities/contact/model/api";
+} from "@/entities/contact/types";
+import { useGetContactByIdQuery } from "@/entities/contact/api";
 
 
 type ContactFormFieldsProps = {

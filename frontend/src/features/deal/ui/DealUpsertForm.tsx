@@ -4,8 +4,8 @@ import {
   DealExt,
   CreateDealDTO,
   UpdateDealDTO,
-} from "@/entities/deal/model/types";
-import { useGetDealByIdQuery } from "@/entities/deal/model/api";
+} from "@/entities/deal/types";
+import { useGetDealByIdQuery } from "@/entities/deal/api";
 import {
   BaseUpsertForm,
   BaseUpsertFormProps,

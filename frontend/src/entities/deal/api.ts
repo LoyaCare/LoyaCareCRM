@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { Deal, DealExt, CreateDealDTO, UpdateDealDTO } from "@/entities/deal/model/types";
+import { Deal, DealExt, CreateDealDTO, UpdateDealDTO } from "@/entities/deal/types";
 
 export const dealApi = createApi({
   reducerPath: "dealApi",

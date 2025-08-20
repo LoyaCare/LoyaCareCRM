@@ -7,7 +7,7 @@ import {
   DeleteAppointmentDTO,
   CreateAppointmentDTO,
   UpdateAppointmentDTO,
-} from "../model/types";
+} from "../types";
 
 type AppointmentsFormFieldsSetProps = {
   initialAppointments?: Appointment[];
