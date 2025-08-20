@@ -7,5 +7,6 @@ export const currencyFormatter = (
     ? new Intl.NumberFormat(locale, {
         style: "currency",
         currency: currency,
+        currencyDisplay: "symbol",
       }).format(value)
     : null;
