@@ -4,7 +4,14 @@ export default function DealsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <section
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        alignItems: "stretch",
+      }}
+    >
       {children}
     </section>
   );

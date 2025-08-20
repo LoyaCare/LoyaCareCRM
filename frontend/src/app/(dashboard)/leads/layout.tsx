@@ -5,7 +5,14 @@ export default function LeadsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="max-w-7xl mx-auto">
+        <section
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        alignItems: "stretch",
+      }}
+    >
       {children}
     </section>
   );

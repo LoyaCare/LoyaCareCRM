@@ -27,21 +27,23 @@ export default function RootLayout({
             sx={{
               display: "flex",
               minWidth: 0,
-              height: "100vh",
+              height: "98vh",
               width: "100vw",
               overflow: "hidden",
+              alignItems: "stretch",
             }}
           >
             <SidebarDrawer />
             <Box
               component="main"
               sx={{
-                flex: 1, 
+                display: "flex",
+                flex: 1,
                 minWidth: 0,
                 p: 0,
                 bgcolor: "background.default",
-                height: "100vh",
                 overflowY: "auto",
+                alignItems: "stretch",
               }}
             >
               {children}

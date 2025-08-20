@@ -20,6 +20,8 @@ export const KanbanBoard: React.FC<KanbanStackProps> = ({
       aria-label="Kanban board"
       sx={{
         width: "100%",
+        display: "flex",
+        flex: 1,
         overflowX: "auto",
       }}
     >
@@ -27,12 +29,10 @@ export const KanbanBoard: React.FC<KanbanStackProps> = ({
         direction="row"
         sx={{
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "stretch",
           py: padding,
           px: padding,
-          // allow horizontal scrolling of stacks while keeping them laid out in a row
-          minWidth: "100%",
-          // use CSS gap (theme spacing) to ensure consistent spacing between stacks
+          flex: "1",
           gap: (theme: any) => theme.spacing(gap),
         }}
       >
@@ -40,7 +40,7 @@ export const KanbanBoard: React.FC<KanbanStackProps> = ({
           <Box
             key={s.id ?? `${s.title}-${idx}`}
             sx={{
-              flex: "0 0 auto",
+              flex: "1",
               width: s.width ?? (s.compact ? 260 : 300),
             }}
           >

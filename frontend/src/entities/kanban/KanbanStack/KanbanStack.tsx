@@ -35,7 +35,7 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
           display: "flex",
           flexDirection: "column",
           p: 1,
-          height: "100%", // fill parent's height
+          height: "100%",
           boxSizing: "border-box",
           bgcolor: (theme: any) =>
             theme.palette.mode === "dark"
@@ -64,7 +64,9 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
             flex: 1, // take remaining vertical space
             minHeight: 0, // allow child to shrink/scroll in flex layout
             overflowY: "auto",
+            height: "100%",
             pr: 0.5,
+            alignSelf: "stretch",
           }}
         >
           {cards.map((c) => (
