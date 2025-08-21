@@ -9,7 +9,7 @@ export default async function LeadsPage() {
   )) as LeadExt[];
   return (
     <Container maxWidth={false} component="main">
-      <h1>Leads</h1>
+      {/* <h1>Leads</h1> */}
       {<LeadsTable initialData={leads} />}
     </Container>
   );

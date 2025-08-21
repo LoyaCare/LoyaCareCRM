@@ -11,6 +11,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
+import { SxProps, Theme } from "@mui/material/styles";
 
 import {
   BaseTableRowData,
@@ -37,6 +38,15 @@ import { useSelection } from "../hooks/useSelection";
 import { ActionCell } from "./ActionCell";
 import { ActionMenu, ActionMenuItemProps, ActionMenuProps } from "./ActionMenu";
 
+// Import helper functions from lib.ts
+import { 
+  createStickySx,
+  createTableSx,
+  calculateEmptyRows, 
+  getVisibleRows,
+  createCellProps
+} from "../lib";
+
 export interface BaseTableProps<T, TTableData extends BaseTableRowData> {
   columnsConfig?: Column<TTableData>[];
   initialData?: T[];
@@ -56,6 +66,7 @@ export interface BaseTableProps<T, TTableData extends BaseTableRowData> {
     order: Order,
     orderBy: SortableFields<TTableData>
   ) => (a: TTableData, b: TTableData) => number;
+  sx?: SxProps<Theme>;
 }
 
 export function BaseTable<T, TTableData extends BaseTableRowData>({
@@ -74,6 +85,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
   rowConverter = defaultConvertSrcDataToDataRows<T, TTableData>,
   rowActionMenuComponent = ActionMenu,
   rowActionMenuItems,
+  sx = {},
 }: BaseTableProps<T, TTableData> & { columnsConfig?: Column<TTableData>[] }) {
   const dispatch = useDispatch();
 
@@ -145,16 +157,13 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
     []
   );
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  // Use helper function for empty rows
+  const emptyRows = calculateEmptyRows(page, rowsPerPage, rows.length);
 
+  // Use helper function for visible rows
   const visibleRows = React.useMemo(
-    () =>
-      rows
-        .sort(comparatorBuilder(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, rows]
+    () => getVisibleRows(rows, order, orderBy, page, rowsPerPage, comparatorBuilder),
+    [order, orderBy, page, rowsPerPage, rows, comparatorBuilder]
   );
 
   const handleDialogClose = useCallback(() => {
@@ -170,21 +179,29 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
     [setClickedId]
   );
 
-  // sticky styles for table header
-  const stickySx = React.useMemo(
-    () => ({
-      position: "sticky",
-      zIndex: (theme: any) => theme.zIndex.appBar + 2,
-      background: (theme: any) => theme.palette.background.paper,
-      boxSizing: "border-box",
-    }),
-    []
-  );
+  // Use helper function for sticky styles
+  const stickySx = React.useMemo(() => createStickySx(), []);
+  
+  // Use helper function for table styles
+  const tableSx = React.useMemo(() => createTableSx(), []);
 
   return (
     <>
-      <Box sx={{ width: "100%" }}>
-        <Paper sx={{ width: "100%", mb: 2 }}>
+      <Box sx={{ 
+        width: "100%", 
+        height: "100%", 
+        display: "flex", 
+        flexDirection: "column",
+        ...sx 
+      }}>
+        <Paper sx={{ 
+          width: "100%", 
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          overflow: "hidden"
+        }}>
           {TableToolbarComponent && (
             <TableToolbarComponent
               numSelected={selected.length}
@@ -196,38 +213,15 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
           <TableContainer
             sx={{
               overflowX: "auto",
-              // ограничиваем высоту контейнера, чтобы заголовок мог "прилипнуть"
-              // подберите значение под ваш layout, можно использовать vh и отступы под AppBar
-              maxHeight: "calc(100vh - 200px)",
               overflowY: "auto",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <Table
               // stickyHeader={true}
-              sx={{
-                width: "100%",
-                minWidth: "800px",
-                tableLayout: "fixed",
-                borderCollapse: "collapse",
-                "& th": {
-                  border: "1px solid rgba(224, 224, 224, 1)",
-                  padding: "6px",
-                  height: "24px",
-                  lineHeight: "1.2",
-                  fontWeight: 700,
-                  boxShadow: "0 1px 0 rgba(0,0,0,0.04)",
-                },
-                "& td": {
-                  border: "1px solid rgba(224, 224, 224, 1)",
-                  padding: "6px",
-                  height: "24px",
-                  lineHeight: "1.2",
-                  minWidth: "800px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                },
-              }}
+              sx={tableSx}
               aria-labelledby="tableTitle"
               size="small"
             >
@@ -274,26 +268,11 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                       </TableCell>
                       {columnsConfig.map(
                         (col: Column<any>, colIndex: number) => {
-                          const cellProps: any = {
-                            align: col.align || undefined,
-                            width: col.width || undefined,
-                          };
-                          const cellSxProps = {
-                            width: col.width || undefined,
-                            minWidth: col.minWidth || undefined,
-                            maxWidth: col.maxWidth || undefined,
-                          };
-
-                          if (col.padding === "none") {
-                            cellProps.padding = "none";
-                            if (colIndex === 0) {
-                              cellProps.id = labelId;
-                              cellProps.scope = "row";
-                            }
-                          }
+                          // Use helper function to create cell props
+                          const { cellProps, cellSxProps, content } = 
+                            createCellProps(col, row, labelId, colIndex);
 
                           if (col.isActions) {
-                            // pass styles in ActionCell
                             return (
                               <ActionCell
                                 key={`col-${colIndex}`}
@@ -309,13 +288,6 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                               />
                             );
                           }
-
-                          const value = col.key
-                            ? (row[col.key as keyof typeof row] as any)
-                            : undefined;
-                          const content = col.formatter
-                            ? col.formatter(value, row)
-                            : value;
 
                           return (
                             <TableCell

@@ -1,58 +1,30 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
+import { useDispatch } from "react-redux";
+
 import {
+  CardsByRestStages,
   KanbanBoard as EntitiesKanbanBoard,
   KanbanStackData,
 } from "@/entities/kanban/";
-import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
-import { DealExt } from "@/entities/deal";
 import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import { useDroppable } from "@dnd-kit/core";
-
-const createKanbanCard = (deal: DealExt) => ({
-  id: deal.id,
-  title: deal.title,
-  clientName: deal.contact?.name ?? "",
-  potentialValue: deal.potentialValue,
-});
-
-const prepareStacks = (deals: DealExt[]): KanbanStackData[] => {
-  return [
-    {
-      id: "QUALIFIED",
-      title: "Qualified",
-      cards: deals.filter((deal) => deal.stage === "QUALIFIED").map(createKanbanCard),
-      compact: true,
-    },
-    {
-      id: "CONTACTED",
-      title: "Contacted",
-      cards: deals.filter((deal) => deal.stage === "CONTACTED").map(createKanbanCard),
-      compact: true,
-    },
-    {
-      id: "DEMO_SCHEDULED",
-      title: "Demo Scheduled",
-      cards: deals.filter((deal) => deal.stage === "DEMO_SCHEDULED").map(createKanbanCard),
-      compact: true,
-    },
-    {
-      id: "PROPOSAL_SENT",
-      title: "Proposal Sent",
-      cards: deals.filter((deal) => deal.stage === "PROPOSAL_SENT").map(createKanbanCard),
-      compact: true,
-    },
-    {
-      id: "NEGOTIATION",
-      title: "Negotiation",
-      cards: deals.filter((deal) => deal.stage === "NEGOTIATION").map(createKanbanCard),
-      compact: true,
-    },
-  ];
-};
+import {
+  dealApi,
+  DealExt,
+  prepareToUpdate,
+  UpdateDealDTO,
+  useGetDealsQuery,
+  useLazyGetDealByIdQuery,
+  useUpdateDealMutation,
+} from "@/entities/deal";
+import { DealStage, DealStatus } from "@/shared/generated/prisma-client";
+import {
+  createKanbanCard,
+  prepareStacks,
+  moveCardToStage,
+  processKanbanChanges
+} from "./lib";
 
 export type KanbanBoardProps = {
   stacks?: KanbanStackData[];
@@ -66,36 +38,95 @@ export type KanbanBoardProps = {
  * Accepts stacks data and forwards to the entities component.
  */
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
-  stacks,
+  stacks: incomingStacks,
   className,
   gap = 2,
   padding = 1,
 }) => {
-  const [stacksInfo, setStacksInfo] = React.useState<KanbanStackData[]>(
-    stacks || []
-  );
+  const needToFetchData = !incomingStacks || incomingStacks.length === 0;
 
-  useEffect(() => {
-    if (stacks && stacks.length) {
-      setStacksInfo(stacks);
+  // load data only if needed
+  const { data: deals = [] } = useGetDealsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    skip: !needToFetchData,
+  }) as { data: DealExt[] };
+
+  // Memoize the calculation of stacks to avoid unnecessary recomputations
+  const dealStacks = React.useMemo(() => {
+    // If ready-made stacks are provided, use them
+    if (incomingStacks?.length) {
+      return incomingStacks;
     }
-  }, [stacks]);
+    // Otherwise, create from deals
+    return prepareStacks(deals || []);
+  }, [incomingStacks, deals]);
 
+  // Local state for working with data
+  const [stacksInfo, setStacksInfo] = React.useState<KanbanStackData[]>([]);
+  const dispatch = useDispatch();
+  const [triggerGetDealById] = useLazyGetDealByIdQuery();
+  const [updateDeal] = useUpdateDealMutation();
+
+  // Update state when data source changes
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(`${NEXT_PUBLIC_API_URL}/deals/api`);
-      const result = await data.json();
-      setStacksInfo(prepareStacks(result));
-    };
-    fetchData();
-  }, []);
+    if (dealStacks.length) {
+      setStacksInfo(dealStacks);
+    }
+  }, [dealStacks]);
 
-  const footerItems = [
-    { id: "DELETE", label: "DELETE" },
+  const footerItems: { id: DealStage | DealStatus; label: string }[] = [
     { id: "LOST", label: "LOST" },
     { id: "WON", label: "WON" },
-    { id: "OTHER", label: "OTHER" },
+    { id: "ARCHIVED", label: "ARCHIVED" },
   ];
+
+  const update = useCallback(
+    async (id: string, updateData: (deal: DealExt) => UpdateDealDTO) => {
+      const getResult = await triggerGetDealById(id);
+      const deal = ("data" in getResult ? getResult.data : undefined) as
+        | DealExt
+        | undefined;
+      if (!deal) {
+        console.error("Deal not found for id", id);
+        return;
+      }
+
+      const updatedData = updateData(deal);
+      const preparedUpdate = prepareToUpdate(updatedData);
+      const body: UpdateDealDTO = {
+        ...preparedUpdate,
+      };
+      console.log("Updating deal with id:", id, "and body:", body);
+      await updateDeal({ id, body }).unwrap();
+      dispatch(dealApi.util.invalidateTags(["Deals"]));
+    },
+    [triggerGetDealById, updateDeal, dispatch]
+  );
+
+  const moveCardToRestStage = useCallback(
+    (stage: string, id: string) => {
+      moveCardToStage(stage, id, update);
+    },
+    [update]
+  );
+  
+  const handleChange = useCallback(
+    (newStacks: KanbanStackData[], restStages?: CardsByRestStages) => {
+      // Process all changes using the utility function
+      processKanbanChanges(
+        stacksInfo,
+        newStacks,
+        restStages,
+        moveCardToRestStage,
+        update
+      );
+
+      // Save new state
+      setStacksInfo(newStacks);
+    },
+    [stacksInfo, moveCardToRestStage, update]
+  );
 
   return (
     <Container
@@ -107,8 +138,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         alignItems: "stretch",
         paddingLeft: "0 !important",
         paddingRight: "0 !important",
+        height: "100%", // Занимает всю высоту родителя
+        overflow: "hidden", // Важно для вложенного скролла
         flex: 1,
-        position: "relative", // required so footer absolute positions relative to container
+        position: "relative",
       }}
     >
       <EntitiesKanbanBoard
@@ -116,10 +149,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         className={className}
         gap={gap}
         padding={padding}
-        onChange={(newStacks, restStages) => {
-          setStacksInfo(newStacks);
-          console.log("KanbanBoard onChange", newStacks, restStages);
-        }}
+        onChange={handleChange}
         footerItems={footerItems}
       />
     </Container>

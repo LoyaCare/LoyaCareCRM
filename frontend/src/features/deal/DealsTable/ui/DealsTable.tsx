@@ -26,6 +26,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import { columns } from "../config";
 import { DealTableRowData } from "../model";
 import { convertDealsToDealRows } from "../utils";
+import { SxProps, Theme } from "@mui/material/styles";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
@@ -54,7 +55,10 @@ export function DealsTable<T extends DealExt>({
   order,
   orderBy = "stage" as SortableFields<DealTableRowData>,
   EditDialogComponent = EditDialog,
-}: BaseTableProps<T, DealTableRowData>) {
+  sx,
+}: BaseTableProps<T, DealTableRowData> & {
+  sx?: SxProps<Theme>;
+}) {
   const dispatch = useDispatch();
 
   const [triggerGetDealById] = useLazyGetDealByIdQuery();
@@ -122,7 +126,7 @@ export function DealsTable<T extends DealExt>({
       order={order}
       orderBy={orderBy}
       getInitData={() => {
-        const { data } = useGetDealsQuery();
+        const { data } = useGetDealsQuery(undefined);
         return data as T[];
       }}
       invalidate={invalidateDeals}
@@ -132,6 +136,7 @@ export function DealsTable<T extends DealExt>({
       TableHeadComponent={DealsTableHead}
       rowConverter={convertDealsToDealRows}
       rowActionMenuItems={rowActionMenuItems}
+      sx={sx} // Передаём sx в BaseTable
     />
   );
 }

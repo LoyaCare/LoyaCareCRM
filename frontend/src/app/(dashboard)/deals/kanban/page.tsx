@@ -1,23 +1,9 @@
 import React from "react";
-// import { DealsTable } from "@/features";
-// import { DealExt } from "@/entities/deal/types";
-// import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 import Container from "@mui/material/Container";
 import { KanbanBoard } from "@/features/kanban/KanbanBoard";
 import Box from "@mui/material/Box";
 
 export default async function KanbanDealsPage() {
-  //   const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/deals/api`).then((res) =>
-  //     res.json()
-  //   )) as DealExt[];
-
-  //   const kanbanCards = deals.slice(0, 6).map((deal) => ({
-  //     id: deal.id,
-  //     title: deal.title,
-  //     clientName: deal.contact.name,
-  //     potentialValue: deal.potentialValue,
-  //   }));
-
   return (
     <Container
       maxWidth={false}
@@ -27,21 +13,36 @@ export default async function KanbanDealsPage() {
         p: 0,
         display: "flex",
         flexDirection: "column",
-        alignItems: "stretch",
+        height: "100%",
+        overflow: "hidden", // Prevents double scroll
       }}
       style={{ paddingLeft: "0 !important"}}
     >
+      {/* Фиксированный заголовок */}
       <Box
         sx={{
-          p: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "stretch",
-          flex: 1,
+          p: 2, 
+          pb: 0,
+          flexShrink: 0, // Prevents header from shrinking
         }}
       >
-        <h1 style={{ marginBottom: 16 }}>Deals</h1>
-        <KanbanBoard stacks={[]} gap={3} padding={1} />
+        <h1 style={{ margin: 0, marginBottom: '16px' }}>Deals</h1>
+      </Box>
+
+      {/* Container for KanbanBoard with scroll */}
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1, // Stretch to fill available space
+          overflow: "hidden", // Necessary for proper flexbox + scroll behavior
+          position: "relative", // Needed for correct content height calculation
+        }}
+      >
+        {/* KanbanBoard with scroll */}
+        <KanbanBoard
+          gap={3}
+          padding={1} 
+        />
       </Box>
     </Container>
   );

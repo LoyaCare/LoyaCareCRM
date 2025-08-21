@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { Deal, DealExt, CreateDealDTO, UpdateDealDTO } from "@/entities/deal/types";
+import { Deal, DealExt, CreateDealDTO, UpdateDealDTO, DealStatus } from "@/entities/deal/types";
+import { D } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
+import { DealStage } from "@/shared/generated/prisma-client/wasm";
 
 export const dealApi = createApi({
   reducerPath: "dealApi",
@@ -10,8 +12,11 @@ export const dealApi = createApi({
   }),
   tagTypes: ["Deals", "Deal"],
   endpoints: (build) => ({
-    getDeals: build.query<DealExt[], void>({
-      query: () => "deals",
+    getDeals: build.query<DealExt[], { statuses?: DealStatus[], excludeStatuses?: DealStatus[], stages?: DealStage[], excludeStages?: DealStage[] } | undefined | null>({
+      query: (params) => ({
+        url: "deals",
+        params: params || undefined,
+      }),
       providesTags: ["Deals"],
     }),
     getDealById: build.query<DealExt, string>({

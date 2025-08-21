@@ -9,9 +9,24 @@ export default async function DealsPage() {
   )) as DealExt[];
 
   return (
-    <Container maxWidth={false} component="main">
-      <h1 style={{ marginBottom: 16 }}>Deals</h1>
-      <DealsTable initialData={deals} />
+    <Container 
+      maxWidth={false} 
+      component="main" 
+      sx={{ 
+        pr: 1, 
+        pl: 0, 
+        pt: 1,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden"
+      }}
+    >
+      {/* <h1 style={{ marginBottom: 16 }}>Deals</h1> */}
+      <DealsTable 
+        initialData={deals}
+        // sx={{ flex: 1, height: '100%' }}
+      />
     </Container>
   );
 }

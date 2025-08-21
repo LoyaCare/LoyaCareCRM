@@ -8,7 +8,6 @@ import {
   pointerWithin,
   DragEndEvent,
   DragOverEvent,
-  DragStartEvent,
   useSensor,
   useSensors,
   PointerSensor,
@@ -37,7 +36,7 @@ type Props = {
   className?: string;
   gap?: number;
   padding?: number;
-  onChange?: (stacks: KanbanStackData[], restStages: CardsByRestStages) => void;
+  onChange?: (stacks: KanbanStackData[], restStages?: CardsByRestStages) => void;
   footerItems?: { id: string; label: string }[];
 };
 
@@ -54,14 +53,6 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
   );
 
   const restStagesNames = footerItems?.map((item) => item.id) || [];
-
-  const [restStagesCards, setRestStagesCards] =
-    React.useState<CardsByRestStages>({
-      ...restStagesNames?.reduce((acc, item) => {
-        acc[item] = [];
-        return acc;
-      }, {} as CardsByRestStages),
-    });
 
   React.useEffect(() => {
     setLocalStacks(stacks);
@@ -82,7 +73,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
 
   // schedule onChange outside of render (prevents "setState during render" errors)
   const scheduleOnChange = React.useCallback(
-    (next: KanbanStackData[], restStages: CardsByRestStages) => {
+    (next: KanbanStackData[], restStages?: CardsByRestStages) => {
       if (!onChange) return;
 
       // refuse previous scheduled call if exists
@@ -153,21 +144,21 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
           return next;
         }
 
-        // intra-stack reorder
-        if (destIndex === sourceStackIndex && destIndex !== -1) {
-          const stack = next[sourceStackIndex];
-          const oldIndex = stack.cards.findIndex(
-            (c) => String(c.id) === activeId
-          );
-          const newIndex = stack.cards.findIndex(
-            (c) => String(c.id) === overId
-          );
-          if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-            stack.cards = arrayMove(stack.cards, oldIndex, newIndex);
-            scheduleOnChange(next, {});
-          }
-          return next;
-        }
+        // // intra-stack reorder
+        // if (destIndex === sourceStackIndex && destIndex !== -1) {
+        //   const stack = next[sourceStackIndex];
+        //   const oldIndex = stack.cards.findIndex(
+        //     (c) => String(c.id) === activeId
+        //   );
+        //   const newIndex = stack.cards.findIndex(
+        //     (c) => String(c.id) === overId
+        //   );
+        //   if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        //     stack.cards = arrayMove(stack.cards, oldIndex, newIndex);
+        //     scheduleOnChange(next);
+        //   }
+        //   return next;
+        // }
 
         // moving between stacks
         if (destIndex !== -1 && destIndex !== sourceStackIndex) {
@@ -186,7 +177,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
             overCardIndex === -1 ? dst.cards.length : overCardIndex;
           dst.cards.splice(insertIndex, 0, moved);
 
-          scheduleOnChange(next, {});
+          scheduleOnChange(next);
           return next;
         }
 
@@ -229,7 +220,6 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
         onDragEndInternal(e);
       }}
       onDragStart={(e) => {
-        // set activeId for overlay and schedule user callback async
         setActiveId(String(e.active.id));
       }}
     >
@@ -239,7 +229,9 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
         aria-label="Kanban board"
         sx={{
           width: "100%",
-          overflowX: "hidden",
+          height: "100%",
+          overflowX: "auto",
+          overflowY: "auto", // Stay it for the container
           display: "flex",
           flex: 1,
         }}
@@ -248,8 +240,9 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
           direction="row"
           sx={{
             display: "flex",
-            flex: 1,
-            alignItems: "stretch",
+            flex: "0 0 auto",
+            minHeight: "100%", // Minimal height occupies the entire height of the parent
+            alignItems: "flex-start", // Important: alignment at the top
             py: padding,
             px: padding,
             gap: (theme: any) => theme.spacing(gap),
@@ -333,11 +326,12 @@ function ColumnDroppable({
       sx={{
         flex: "0 0 auto",
         minWidth: stack.width ?? (stack.compact ? 200 : 300),
-        minHeight: 0, // важное правило для корректного поведения flex + overflow
-        height: "100%",
+        maxHeight: "100%", // Can occupy full height, but does not stretch
+        height: "auto", // Changed: height is determined by content
         boxSizing: "border-box",
-        alignSelf: "stretch",
-        overflow: "visible", // позволяем карточкам визуально выходить, но droppable bounds — по контейнеру
+        display: "flex",
+        flexDirection: "column", // Explicitly set vertical direction
+        overflow: "visible", // For droppable bounds
         outline: isOver ? "2px dashed rgba(0,0,0,0.08)" : "none",
       }}
     >

@@ -49,7 +49,7 @@ export function SidebarDrawer() {
       <Toolbar sx={{ justifyContent: collapsed ? "center" : "space-between", px: 1 }}>
         {!collapsed && (
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            LoyaCRM
+            Loya Care
           </Typography>
         )}
         <IconButton onClick={() => setCollapsed((v) => !v)} size="small">

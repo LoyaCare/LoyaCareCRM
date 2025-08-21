@@ -19,26 +19,33 @@ export const getAllLeadsBase = async (
   _req: Request,
   res: Response,
   stages?: DealStage[],
-  status?: DealStatus
+  statuses?: DealStatus[]
 ) => {
   const leads = await prisma.deal.findMany({
     where: {
       stage: stages ? { in: stages } : undefined,
-      status: status ?? undefined,
+      status: statuses ? { in: statuses } : undefined,
     },
     include: shouldAllLinkedDatelsIncluded,
   });
   res.json(leads);
 };
 
-export const getAllDeals = async (_req: Request, res: Response) =>
-  getAllLeadsBase(_req, res, [
-    "CONTACTED",
-    "QUALIFIED",
-    "PROPOSAL_SENT",
-    "NEGOTIATION",
+export const getAllDeals = async (_req: Request, res: Response) => {
+  const { excludeStatuses = ["ARCHIVED"], excludeStages = ["LEAD", "WON", "LOST"], statuses: defaultStatuses = ["ACTIVE", "ARCHIVED"], stages: defaultStages = [
+        "LEAD", "WON", "LOST",
+        "CONTACTED",
+        "QUALIFIED",
+        "PROPOSAL_SENT",
+        "NEGOTIATION",
     "DEMO_SCHEDULED",
-  ]);
+  ] } = _req.query;
+
+  const statuses = (defaultStatuses as DealStatus[]).filter((s) => !(excludeStatuses as DealStatus[]).includes(s as DealStatus))
+  const stages = (defaultStages as DealStage[]).filter((s) => !(excludeStages as DealStage[]).includes(s as DealStage));
+  console.log("statuses:", statuses, " stages:", stages);
+  return getAllLeadsBase(_req, res, stages, statuses);
+}
 
 export const getDealByIdBase = async (id: string) =>
   await prisma.deal.findUnique({

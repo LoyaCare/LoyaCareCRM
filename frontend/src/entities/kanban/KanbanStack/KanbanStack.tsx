@@ -6,9 +6,17 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import { KanbanCard } from "@/entities/kanban";
-import { KanbanStackProps } from "./types";
+import { KanbanCard, KanbanCardData } from "@/entities/kanban";
 import { currencyFormatter } from "@/shared/lib";
+
+export type KanbanStackProps = {
+  title: string;
+  cards: KanbanCardData[];
+  className?: string;
+  compact?: boolean;
+  // optional renderer - allows wrapping cards in Draggable when used by KanbanBoard
+  renderCard?: (card: KanbanCardData, index: number) => React.ReactNode;
+};
 
 export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
   function KanbanStack({
@@ -57,10 +65,14 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
           >
             {title}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {formattedTotal}
-            {cards.length} {cards.length === 1 ? "card" : "cards"}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="caption" color="text.primary">
+              {formattedTotal}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {cards.length} {cards.length === 1 ? "card" : "cards"}
+            </Typography>
+          </Box>
         </Box>
 
         <Divider sx={{ mb: 1 }} />
