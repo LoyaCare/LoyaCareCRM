@@ -5,12 +5,19 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { KanbanCard } from "@/entities/kanban/KanbanCard";
-import { currencyFormatter } from "@/shared/lib";
+import Divider from "@mui/material/Divider";
+import { KanbanCard } from "@/entities/kanban";
 import { KanbanStackProps } from "./types";
+import { currencyFormatter } from "@/shared/lib";
 
 export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
-  function KanbanStack({ title, cards, className, compact = false }) {
+  function KanbanStack({
+    title,
+    cards,
+    className,
+    compact = true,
+    renderCard,
+  }) {
     const total = React.useMemo(
       () =>
         cards.reduce(
@@ -21,17 +28,17 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
       [cards]
     );
 
-    const formattedTotal = React.useMemo(() => {
-      if (total === 0) return "";
-      return currencyFormatter(total);
-    }, [total]);
+    const formattedTotal = React.useMemo(
+      () => currencyFormatter(total),
+      [total]
+    );
 
     return (
       <Paper
         className={className}
         variant="outlined"
         sx={{
-          width: compact ? 260 : 300,
+          // width: compact ? 200 : 300,
           display: "flex",
           flexDirection: "column",
           p: 1,
@@ -51,29 +58,31 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
             {title}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {formattedTotal ? `${formattedTotal} · ` : ""}
+            {formattedTotal}
             {cards.length} {cards.length === 1 ? "card" : "cards"}
           </Typography>
         </Box>
 
-        {/* <Divider sx={{ mb: 1 }} /> */}
+        <Divider sx={{ mb: 1 }} />
 
         <Stack
           sx={{
             gap: 1,
-            flex: 1, // take remaining vertical space
-            minHeight: 0, // allow child to shrink/scroll in flex layout
-            overflowY: "auto",
-            height: "100%",
-            pr: 0.5,
+            flex: 1,
+            minHeight: 0,
+            overflowX: "visible",
+            overflowY: "clip",
             alignSelf: "stretch",
+            pr: 0.5,
           }}
         >
-          {cards.map((c) => (
-            <KanbanCard key={c.id} data={c} />
-          ))}
+          {cards.map((c, i) =>
+            renderCard ? renderCard(c, i) : <KanbanCard key={c.id} data={c} />
+          )}
         </Stack>
       </Paper>
     );
   }
 );
+
+export default KanbanStack;

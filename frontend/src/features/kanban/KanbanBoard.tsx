@@ -1,19 +1,21 @@
 "use client";
 
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   KanbanBoard as EntitiesKanbanBoard,
   KanbanStackData,
 } from "@/entities/kanban/";
-import type { KanbanBoardProps } from "./types";
 import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 import { DealExt } from "@/entities/deal";
 import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import { useDroppable } from "@dnd-kit/core";
 
 const createKanbanCard = (deal: DealExt) => ({
   id: deal.id,
   title: deal.title,
-  clientName: deal.contact.name,
+  clientName: deal.contact?.name ?? "",
   potentialValue: deal.potentialValue,
 });
 
@@ -52,6 +54,13 @@ const prepareStacks = (deals: DealExt[]): KanbanStackData[] => {
   ];
 };
 
+export type KanbanBoardProps = {
+  stacks?: KanbanStackData[];
+  className?: string;
+  gap?: number;
+  padding?: number;
+};
+
 /**
  * Feature-level wrapper around entities/kanban KanbanBoard.
  * Accepts stacks data and forwards to the entities component.
@@ -66,9 +75,11 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     stacks || []
   );
 
-  if (stacks && stacks.length) {
-    setStacksInfo(stacks);
-  }
+  useEffect(() => {
+    if (stacks && stacks.length) {
+      setStacksInfo(stacks);
+    }
+  }, [stacks]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +89,13 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     };
     fetchData();
   }, []);
+
+  const footerItems = [
+    { id: "DELETE", label: "DELETE" },
+    { id: "LOST", label: "LOST" },
+    { id: "WON", label: "WON" },
+    { id: "OTHER", label: "OTHER" },
+  ];
 
   return (
     <Container
@@ -90,14 +108,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         paddingLeft: "0 !important",
         paddingRight: "0 !important",
         flex: 1,
+        position: "relative", // required so footer absolute positions relative to container
       }}
     >
-      {/* <h1 style={{ marginBottom: 16 }}>Deals</h1> */}
       <EntitiesKanbanBoard
         stacks={stacksInfo}
         className={className}
         gap={gap}
         padding={padding}
+        onChange={(newStacks, restStages) => {
+          setStacksInfo(newStacks);
+          console.log("KanbanBoard onChange", newStacks, restStages);
+        }}
+        footerItems={footerItems}
       />
     </Container>
   );
