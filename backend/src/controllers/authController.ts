@@ -48,14 +48,13 @@ export const login = async (req: Request, res: Response) => {
     );
 
     // Возвращаем данные пользователя и токен
+    console.log(
+      "Login successful:",
+      JSON.stringify({ success: true, user, token }, null, 2)
+    );
     return res.status(200).json({
       success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      },
+      user,
       token,
     });
   } catch (error) {
@@ -98,6 +97,10 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     }
     
     // Возвращаем данные пользователя
+    console.log(
+      "Current user:",
+      JSON.stringify({ success: true, user }, null, 2)
+    );
     return res.status(200).json({
       success: true,
       user

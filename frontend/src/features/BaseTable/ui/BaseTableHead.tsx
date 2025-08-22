@@ -45,7 +45,9 @@ export function BaseTableHead<T extends TBaseColumnType>(
           sx={{
             left: 0,
             ...stickySx,
-            zIndex: (theme: any) => theme.zIndex.appBar + 7
+            zIndex: (theme: any) => theme.zIndex.appBar + 7,
+            textOverflow: "clip",
+            boxSizing: "content-box", // Ensures checkbox does not affect width calculation
           }}
         >
           <Checkbox
@@ -86,6 +88,8 @@ export function BaseTableHead<T extends TBaseColumnType>(
                   ? {
                       right: 0,
                       zIndex: (theme: any) => theme.zIndex.appBar + 7,
+                      textOverflow: "clip",
+                      boxSizing: "content-box", // Ensures checkbox does not affect width calculation
                     }
                   : {})
               }}

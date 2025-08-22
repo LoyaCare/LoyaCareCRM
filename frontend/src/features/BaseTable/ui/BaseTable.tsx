@@ -39,12 +39,12 @@ import { ActionCell } from "./ActionCell";
 import { ActionMenu, ActionMenuItemProps, ActionMenuProps } from "./ActionMenu";
 
 // Import helper functions from lib.ts
-import { 
+import {
   createStickySx,
   createTableSx,
-  calculateEmptyRows, 
+  calculateEmptyRows,
   getVisibleRows,
-  createCellProps
+  createCellProps,
 } from "../lib";
 
 export interface BaseTableProps<T, TTableData extends BaseTableRowData> {
@@ -162,7 +162,15 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
 
   // Use helper function for visible rows
   const visibleRows = React.useMemo(
-    () => getVisibleRows(rows, order, orderBy, page, rowsPerPage, comparatorBuilder),
+    () =>
+      getVisibleRows(
+        rows,
+        order,
+        orderBy,
+        page,
+        rowsPerPage,
+        comparatorBuilder
+      ),
     [order, orderBy, page, rowsPerPage, rows, comparatorBuilder]
   );
 
@@ -181,27 +189,31 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
 
   // Use helper function for sticky styles
   const stickySx = React.useMemo(() => createStickySx(), []);
-  
+
   // Use helper function for table styles
   const tableSx = React.useMemo(() => createTableSx(), []);
 
   return (
     <>
-      <Box sx={{ 
-        width: "100%", 
-        height: "100%", 
-        display: "flex", 
-        flexDirection: "column",
-        ...sx 
-      }}>
-        <Paper sx={{ 
-          width: "100%", 
-          mb: 2,
+      <Box
+        sx={{
+          width: "100%",
+          height: "100%",
           display: "flex",
           flexDirection: "column",
-          flex: 1,
-          overflow: "hidden"
-        }}>
+          ...sx,
+        }}
+      >
+        <Paper
+          sx={{
+            width: "100%",
+            mb: 2,
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
           {TableToolbarComponent && (
             <TableToolbarComponent
               numSelected={selected.length}
@@ -219,11 +231,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
               flexDirection: "column",
             }}
           >
-            <Table
-              sx={tableSx}
-              aria-labelledby="tableTitle"
-              size="small"
-            >
+            <Table sx={tableSx} aria-labelledby="tableTitle" size="small">
               {TableHeadComponent && (
                 <TableHeadComponent
                   numSelected={selected.length}
@@ -254,7 +262,12 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                     >
                       <TableCell
                         padding="checkbox"
-                        sx={{ ...stickySx, left: 0 }}
+                        sx={{
+                          ...stickySx,
+                          left: 0,
+                          textOverflow: "clip",
+                          boxSizing: "content-box", // Ensures checkbox does not affect width calculation
+                        }}
                       >
                         <Checkbox
                           onClick={(event) => handleClick(event, row.id)}
@@ -268,7 +281,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                       {columnsConfig.map(
                         (col: Column<any>, colIndex: number) => {
                           // Use helper function to create cell props
-                          const { cellProps, cellSxProps, content } = 
+                          const { cellProps, cellSxProps, content } =
                             createCellProps(col, row, labelId, colIndex);
 
                           if (col.isActions) {
@@ -283,6 +296,8 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                                   ...stickySx,
                                   right: 0,
                                   ...cellSxProps,
+                                  textOverflow: "clip",
+                                  boxSizing: "content-box", // Ensures checkbox does not affect width calculation
                                 }}
                               />
                             );
