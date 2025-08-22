@@ -14,7 +14,8 @@
       "@/*": ["./src/*"],
       "@/generated": ["./generated/*"]
     },
-    "sourceMap": true
+    "sourceMap": true,
+    "resolveJsonModule": true
   },
   "include": ["./src/**/*", "./generated/**/*"],
   "exclude": ["node_modules", "dist"]

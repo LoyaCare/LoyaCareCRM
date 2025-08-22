@@ -5,6 +5,7 @@ import appointmentRoutes from './appointmentRoutes';
 import userRoutes from './userRoutes';
 import contactRoutes from './contactRoutes';
 import noteRoutes from './noteRoutes';
+import authRouter from "./authRoutes";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use('/appointments', appointmentRoutes);
 router.use('/users', userRoutes);
 router.use('/contacts', contactRoutes);
 router.use('/notes', noteRoutes);
+router.use('/auth', authRouter);
 
 router.get('/ping', (_req, res) => res.send('pong'));
 

@@ -12,12 +12,18 @@ model User {
   id            String   @id @default(uuid())
   email         String   @unique
   name          String
+  role          Role     @default(EMPLOYEE)
   password      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   createdDeals  Deal[]   @relation("DealsCreatedByUser")
   assignedDeals Deal[]   @relation("DealsAssignedToUser")
   notes         Note[]
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
 }
 
 model Contact {

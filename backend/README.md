@@ -17,3 +17,6 @@ npm run generate
 
 💡 Hinweis / Note:
 Der prisma-client wird automatisch aus dem Datenbankschema erstellt. Änderungen am Schema erfordern das erneute Ausführen des obigen Befehls.
+
+Create admin:
+npx ts-node src/scripts/createAdmin.ts

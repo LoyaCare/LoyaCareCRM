@@ -11,12 +11,14 @@ console.log(`✅ Mock mode is ${isMockEnabled ? "ENABLED" : "DISABLED"}`);
 
 const app = express();
 
+// Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(addMockHeader);
 
+// Routes
 app.use('/api', routes);
 
 app.use(errorHandler);
