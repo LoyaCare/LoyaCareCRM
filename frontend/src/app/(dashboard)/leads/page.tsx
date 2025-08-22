@@ -8,7 +8,7 @@ export default async function LeadsPage() {
     res.json()
   )) as LeadExt[];
   return (
-    <Container maxWidth={false} component="main">
+    <Container maxWidth={false} component="main" style={{ padding: "0 !important" }} sx={{ pl: 0 , m: 0 }}>
       {/* <h1>Leads</h1> */}
       {<LeadsTable initialData={leads} />}
     </Container>

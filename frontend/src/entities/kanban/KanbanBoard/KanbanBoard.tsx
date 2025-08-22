@@ -117,7 +117,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
           sx={{
             display: "flex",
             flex: "0 0 auto",
-            minHeight: "100%",
+            // minHeight: "100%",
             alignItems: "flex-start",
             py: padding,
             px: padding,

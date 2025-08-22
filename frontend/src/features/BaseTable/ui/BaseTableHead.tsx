@@ -67,6 +67,7 @@ export function BaseTableHead<T extends TBaseColumnType>(
             width: `${headCell.width}px`,
             minWidth: `${headCell.minWidth}px`,
             maxWidth: `${headCell.maxWidth}px`,
+            textAlign: headCell.align || "left",
             ...(isSticky && {
               borderLeft: "1px solid rgba(224, 224, 224, 1)",
             })

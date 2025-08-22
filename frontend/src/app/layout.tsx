@@ -21,16 +21,18 @@ export default function RootLayout({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </head>
-      <body>
+      <body style={{margin: 0}}>
         <Providers>
           <Box
             sx={{
               display: "flex",
               minWidth: 0,
-              height: "98vh",
+              height: "100vh",
               width: "100vw",
               overflow: "hidden",
               alignItems: "stretch",
+              m: 0,
+              p: 0,
             }}
           >
             <SidebarDrawer />

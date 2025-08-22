@@ -2,7 +2,7 @@ import React from "react";
 import { BaseTableRowData } from "./model";
 import { currencyFormatter as defaultCurrencyFormatter } from "@/shared/lib/formatCurrency";
 import {EnumDealStage} from '@/entities/deal';
-import { DealStage } from "@/entities/deal/DealStage/ui/DealStage";
+import { DealStageComponent } from "@/entities/deal/DealStage/DealStage";
 
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -55,6 +55,6 @@ export const stageToComponentFormatter = <T extends BaseTableRowData>(
 ): React.ReactNode => {
   return (
     value &&
-    React.createElement(DealStage, { stage: value, readOnly: true, compact: true  })
+    React.createElement(DealStageComponent, { stage: value, readOnly: true, compact: true  })
   );
 };

@@ -1,4 +1,5 @@
-// src/features/lead/edit/ui/LeadEditDialog.tsx
+"use client";
+
 import React from "react";
 import { useDispatch } from "react-redux";
 
@@ -9,8 +10,8 @@ import {
   useUpdateDealMutation,
   useCreateDealMutation,
   dealApi,
-} from "@/entities/deal/api";
-import type { CreateDealDTO, UpdateDealDTO } from "@/entities/deal/types";
+} from "@/entities";
+import type { CreateDealDTO, UpdateDealDTO } from "@/entities";
 
 export function DealEditDialog({
   id,
@@ -36,7 +37,7 @@ export function DealEditDialog({
     async (values: CreateDealDTO | UpdateDealDTO, shouldCreate?: boolean) => {
       if (!id || shouldCreate) {
         await createDeal(values as CreateDealDTO);
-        dispatch(dealApi.util.invalidateTags(["Deals"]));
+        dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
         onClose?.();
         return;
       }
@@ -57,7 +58,8 @@ export function DealEditDialog({
       }
 
       await updateDeal({ id: id, body: values as UpdateDealDTO });
-      dispatch(dealApi.util.invalidateTags(["Deals"]));
+      console.log("Deal updated with id:", id, "and values:", values);
+      dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
       onClose?.();
     },
     [id, data, updateDeal, createDeal, onClose]

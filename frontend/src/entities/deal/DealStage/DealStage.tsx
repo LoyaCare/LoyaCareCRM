@@ -9,8 +9,8 @@ import ListItemText from "@mui/material/ListItemText";
 import CheckIcon from "@mui/icons-material/Check";
 import Box from "@mui/material/Box";
 import type {
-  EnumDealStage,
-} from "@/entities/deal/DealStage/model/types";
+  EnumDealStage
+} from "@/entities/deal/";
 
 export const DEFAULT_STAGES: EnumDealStage[] = [
   "QUALIFIED",
@@ -45,7 +45,7 @@ type Props = {
   ariaLabel?: string;
 };
 
-export const DealStage: React.FC<Props> = React.memo(function DealStage({
+export const DealStageComponent: React.FC<Props> = React.memo(function DealStage({
   stage,
   onChange,
   readOnly = false,
@@ -125,4 +125,4 @@ export const DealStage: React.FC<Props> = React.memo(function DealStage({
   );
 });
 
-export default DealStage;
+export default DealStageComponent;

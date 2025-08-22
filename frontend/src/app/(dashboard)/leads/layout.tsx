@@ -1,11 +1,10 @@
-
 export default function LeadsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-        <section
+    <section
       style={{
         display: "flex",
         width: "100%",

@@ -99,7 +99,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       };
       console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
-      dispatch(dealApi.util.invalidateTags(["Deals"]));
+      dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
     },
     [triggerGetDealById, updateDeal, dispatch]
   );

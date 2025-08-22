@@ -220,7 +220,6 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
             }}
           >
             <Table
-              // stickyHeader={true}
               sx={tableSx}
               aria-labelledby="tableTitle"
               size="small"

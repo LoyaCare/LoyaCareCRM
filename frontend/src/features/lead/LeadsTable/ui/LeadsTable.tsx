@@ -149,6 +149,7 @@ export function LeadsTable<T extends LeadExt>({
       columnsConfig={columns}
       rowConverter={convertLeadsToLeadRows}
       rowActionMenuItems={rowActionMenuItems}
+      sx={{ p: 0, m: 0 }}
     />
   );
 }

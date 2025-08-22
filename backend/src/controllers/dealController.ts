@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
-import {
-  Note,
-  Appointment,
-  DealStage,
-  DealStatus,
-} from "../../generated/prisma-client";
+import { Note, Appointment } from "../../generated/prisma-client";
+
+import type { DealStage, DealStatus } from "../../generated/prisma-client";
 
 export const shouldAllLinkedDatelsIncluded = {
   contact: true,
@@ -21,6 +18,12 @@ export const getAllLeadsBase = async (
   stages?: DealStage[],
   statuses?: DealStatus[]
 ) => {
+  console.log(
+    "Fetching all deals with stages:",
+    stages,
+    " and statuses:",
+    statuses
+  );
   const leads = await prisma.deal.findMany({
     where: {
       stage: stages ? { in: stages } : undefined,
@@ -31,21 +34,73 @@ export const getAllLeadsBase = async (
   res.json(leads);
 };
 
-export const getAllDeals = async (_req: Request, res: Response) => {
-  const { excludeStatuses = ["ARCHIVED"], excludeStages = ["LEAD", "WON", "LOST"], statuses: defaultStatuses = ["ACTIVE", "ARCHIVED"], stages: defaultStages = [
-        "LEAD", "WON", "LOST",
-        "CONTACTED",
-        "QUALIFIED",
-        "PROPOSAL_SENT",
-        "NEGOTIATION",
-    "DEMO_SCHEDULED",
-  ] } = _req.query;
+export const getArchivedDeals = async (_req: Request, res: Response) => {
+  const {
+    stages: defaultStages = [
+      "LEAD",
+      "WON",
+      "LOST",
+      "CONTACTED",
+      "QUALIFIED",
+      "PROPOSAL_SENT",
+      "NEGOTIATION",
+      "DEMO_SCHEDULED",
+    ],
+  } = _req.query;
 
-  const statuses = (defaultStatuses as DealStatus[]).filter((s) => !(excludeStatuses as DealStatus[]).includes(s as DealStatus))
-  const stages = (defaultStages as DealStage[]).filter((s) => !(excludeStages as DealStage[]).includes(s as DealStage));
+  return getAllLeadsBase(
+    _req,
+    res,
+    (defaultStages && Array.isArray(defaultStages)
+      ? defaultStages
+      : (defaultStages ? (defaultStages as string) : "")
+          .split(",")
+          .map((s) => s as DealStage)) as DealStage[],
+    ["ARCHIVED"]
+  );
+};
+
+export const getAllDeals = async (_req: Request, res: Response) => {
+  const {
+    excludeStatuses = ["ARCHIVED"],
+    excludeStages = ["LEAD", "WON", "LOST"],
+    statuses: defaultStatuses = ["ACTIVE", "ARCHIVED"],
+    stages: defaultStages = [
+      "LEAD",
+      "WON",
+      "LOST",
+      "CONTACTED",
+      "QUALIFIED",
+      "PROPOSAL_SENT",
+      "NEGOTIATION",
+      "DEMO_SCHEDULED",
+    ],
+  } = _req.query as {
+    excludeStatuses?: DealStatus[] | string[];
+    excludeStages?: DealStage[] | string[];
+    statuses?: DealStatus[] | string;
+    stages?: DealStage[] | string;
+  };
+
+  const statuses: DealStatus[] = (
+    Array.isArray(defaultStatuses)
+      ? defaultStatuses
+      : defaultStatuses.split(",")
+  )
+    .map((s) => s as DealStatus)
+    .filter(
+      (s) => !(excludeStatuses as DealStatus[]).includes(s as DealStatus)
+    );
+
+  const stages: DealStage[] = (
+    Array.isArray(defaultStages) ? defaultStages : defaultStages.split(",")
+  )
+    .map((s) => s as DealStage)
+    .filter((s) => !(excludeStages as DealStage[]).includes(s as DealStage));
+
   console.log("statuses:", statuses, " stages:", stages);
   return getAllLeadsBase(_req, res, stages, statuses);
-}
+};
 
 export const getDealByIdBase = async (id: string) =>
   await prisma.deal.findUnique({

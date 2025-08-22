@@ -4,5 +4,6 @@ export * from './selectors';
 export * from './api';
 export * from './selectors';
 export * from './utils';
-export * from './DealStage/ui/DealStage';
-export * from "./DealStage/model/types";
+export * from './DealStage/DealStage';
+export * from "./DealStage/types";
+export * from './DealViewSwitcher';

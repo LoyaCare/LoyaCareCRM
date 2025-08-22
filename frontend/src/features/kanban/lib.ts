@@ -146,15 +146,11 @@ export const processKanbanChanges = (
   // Find moved cards between main columns
   const { movedCards } = findStackChanges(oldStacks, newStacks);
 
-  // Log changes for debugging
   if (movedCards.length > 0) {
-    console.log("Cards moved between stacks:", movedCards);
-
     // Apply changes
     movedCards.forEach(({ cardId, fromStack, toStack }) => {
       // If toStack is a DealStage, update the stage
       if (toStack in DealStage) {
-        console.log(`Moving card ${cardId} from ${fromStack} to stage ${toStack}`);
         updateDeal(cardId, (deal) => ({
           ...deal,
           stage: toStack as DealStage,

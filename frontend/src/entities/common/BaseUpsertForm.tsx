@@ -13,7 +13,7 @@ import {
   DealExt,
   CreateDealDTO,
   UpdateDealDTO,
-  DealStage,
+  DealStageComponent,
 } from "@/entities/deal";
 import {
   AppointmentExt,
@@ -167,7 +167,7 @@ export const BaseUpsertForm = <
             </Paper>
             {/* {(form?.stage !== 'LEAD') && ( */}
               <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
-                <DealStage
+                <DealStageComponent
                   stage={form?.stage || (isDeal ? "QUALIFIED" : "LEAD")}
                   onChange={(stage) => setForm((prev) => ({ ...prev, stage }))}
                 />

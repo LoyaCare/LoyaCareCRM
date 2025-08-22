@@ -1,9 +1,21 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 
 import dynamic from "next/dynamic";
-import { DealExt } from "@/entities/deal/types";
+import {
+  Deal,
+  DealExt,
+  DealStatus,
+  DealStage,
+  DealViewSwitcher,
+  dealApi,
+  useLazyGetDealByIdQuery,
+  useUpdateDealMutation,
+  useGetDealsQuery,
+  UpdateDealDTO,
+  prepareToUpdate,
+} from "@/entities/deal";
 import {
   BaseTable,
   BaseTableHeadProps,
@@ -13,20 +25,11 @@ import {
   SortableFields,
   ActionMenuItemProps,
 } from "@/features/BaseTable";
-import {
-  dealApi,
-  useLazyGetDealByIdQuery,
-  useUpdateDealMutation,
-  useGetDealsQuery,
-  UpdateDealDTO,
-  prepareToUpdate,
-} from "@/entities/deal";
 import { BaseTableHead } from "@/features/BaseTable";
+import { columns } from "./config";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import { columns } from "../config";
-import { DealTableRowData } from "../model";
-import { convertDealsToDealRows } from "../utils";
-import { SxProps, Theme } from "@mui/material/styles";
+import { DealTableRowData } from "./model";
+import { convertDealsToDealRows } from "./utils";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
@@ -50,15 +53,25 @@ const EditDialog = dynamic(
   { ssr: false }
 );
 
+export type DealsTableProps<T extends DealExt> = BaseTableProps<T, DealTableRowData> & {
+  stages?: DealStage[];
+  excludeStages?: DealStage[];
+  statuses?: DealStatus[];
+  excludeStatuses?: DealStatus[];
+};
+
 export function DealsTable<T extends DealExt>({
   initialData,
   order,
+  stages,
+  excludeStages,
+  statuses,
+  excludeStatuses,
   orderBy = "stage" as SortableFields<DealTableRowData>,
   EditDialogComponent = EditDialog,
   sx,
-}: BaseTableProps<T, DealTableRowData> & {
-  sx?: SxProps<Theme>;
-}) {
+  toolbarTitle = <DealViewSwitcher title="Deals" />
+}: DealsTableProps<T>) {
   const dispatch = useDispatch();
 
   const [triggerGetDealById] = useLazyGetDealByIdQuery();
@@ -82,11 +95,10 @@ export function DealsTable<T extends DealExt>({
       };
       console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
-      dispatch(dealApi.util.invalidateTags(["Deals"]));
+      dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
     },
     [updateDeal, dispatch, prepareToUpdate]
   );
-
 
   const handleArchive = useCallback(
     async (e: React.MouseEvent | undefined, id?: string) => {
@@ -112,31 +124,43 @@ export function DealsTable<T extends DealExt>({
         onClick: handleArchive,
       },
     ],
-    [ handleArchive]
+    [handleArchive]
   );
 
-  const { data: deals = initialData || [] } = useGetDealsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-  });
+  const { data: deals = initialData || [] } = useGetDealsQuery(
+    { statuses, stages, excludeStatuses, excludeStages },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      // Can't use skip, because in other case after invalidate tags,
+      //  data will not be refetched by RTK Query
+      // skip: initialData && initialData.length > 0,
+    }
+  );
 
   return (
     <BaseTable
-      initialData={deals}
+      initialData={deals?.length > 0 ? deals : initialData}
       order={order}
       orderBy={orderBy}
       getInitData={() => {
-        const { data } = useGetDealsQuery(undefined);
+        const { data } = useGetDealsQuery(
+          { statuses, stages, excludeStatuses, excludeStages },
+          {
+            refetchOnMountOrArgChange: true,
+            refetchOnFocus: true,
+          }
+        );
         return data as T[];
       }}
       invalidate={invalidateDeals}
       EditDialogComponent={EditDialogComponent}
       columnsConfig={columns}
-      toolbarTitle="Deals"
+      toolbarTitle={toolbarTitle}
       TableHeadComponent={DealsTableHead}
       rowConverter={convertDealsToDealRows}
       rowActionMenuItems={rowActionMenuItems}
-      sx={sx} // Передаём sx в BaseTable
+      sx={sx}
     />
   );
 }

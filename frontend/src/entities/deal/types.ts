@@ -2,6 +2,7 @@ import {
   Prisma,
   Deal,
   DealStatus,
+  DealStage,
 } from "@/shared/generated/prisma-client";
 
 type DealWithCreatorContact = Prisma.DealGetPayload<{
@@ -18,12 +19,7 @@ type DealExt = Prisma.DealGetPayload<{
   };
 }>;
 
-export type {
-  Deal,
-  DealWithCreatorContact,
-  DealExt,
-  DealStatus,
-};
+export type { Deal, DealWithCreatorContact, DealExt, DealStatus, DealStage };
 
 export type CreateDealDTO = Omit<DealExt, "id" | "createdAt" | "updatedAt">;
 export type UpdateDealDTO = Partial<CreateDealDTO>;
