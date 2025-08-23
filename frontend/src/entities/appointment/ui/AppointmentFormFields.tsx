@@ -97,10 +97,10 @@ export const AppointmentFormFields: React.FC<AppointmentFormFieldsProps> = ({
                 size: "small",
               },
             }}
-            sx={{ flex: 1, minWidth: 200 }}
+            sx={{ flex: 1, minWidth: 200, zIndex: 0 }}
           />
         </LocalizationProvider>
-        <FormControl size="small" sx={{ flex: 1, minWidth: 200 }}>
+        <FormControl size="small" sx={{ flex: 1, minWidth: 200, zIndex: 0 }}>
           <InputLabel id="type-label">Type</InputLabel>
           <Select
             labelId="type-label"
@@ -131,6 +131,7 @@ export const AppointmentFormFields: React.FC<AppointmentFormFieldsProps> = ({
         multiline
         maxRows={6}
         minRows={1}
+        sx={{ zIndex: 0 }}
       />
     </Box>
   );
