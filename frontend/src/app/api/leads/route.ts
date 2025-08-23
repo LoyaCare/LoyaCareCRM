@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Url=", `${BACKEND_API_URL}/leads/`);
+    // console.error("Url=", `${BACKEND_API_URL}/leads/`);
     console.error("API route error:", error);
 
     return NextResponse.json({ error: "Server error" }, { status: 500 });

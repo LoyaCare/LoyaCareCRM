@@ -17,7 +17,7 @@ export default async function DealsPage() {
     excludeStatuses: excludeStatuses.join(","),
   });
   
-  const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/deals/archived/api?${params}`, {
+  const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/api/deals/archived?${params}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export default async function DealsPage() {
         initialData={deals}
         statuses={status}
         excludeStatuses={excludeStatuses}
-        toolbarTitle={<DealViewSwitcher title="Deals archived" />}
+        toolbarTitle={<DealViewSwitcher title="Archived Deals" />}
         // sx={{ flex: 1, height: '100%' }}
       />
     </Container>

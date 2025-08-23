@@ -4,7 +4,7 @@ import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 import Container from "@mui/material/Container";
 
 export default async function DealsPage() {
-  const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/deals/api`, {
+  const deals = (await fetch(`${NEXT_PUBLIC_API_URL}/api/deals`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
