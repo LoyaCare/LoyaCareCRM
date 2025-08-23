@@ -1,8 +1,9 @@
 // shared/auth/AuthProvider.tsx
 "use client";
 import { ReactNode, useReducer, useEffect } from "react";
-import { AuthContext, authReducer, initialState } from "./AuthContext";
-import { LoginCredentials } from "./types";
+import { AuthContext, initialState } from "./model/AuthContext";
+import { LoginCredentials } from "./model/types";
+import { authReducer } from "./model/authReducer";
 import { authApi } from "./api";
 
 interface AuthProviderProps {
@@ -12,7 +13,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Проверка аутентификации при загрузке
+  // Check authentication on load
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, []);
 
-  // Функция для входа
+  // Function for logging in
   const login = async (credentials: LoginCredentials) => {
     try {
       dispatch({ type: "LOGIN_START" });
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Функция для выхода
+  // Function for logging out
   const logout = async () => {
     try {
       if (state.token) {
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Функция для проверки авторизации
+  // Function for checking authentication
   const checkAuth = async () => {
     const token = localStorage.getItem("token");
     if (!token) {

@@ -22,7 +22,7 @@ export const login = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { email }
     });
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -32,7 +32,7 @@ export const login = async (req: Request, res: Response) => {
 
     // Checking password
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -41,11 +41,9 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Create JWT token
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: TOKEN_EXPIRY }
-    );
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+      expiresIn: TOKEN_EXPIRY,
+    });
 
     // Returning user data and token
     console.log(
@@ -54,7 +52,12 @@ export const login = async (req: Request, res: Response) => {
     );
     return res.status(200).json({
       success: true,
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },
       token,
     });
   } catch (error) {
@@ -70,7 +73,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
   try {
     // req.user setting middleware authMiddleware
     const userId = req.user?.id;
-    
+
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -85,10 +88,10 @@ export const getCurrentUser = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
-        role: true
-      }
+        role: true,
+      },
     });
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -97,13 +100,13 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     }
 
     // Returning user data
-    // console.log(
-    //   "Current user:",
-    //   JSON.stringify({ success: true, user }, null, 2)
-    // );
+    console.log(
+      "Current user:",
+      JSON.stringify({ success: true, user }, null, 2)
+    );
     return res.status(200).json({
       success: true,
-      user
+      user,
     });
   } catch (error) {
     console.error("Get current user error:", error);

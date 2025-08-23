@@ -18,12 +18,6 @@ export const getAllLeadsBase = async (
   stages?: DealStage[],
   statuses?: DealStatus[]
 ) => {
-  console.log(
-    "Fetching all deals with stages:",
-    stages,
-    " and statuses:",
-    statuses
-  );
   const leads = await prisma.deal.findMany({
     where: {
       stage: stages ? { in: stages } : undefined,
@@ -98,7 +92,6 @@ export const getAllDeals = async (_req: Request, res: Response) => {
     .map((s) => s as DealStage)
     .filter((s) => !(excludeStages as DealStage[]).includes(s as DealStage));
 
-  console.log("statuses:", statuses, " stages:", stages);
   return getAllLeadsBase(_req, res, stages, statuses);
 };
 

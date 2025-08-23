@@ -1,5 +1,5 @@
 export * from "./AuthProvider";
 export * from "./ProtectedRoute";
-export * from "./AuthContext";
 export * from "./useAuth";
-export * from "./types";
+export * from "./model/authReducer";
+export * from "./model/types";

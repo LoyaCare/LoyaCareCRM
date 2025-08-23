@@ -10,7 +10,7 @@ export default async function LeadCardPage({ params }: PageProps) {
   const { id } = await params;
   let leadData: LeadExt | null = null;
   try {
-    const res = await fetch(`${BACKEND_API_URL}/leads/${id}`, {
+    const res = await fetch(`${BACKEND_API_URL}/api/leads/${id}`, {
       cache: "no-store",
     });
     if (res.ok) {

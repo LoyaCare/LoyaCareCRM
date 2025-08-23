@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "./useAuth";
 import { useRouter, usePathname } from "next/navigation";
-import { UserRole } from "./types";
+import { UserRole } from "./model/types";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,13 +16,13 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   const pathname = usePathname();
 
   useEffect(() => {
-    // Если загрузка завершена и пользователь не авторизован
+    // If loading is complete and user is not authenticated
     if (!isLoading && !isAuthenticated) {
       router.push(`/login?returnUrl=${encodeURIComponent(pathname || "")}`);
       return;
     }
 
-    // Проверка роли
+    // Role check
     if (
       !isLoading &&
       isAuthenticated &&
@@ -34,16 +34,16 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
     }
   }, [isLoading, isAuthenticated, user, router, pathname, allowedRoles]);
 
-  // Показываем состояние загрузки
+  // Show loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading user data...</div>;
   }
 
-  // Если пользователь авторизован и имеет нужную роль
+  // If user is authenticated and has the required role
   if (isAuthenticated && (!allowedRoles || (user && allowedRoles.includes(user.role)))) {
     return <>{children}</>;
   }
 
-  // Если проверка не прошла, не рендерим содержимое
+  // If check failed, do not render content
   return null;
 };

@@ -1,5 +1,5 @@
 // shared/auth/api.ts
-import { User, LoginCredentials } from "./types";
+import { User, LoginCredentials } from "./model/types";
 import { NEXT_PUBLIC_API_URL } from "@/shared/config/urls";
 
 export const authApi = {
@@ -16,9 +16,8 @@ export const authApi = {
       const error = await response.json();
       throw new Error(error.message || "Failed to login");
     }
-    const user = await response.json();
-    console.log("Login response:", user);
-    return user;
+    const responseData = await response.json();
+    return responseData;
   },
   
   getCurrentUser: async (token: string): Promise<User> => {
@@ -32,12 +31,11 @@ export const authApi = {
       throw new Error("Failed to get user info");
     }
 
-    const user = await response.json();
-    console.log("Current user:", user);
-    if (!user?.user || !user.success) {
+    const responseData = await response.json();
+    if (!responseData?.user || !responseData.success) {
       throw new Error("Failed to get user info");
     }
-    return user.user;
+    return responseData.user;
   },
   
   logout: async (token: string): Promise<void> => {

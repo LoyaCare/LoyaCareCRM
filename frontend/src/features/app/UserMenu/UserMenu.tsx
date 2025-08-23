@@ -16,7 +16,7 @@ import {
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import { useAuth } from "@/shared/auth/useAuth";
+import { useAuth } from "@/shared/auth";
 import { LogoutButton } from "../LogoutButton";
 import { useRouter } from "next/navigation";
 
