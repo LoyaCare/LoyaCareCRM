@@ -11,7 +11,7 @@ export default async function KanbanDealsPage() {
       component="main"
       disableGutters={true}
       sx={{
-        m: 2,
+        p: 2,
         display: "flex",
         flexDirection: "column",
         height: "100%",
