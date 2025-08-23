@@ -9,8 +9,8 @@ const TOKEN_EXPIRY = "24h";
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    
-    // Проверяем обязательные поля
+
+    // Checking required fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Ищем пользователя по email
+    // Searching user by email
     const user = await prisma.user.findUnique({
       where: { email }
     });
@@ -30,7 +30,7 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Проверяем пароль
+    // Checking password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
     if (!isPasswordValid) {
@@ -40,14 +40,14 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Создаем JWT токен
+    // Create JWT token
     const token = jwt.sign(
       { id: user.id, role: user.role },
       JWT_SECRET,
       { expiresIn: TOKEN_EXPIRY }
     );
 
-    // Возвращаем данные пользователя и токен
+    // Returning user data and token
     console.log(
       "Login successful:",
       JSON.stringify({ success: true, user, token }, null, 2)
@@ -68,7 +68,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   try {
-    // req.user устанавливается middleware authMiddleware
+    // req.user setting middleware authMiddleware
     const userId = req.user?.id;
     
     if (!userId) {
@@ -77,8 +77,8 @@ export const getCurrentUser = async (req: Request, res: Response) => {
         message: "Unauthorized",
       });
     }
-    
-    // Получаем пользователя из базы данных
+
+    // Get user from database
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -95,12 +95,12 @@ export const getCurrentUser = async (req: Request, res: Response) => {
         message: "User not found",
       });
     }
-    
-    // Возвращаем данные пользователя
-    console.log(
-      "Current user:",
-      JSON.stringify({ success: true, user }, null, 2)
-    );
+
+    // Returning user data
+    // console.log(
+    //   "Current user:",
+    //   JSON.stringify({ success: true, user }, null, 2)
+    // );
     return res.status(200).json({
       success: true,
       user
@@ -115,9 +115,9 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-  // На бэкенде нет необходимости в особой логике для logout при использовании JWT
-  // Клиент просто удалит токен из localStorage
-  
+  // On the backend, there is no need for special logic for logout when using JWT
+  // The client simply removes the token from localStorage
+
   return res.status(200).json({
     success: true,
     message: "Logged out successfully",
