@@ -70,16 +70,15 @@ export function SidebarDrawer() {
     return pathname === path || pathname?.startsWith(`${path}/`);
   };
 
-  // Получение инициалов пользователя для аватара
+  // Getting user initials for avatar
   const getUserInitials = () => {
     if (!user || !user.name) return "?";
 
     const nameParts = user.name.split(" ");
-    if (nameParts.length >= 2) {
-      return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-    }
 
-    return user.name.substring(0, 2).toUpperCase();
+    return nameParts.length >= 1
+      ? `${nameParts[0][0]}`.toUpperCase()
+      : user.name.substring(0, 1).toUpperCase();
   };
 
   const userInitials = useMemo(() => getUserInitials(), [user]);
@@ -152,8 +151,10 @@ export function SidebarDrawer() {
                   {!collapsed && (
                     <ListItemText
                       primary={item.text}
-                      primaryTypographyProps={{
-                        sx: { fontWeight: isActive ? 700 : 400 },
+                      slotProps={{
+                        primary: {
+                          sx: { fontWeight: isActive ? 700 : 400 },
+                        },
                       }}
                     />
                   )}
@@ -165,19 +166,21 @@ export function SidebarDrawer() {
       </List>
       <Box sx={{ flexGrow: 1 }} />
 
-      {/* Аватар пользователя внизу */}
+      {/* User Avatar behind the collapsed sidebar */}
       {isAuthenticated && user && collapsed && (
         <IconButton
           onClick={handleDrawerToggle}
           sx={{ my: 2 }}
           aria-label="User profile"
         >
-          <Avatar sx={{ width: 30, height: 30, bgcolor: "primary.main" }}>
+          <Avatar
+            sx={{ width: "1.5em", height: "1.5em", bgcolor: "primary.main" }}
+          >
             {userInitials}
           </Avatar>
         </IconButton>
       )}
-      {/* Профиль пользователя и меню */}
+      {/* User profile and menu */}
       {isAuthenticated && !collapsed && user ? (
         <>
           <ListItemButton onClick={toggleUserMenu} sx={{ pl: 2, py: 1.5 }}>
@@ -226,7 +229,7 @@ export function SidebarDrawer() {
         </>
       ) : null}
 
-      {/* Дополнительные ссылки */}
+      {/* Additional links */}
       <List>
         <ListItemButton
           component={Link}
