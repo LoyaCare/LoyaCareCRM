@@ -12,8 +12,6 @@ export type AuthAction =
 
 // Reducer for managing authentication state
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
-  console.log("Auth action:", action);
-  console.log("Auth state:", state);
   switch (action.type) {
     case "LOGIN_START":
     case "AUTH_CHECK_START":

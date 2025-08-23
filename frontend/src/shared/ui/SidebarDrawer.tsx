@@ -47,15 +47,6 @@ export function SidebarDrawer() {
   const isSmallScreen = useMediaQuery("(max-width:900px)");
   const { user, isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    console.log(
-      `User is authenticated(${isAuthenticated})\n`,
-      JSON.stringify(user, null, 2)
-    );
-    console.log(`User is ${isLoading ? "loading..." : "loaded"}`);
-    console.log(`User name is ${user?.name} user.role is ${user?.role} `);
-  }, [user, isAuthenticated]);
-
   const pathname = usePathname() || "/";
 
   const handleDrawerToggle = () => {
