@@ -1,8 +1,7 @@
 import React from "react";
-import { BaseTableRowData } from "./model";
+import { BaseTableRowData } from "./model/types";
 import { currencyFormatter as defaultCurrencyFormatter } from "@/shared/lib/formatCurrency";
-import {EnumDealStage} from '@/entities/deal';
-import { DealStageComponent } from "@/entities/deal/DealStage/DealStage";
+import { EnumDealStage, DealStageComponent } from "@/entities/deal";
 
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {

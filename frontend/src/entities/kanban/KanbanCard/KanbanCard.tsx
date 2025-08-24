@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { currencyFormatter } from "@/shared/lib";
-import { KanbanCardData } from "./model";
+import { KanbanCardData } from "./types";
 
 export type Props = {
   data: KanbanCardData;

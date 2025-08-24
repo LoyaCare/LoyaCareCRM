@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BACKEND_API_URL } from "@/shared/config/urls";
-import { Deal, DealExt, CreateDealDTO, UpdateDealDTO, DealStatus } from "@/entities/deal/types";
-import { D } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
+import { Deal, DealExt, CreateDealDTO, UpdateDealDTO, DealStatus } from "@/entities/deal/model/types";
 import { DealStage } from "@/shared/generated/prisma-client/wasm";
 
 export const dealApi = createApi({

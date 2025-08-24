@@ -64,3 +64,8 @@ export type TEditDialogComponent = React.ComponentType<{
   open?: boolean;
   onClose?: () => void;
 }>;
+
+export interface BaseTableRowData {
+  id: string;
+  actions?: string;
+}

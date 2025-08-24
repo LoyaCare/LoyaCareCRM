@@ -22,7 +22,7 @@ import {
   processDragEnd,
   findCardById,
   createDraggableCardProps,
-} from "./lib";
+} from "./boardDndHelpers";
 
 type Props = {
   stacks: KanbanStackData[];

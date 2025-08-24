@@ -1,2 +1,2 @@
 export * from "./KanbanCard";
-export * from "./model";
+export * from "./types";

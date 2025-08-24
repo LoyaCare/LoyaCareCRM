@@ -1,8 +1,8 @@
 import { formatDate } from "@/shared/lib/formatDate";
-import { DealExt, DealStageComponent } from "@/entities/deal";
-import { DealTableRowData } from "./model"
+import { DealExt } from "@/entities/deal";
+import { DealTableRowData } from "../model/types"
 
-export function convertDealsToDealRows(deals: DealExt[]): DealTableRowData[] {
+export function mapDealsToDealRows(deals: DealExt[]): DealTableRowData[] {
   return deals.map(
     (deal) =>
       ({

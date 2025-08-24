@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   ToggleButtonGroup,

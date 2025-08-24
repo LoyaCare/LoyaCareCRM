@@ -9,7 +9,7 @@ import { useGetLeadByIdQuery } from "@/entities/lead/api";
 import {
   BaseUpsertForm,
   BaseUpsertFormProps,
-} from "@/entities/common/BaseUpsertForm";
+} from "@/features/entityUpsert";
 
 type LeadFormProps = BaseUpsertFormProps<
   LeadExt,

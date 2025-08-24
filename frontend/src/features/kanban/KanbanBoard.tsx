@@ -12,7 +12,7 @@ import Container from "@mui/material/Container";
 import {
   dealApi,
   DealExt,
-  prepareToUpdate,
+  sanitizeDealData,
   UpdateDealDTO,
   useGetDealsQuery,
   useLazyGetDealByIdQuery,
@@ -93,7 +93,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       }
 
       const updatedData = updateData(deal);
-      const preparedUpdate = prepareToUpdate(updatedData);
+      const preparedUpdate = sanitizeDealData(updatedData);
       const body: UpdateDealDTO = {
         ...preparedUpdate,
       };

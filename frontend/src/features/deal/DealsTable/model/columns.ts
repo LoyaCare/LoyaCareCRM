@@ -1,4 +1,4 @@
-import { DealTableRowData } from "./model";
+import { DealTableRowData } from "./types";
 import { currencyFormatter, stageToComponentFormatter } from "@/features/BaseTable";
 import type { Column, TGetColumns } from "@/features/BaseTable";
 

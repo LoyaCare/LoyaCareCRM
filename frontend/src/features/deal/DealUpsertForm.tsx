@@ -4,12 +4,12 @@ import {
   DealExt,
   CreateDealDTO,
   UpdateDealDTO,
-} from "@/entities/deal/types";
+} from "@/entities/deal/model/types";
 import { useGetDealByIdQuery } from "@/entities/deal/api";
 import {
   BaseUpsertForm,
   BaseUpsertFormProps,
-} from "@/entities/common/BaseUpsertForm";
+} from "@/features/entityUpsert";
 
 type DealFormProps = BaseUpsertFormProps<
   DealExt,

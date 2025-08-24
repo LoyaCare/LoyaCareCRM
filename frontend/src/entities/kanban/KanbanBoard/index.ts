@@ -1,2 +1,2 @@
 export * from './KanbanBoard';
-export * from './lib';
+export * from './boardDndHelpers';

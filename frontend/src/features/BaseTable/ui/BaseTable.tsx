@@ -22,14 +22,14 @@ import {
   BaseTableToolbar,
   defaultConvertSrcDataToDataRows,
 } from "../index";
-import defaultColumnsConfig from "../config";
+import defaultColumnsConfig from "../columns";
 import {
   BaseTableHeadProps,
   BaseTableToolbarProps,
   Column,
   TablePaginationComponent,
   TEditDialogComponent,
-} from "../types";
+} from "../model/types";
 import { BaseTablePagination } from "./BaseTablePagination";
 import TableRow from "@mui/material/TableRow";
 import { UnknownAction } from "@reduxjs/toolkit";

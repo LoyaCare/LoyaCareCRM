@@ -14,7 +14,7 @@ import {
   useUpdateDealMutation,
   useGetDealsQuery,
   UpdateDealDTO,
-  prepareToUpdate,
+  sanitizeDealData,
 } from "@/entities/deal";
 import {
   BaseTable,
@@ -26,10 +26,10 @@ import {
   ActionMenuItemProps,
 } from "@/features/BaseTable";
 import { BaseTableHead } from "@/features/BaseTable";
-import { columns } from "./config";
+import { columns } from "./model";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import { DealTableRowData } from "./model";
-import { convertDealsToDealRows } from "./utils";
+import { DealTableRowData } from "./model/types";
+import { mapDealsToDealRows } from "./lib/mappers";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
@@ -47,7 +47,7 @@ const DealsTableHead = <TTableData extends BaseTableRowData>(
 
 const EditDialog = dynamic(
   () =>
-    import("@/features/deal/ui/DealEditDialog").then(
+    import("@/features/deal/DealEditDialog").then(
       (mod) => mod.DealEditDialog
     ),
   { ssr: false }
@@ -89,7 +89,7 @@ export function DealsTable<T extends DealExt>({
       }
 
       const updatedData = updateData(deal);
-      const preparedUpdate = prepareToUpdate(updatedData);
+      const preparedUpdate = sanitizeDealData(updatedData);
       const body: UpdateDealDTO = {
         ...preparedUpdate,
       };
@@ -97,7 +97,7 @@ export function DealsTable<T extends DealExt>({
       await updateDeal({ id, body }).unwrap();
       dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
     },
-    [updateDeal, dispatch, prepareToUpdate]
+    [updateDeal, dispatch, sanitizeDealData]
   );
 
   const handleArchive = useCallback(
@@ -158,7 +158,7 @@ export function DealsTable<T extends DealExt>({
       columnsConfig={columns}
       toolbarTitle={toolbarTitle}
       TableHeadComponent={DealsTableHead}
-      rowConverter={convertDealsToDealRows}
+      rowConverter={mapDealsToDealRows}
       rowActionMenuItems={rowActionMenuItems}
       sx={sx}
     />
