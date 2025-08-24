@@ -1,7 +1,10 @@
 "use client";
 import React, { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import EditIcon from "@mui/icons-material/Edit";
+
 import {
   BaseTable,
   BaseTableHeadProps,
@@ -11,32 +14,25 @@ import {
   Column,
 } from "@/features/BaseTable";
 import {
-  leadApi,
   useGetLeadsQuery,
-  useUpdateLeadMutation,
-  useLazyGetLeadByIdQuery,
-  UpdateLeadDTO,
   LeadExt,
-  prepareToUpdate,
 } from "@/entities/lead";
 import { ActionMenuItemProps } from "@/features/BaseTable";
 
-import ArchiveIcon from "@mui/icons-material/Archive";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import EditIcon from "@mui/icons-material/Edit";
+import { useEntityDialog } from "@/shared";
 
-import { leadTableColumns } from "../model/columns";
-import { LeadTableRowData } from "../model/types";
-import { mapLeadsToLeadRows } from "../model/mappers";
+import {
+  leadTableColumns,
+  LeadTableRowData,
+  mapLeadsToLeadRows,
+} from "../model";
+import { useLeadOperations } from "../lib";
 import { LeadsTableToolbar } from "./LeadsTableToolbar";
 
-const invalidateLeads = () => leadApi.util.invalidateTags(["Leads"]);
-
 const EditDialog = dynamic(
-  () =>
-    import("@/features/lead/ui/LeadEditDialog").then(
-      (mod) => mod.LeadEditDialog
-    ),
+  () => import("@/features/lead/ui/LeadEditDialog").then(
+    (mod) => mod.LeadEditDialog
+  ),
   { ssr: false }
 );
 
@@ -56,102 +52,37 @@ export function LeadsTable<T extends LeadExt>({
   order = "asc",
   orderBy = "createdAt" as SortableFields<LeadTableRowData>,
 }: BaseTableProps<T, LeadTableRowData>) {
-  const dispatch = useDispatch();
+  const {
+    entityId: clickedId,
+    isDialogOpen,
+    handleEditClick,
+    handleCreateClick,
+    handleDialogClose,
+    showDialog,
+  } = useEntityDialog();
+  
+  const { 
+    handleConvert, 
+    handleArchive, 
+    invalidateLeads 
+  } = useLeadOperations();
+
   const { data: leads = initialData || [] } = useGetLeadsQuery(undefined, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
   });
 
-  const [triggerGetLeadById] = useLazyGetLeadByIdQuery();
-  const [updateLead] = useUpdateLeadMutation();
-
-  const [clickedId, setClickedId] = React.useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-
-  const update = useCallback(
-    async (id: string, updateData: (lead: LeadExt) => UpdateLeadDTO) => {
-      const getResult = await triggerGetLeadById(id);
-      const lead = ("data" in getResult ? getResult.data : undefined) as
-        | LeadExt
-        | undefined;
-      if (!lead) {
-        console.error("Lead not found for id", id);
-        return;
-      }
-
-      const updatedData = updateData(lead);
-      const preparedUpdate = prepareToUpdate(updatedData);
-      const body: UpdateLeadDTO = {
-        ...preparedUpdate,
-      };
-      await updateLead({ id, body }).unwrap();
-      dispatch(leadApi.util.invalidateTags(["Leads"]));
-    },
-    [updateLead, dispatch, prepareToUpdate]
-  );
-
-  const handleConvert = useCallback(
-    async (e: React.MouseEvent | undefined, id?: string) => {
-      e?.stopPropagation();
-      if (!id) return;
-      try {
-        update(id, (lead) => ({
-          ...lead,
-          stage: "QUALIFIED",
-        }));
-      } catch (err) {
-        console.error("Convert action failed", err);
-      }
-    },
-    [triggerGetLeadById, updateLead, dispatch]
-  );
-
-  const handleArchive = useCallback(
-    async (e: React.MouseEvent | undefined, id?: string) => {
-      e?.stopPropagation();
-      if (!id) return;
-      try {
-        update(id, (lead) => ({
-          ...lead,
-          status: "ARCHIVED",
-        }));
-      } catch (err) {
-        console.error("Archive action failed", err);
-      }
-    },
-    [triggerGetLeadById, updateLead, dispatch]
-  );
-
-  const handleEditDialogOpen = useCallback(
-    (e: React.MouseEvent, id?: string) => {
-      if (!id) return;
-      e.stopPropagation();
-      setClickedId(id);
-      setIsDialogOpen(true);
-    },
-    [setClickedId]
-  );
-  const handleCreateClick = useCallback(() => {
-    setIsDialogOpen(true);
+  const handleDeleteClick = useCallback((selected: readonly string[]) => {
+    console.log("Delete clicked for selected ids:", selected);
   }, []);
-
-  const handleCreateClose = useCallback(() => {
-    setIsDialogOpen(false);
-  }, []);
-
-  const handleDialogClose = useCallback(() => {
-    setClickedId(null);
-    handleCreateClose();
-  }, [handleCreateClose]);
 
   const rowActionMenuItems: ActionMenuItemProps[] = React.useMemo(
     () => [
       {
         element: "Edit",
         icon: <EditIcon fontSize="small" />,
-        onClick: handleEditDialogOpen,
+        onClick: handleEditClick,
       },
-
       {
         element: "Convert to deal",
         icon: <SwapHorizIcon fontSize="small" />,
@@ -163,15 +94,8 @@ export function LeadsTable<T extends LeadExt>({
         onClick: handleArchive,
       },
     ],
-    [handleConvert, handleArchive]
+    [handleEditClick, handleConvert, handleArchive]
   );
-  const handleRefreshData = useCallback(() => {
-      dispatch(invalidateLeads());
-  }, [invalidateLeads]);
-
-  const handleDeleteClick = useCallback((selected: readonly string[]) => {
-    console.log("Delete clicked for selected ids:", selected);
-  }, []);
 
   return (
     <>
@@ -184,7 +108,7 @@ export function LeadsTable<T extends LeadExt>({
             title="Leads"
             selected={selected}
             onCreateClick={handleCreateClick}
-            onRefreshClick={handleRefreshData}
+            onRefreshClick={invalidateLeads}
             onDeleteClick={handleDeleteClick}
           />
         )}
@@ -195,10 +119,10 @@ export function LeadsTable<T extends LeadExt>({
         rowActionMenuItems={rowActionMenuItems}
         sx={{ p: 0, m: 0 }}
       />
-      {(clickedId || isDialogOpen) && (
+      {showDialog && (
         <EditDialog
           id={clickedId || undefined}
-          open={!!clickedId || !!isDialogOpen}
+          open={true}
           onClose={handleDialogClose}
         />
       )}
