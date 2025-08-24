@@ -12,6 +12,7 @@ import {
   dealApi,
 } from "@/entities";
 import type { CreateDealDTO, UpdateDealDTO } from "@/entities";
+import { useAuth } from "@/shared/auth";
 
 export function DealEditDialog({
   id,
@@ -32,11 +33,12 @@ export function DealEditDialog({
   const [updateDeal] = useUpdateDealMutation();
   const [createDeal] = useCreateDealMutation();
   const dispatch = useDispatch();
+  const { user } = useAuth();
 
   const handleSubmit = React.useCallback(
     async (values: CreateDealDTO | UpdateDealDTO, shouldCreate?: boolean) => {
       if (!id || shouldCreate) {
-        await createDeal(values as CreateDealDTO);
+        await createDeal({...values, creatorId: user?.id} as CreateDealDTO);
         dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
         onClose?.();
         return;

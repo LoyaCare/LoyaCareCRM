@@ -28,6 +28,7 @@ import {
 } from "@/entities/contact";
 import { UserSelect } from "@/entities/user";
 import { CreateLeadDTO, UpdateLeadDTO, LeadExt } from "@/entities/lead";
+import { useAuth } from "@/shared/auth";
 
 export type BaseUpsertFormProps<TEntity, TState> = {
   initialData?: TEntity;
@@ -51,6 +52,20 @@ export const BaseUpsertForm = <
 
   const [form, setForm] = useState<TState>(initialData as unknown as TState);
   const [needSubmit, setNeedSubmit] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  // If the user is not authenticated, we should not allow form interaction
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Handle unauthenticated state (e.g., show a message or redirect)
+    }
+  }, [isAuthenticated]);
+
+  // if creating a new form, set the assignee to the current user
+  useEffect(() => {
+    if (isNew && user && isAuthenticated) {
+      handleAssigneeChange(user.id);
+    }
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     if (needSubmit) {
@@ -166,12 +181,12 @@ export const BaseUpsertForm = <
               </Stack>
             </Paper>
             {/* {(form?.stage !== 'LEAD') && ( */}
-              <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
-                <DealStageComponent
-                  stage={form?.stage || (isDeal ? "QUALIFIED" : "LEAD")}
-                  onChange={(stage) => setForm((prev) => ({ ...prev, stage }))}
-                />
-              </Paper>
+            <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
+              <DealStageComponent
+                stage={form?.stage || (isDeal ? "QUALIFIED" : "LEAD")}
+                onChange={(stage) => setForm((prev) => ({ ...prev, stage }))}
+              />
+            </Paper>
             {/* )} */}
             {/* Contact Section */}
             <Paper elevation={0} sx={{ bgcolor: "background.default" }}>
