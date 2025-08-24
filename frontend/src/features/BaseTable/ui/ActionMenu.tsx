@@ -16,7 +16,7 @@ export type ActionMenuProps = {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  onEdit: (e: React.MouseEvent) => void;
+  // onEdit: (e: React.MouseEvent) => void;
 
   menuItems?: ActionMenuItemProps[];
 
@@ -28,20 +28,20 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   anchorEl,
   open,
   onClose,
-  onEdit,
+  // onEdit,
   menuItems,
   compact = true,
 }) => {
-  menuItems = [
-    {
-      onClick: (e) => {
-        onEdit(e);
-      },
-      icon: <EditIcon fontSize="small" />,
-      element: "Edit",
-    },
-    ...(menuItems || []),
-  ];
+  // menuItems = [
+  //   {
+  //     onClick: (e) => {
+  //       onEdit(e);
+  //     },
+  //     icon: <EditIcon fontSize="small" />,
+  //     element: "Edit",
+  //   },
+  //   ...(menuItems || []),
+  // ];
   return (
     <Menu
       id={`action-menu-${id}`}
@@ -51,17 +51,19 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
       onClick={(e) => e.stopPropagation()}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      PaperProps={{
-        sx: {
-          minWidth: compact ? 150 : 200,
-          "& .MuiMenuItem-root": {
-            py: compact ? 0.4 : 0.6,
-            px: compact ? 0.75 : 1,
-            minHeight: compact ? 30 : 36,
-            fontSize: compact ? "0.85rem" : "0.95rem",
-          },
-          "& .MuiListItemIcon-root": {
-            minWidth: 32,
+      slotProps={{
+        paper: {
+          sx: {
+            minWidth: compact ? 150 : 200,
+            "& .MuiMenuItem-root": {
+              py: compact ? 0.4 : 0.6,
+              px: compact ? 0.75 : 1,
+              minHeight: compact ? 30 : 36,
+              fontSize: compact ? "0.75rem" : "0.95rem",
+            },
+            "& .MuiListItemIcon-root": {
+              minWidth: 32,
+            },
           },
         },
       }}

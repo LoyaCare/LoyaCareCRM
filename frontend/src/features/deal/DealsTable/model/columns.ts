@@ -3,7 +3,7 @@ import { currencyFormatter, stageToComponentFormatter } from "@/features/BaseTab
 import type { Column, TGetColumns } from "@/features/BaseTable";
 
 // Columns definition for the Deals table.
-export const columns: Column<DealTableRowData>[] = [
+export const dealTableColumns: Column<DealTableRowData>[] = [
   {
     key: "title",
     label: "Title",
@@ -75,4 +75,4 @@ export const columns: Column<DealTableRowData>[] = [
   },
 ];
 
-export const getColumns: TGetColumns<DealTableRowData> = () => columns;
+export const getColumns: TGetColumns<DealTableRowData> = () => dealTableColumns;

@@ -32,13 +32,6 @@ export interface BaseTableHeadProps<T extends TBaseColumnType> {
   rowCount: number;
 }
 
-export interface BaseTableToolbarProps {
-  numSelected: number;
-  onCreateClick: () => void;
-  onRefreshClick: () => void;
-  title?: string | React.ReactElement
-}
-
 export type TablePaginationComponentProps = {
   count: number;
   rowsPerPage: number;

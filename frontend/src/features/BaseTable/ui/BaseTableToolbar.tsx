@@ -9,10 +9,29 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
-import { BaseTableToolbarProps } from "../model/types";
+
+export interface BaseTableToolbarProps {
+  selected: readonly string[];
+  menuItems?: React.ReactNode[];
+  onDeleteClick?: (selected: readonly string[]) => void;
+  onCreateClick?: () => void;
+  onRefreshClick?: () => void;
+  title?: string | React.ReactElement;
+}
 
 export function BaseTableToolbar(props: BaseTableToolbarProps) {
-  const { numSelected, onCreateClick, onRefreshClick, title } = props;
+  const {
+    selected,
+    onDeleteClick,
+    onCreateClick = () => {},
+    onRefreshClick = () => {},
+    title,
+  } = props;
+
+  const numSelected = React.useMemo(() => selected.length, [selected]);
+  const handleDeleteClick = React.useCallback(() => {
+      onDeleteClick?.(selected);
+  }, [onDeleteClick, selected]);
 
   return (
     <Toolbar
@@ -54,7 +73,7 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
         )}
         {numSelected > 0 ? (
           <Tooltip title="Delete">
-            <IconButton>
+            <IconButton onClick={handleDeleteClick}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>

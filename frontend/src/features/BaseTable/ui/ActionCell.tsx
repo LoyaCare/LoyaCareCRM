@@ -6,16 +6,16 @@ import { ActionMenu, ActionMenuProps, ActionMenuItemProps } from "./ActionMenu";
 
 type Props = {
   id: string;
-  onEdit: (e: React.MouseEvent, id: string) => void; // edit
+  // onEdit: (e: React.MouseEvent, id: string) => void; 
   className?: string;
   MenuComponent?: React.ComponentType<ActionMenuProps>;
   menuItems?: ActionMenuItemProps[];
-  cellSx?: any; // <- новый проп
+  cellSx?: any; // additional sx for TableCell
 };
 
 export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
   id,
-  onEdit,
+  // onEdit,
   className,
   MenuComponent = ActionMenu,
   menuItems,
@@ -36,13 +36,13 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
     setAnchorEl(null);
   }, []);
 
-  const handleEdit = React.useCallback(
-    (e: React.MouseEvent) => {
-      onEdit(e, id);
-      handleCloseMenu();
-    },
-    [onEdit, id, handleCloseMenu]
-  );
+  // const handleEdit = React.useCallback(
+  //   (e: React.MouseEvent) => {
+  //     onEdit(e, id);
+  //     handleCloseMenu();
+  //   },
+  //   [onEdit, id, handleCloseMenu]
+  // );
 
   return (
     <TableCell className={className} sx={{ width: 44, ...cellSx }}>
@@ -64,7 +64,7 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
         anchorEl={anchorEl}
         open={open}
         onClose={handleCloseMenu}
-        onEdit={handleEdit}
+        // onEdit={handleEdit}
         compact={true}
       />
     </TableCell>

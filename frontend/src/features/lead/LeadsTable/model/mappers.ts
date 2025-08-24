@@ -1,8 +1,8 @@
 import { formatDate } from "@/shared/lib/formatDate";
 import { LeadExt } from "@/entities/lead/types";
-import { LeadTableRowData } from "./model";
+import { LeadTableRowData } from "./types";
 
-export function convertLeadsToLeadRows(leads: LeadExt[]): LeadTableRowData[] {
+export function mapLeadsToLeadRows(leads: LeadExt[]): LeadTableRowData[] {
   return leads.map(
     (lead) =>
       ({

@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 
 import dynamic from "next/dynamic";
@@ -26,21 +26,22 @@ import {
   ActionMenuItemProps,
 } from "@/features/BaseTable";
 import { BaseTableHead } from "@/features/BaseTable";
-import { columns } from "./model";
+import { dealTableColumns } from "../model";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import { DealTableRowData } from "./model/types";
-import { mapDealsToDealRows } from "./lib/mappers";
+import EditIcon from "@mui/icons-material/Edit";
+import { DealTableRowData } from "../model";
+import { mapDealsToDealRows } from "../lib";
+import { DealsTableToolbar } from "./DealsTableToolbar";
 
 const invalidateDeals = () => dealApi.util.invalidateTags(["Deals"]);
 
 const DealsTableHead = <TTableData extends BaseTableRowData>(
   props: BaseTableHeadProps<TTableData>
 ) => {
-  // columns is typed for your Deal rows in ./config — assert to the generic Column<TTableData>[]
   return (
     <BaseTableHead
       {...props}
-      columns={columns as unknown as Column<TTableData>[]}
+      columns={dealTableColumns as unknown as Column<TTableData>[]}
     />
   );
 };
@@ -68,7 +69,6 @@ export function DealsTable<T extends DealExt>({
   statuses,
   excludeStatuses,
   orderBy = "stage" as SortableFields<DealTableRowData>,
-  EditDialogComponent = EditDialog,
   sx,
   toolbarTitle = <DealViewSwitcher title="Deals" />
 }: DealsTableProps<T>) {
@@ -76,6 +76,9 @@ export function DealsTable<T extends DealExt>({
 
   const [triggerGetDealById] = useLazyGetDealByIdQuery();
   const [updateDeal] = useUpdateDealMutation();
+
+  const [clickedId, setClickedId] = React.useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const update = useCallback(
     async (id: string, updateData: (deal: DealExt) => UpdateDealDTO) => {
@@ -116,15 +119,43 @@ export function DealsTable<T extends DealExt>({
     [triggerGetDealById, updateDeal, dispatch]
   );
 
+  const handleEditDialogOpen = useCallback(
+    (e: React.MouseEvent, id?: string) => {
+      if (!id) return;
+      e.stopPropagation();
+      setClickedId(id);
+      setIsDialogOpen(true);
+    },
+    [setClickedId]
+  );
+  const handleCreateClick = useCallback(() => {
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleCreateClose = useCallback(() => {
+    setIsDialogOpen(false);
+  }, []);
+
+  const handleDialogClose = useCallback(() => {
+    setClickedId(null);
+    handleCreateClose();
+  }, [handleCreateClose]);
+
   const rowActionMenuItems: ActionMenuItemProps[] = React.useMemo(
     () => [
+      {
+        element: "Edit",
+        icon: <EditIcon fontSize="small" />,
+        onClick: handleEditDialogOpen,
+      },
+
       {
         element: "Archive",
         icon: <ArchiveIcon fontSize="small" />,
         onClick: handleArchive,
       },
     ],
-    [handleArchive]
+    [handleArchive, handleEditDialogOpen]
   );
 
   const { data: deals = initialData || [] } = useGetDealsQuery(
@@ -138,29 +169,52 @@ export function DealsTable<T extends DealExt>({
     }
   );
 
+  const handleRefreshData = useCallback(() => {
+      dispatch(invalidateDeals());
+  }, [invalidateDeals]);
+
+  const handleDeleteClick = useCallback((selected: readonly string[]) => {
+    console.log("Delete clicked for selected ids:", selected);
+  }, []);
+
   return (
-    <BaseTable
-      initialData={deals?.length > 0 ? deals : initialData}
-      order={order}
-      orderBy={orderBy}
-      getInitData={() => {
-        const { data } = useGetDealsQuery(
-          { statuses, stages, excludeStatuses, excludeStages },
-          {
-            refetchOnMountOrArgChange: true,
-            refetchOnFocus: true,
-          }
-        );
-        return data as T[];
-      }}
-      invalidate={invalidateDeals}
-      EditDialogComponent={EditDialogComponent}
-      columnsConfig={columns}
-      toolbarTitle={toolbarTitle}
-      TableHeadComponent={DealsTableHead}
-      rowConverter={mapDealsToDealRows}
-      rowActionMenuItems={rowActionMenuItems}
-      sx={sx}
-    />
+    <>
+      <BaseTable
+        initialData={deals?.length > 0 ? deals : initialData}
+        order={order}
+        orderBy={orderBy}
+        getInitData={() => {
+          const { data } = useGetDealsQuery(
+            { statuses, stages, excludeStatuses, excludeStages },
+            {
+              refetchOnMountOrArgChange: true,
+              refetchOnFocus: true,
+            }
+          );
+          return data as T[];
+        }}
+        columnsConfig={dealTableColumns}
+        TableToolbarComponent={({ selected }) => (
+          <DealsTableToolbar
+            title={toolbarTitle}
+            selected={selected}
+            onCreateClick={handleCreateClick}
+            onRefreshClick={handleRefreshData}
+            onDeleteClick={handleDeleteClick}
+          />
+        )}
+        TableHeadComponent={DealsTableHead}
+        rowMapper={mapDealsToDealRows}
+        rowActionMenuItems={rowActionMenuItems}
+        sx={sx}
+      />
+      {(clickedId || isDialogOpen) && (
+        <EditDialog
+          id={clickedId || undefined}
+          open={!!clickedId || !!isDialogOpen}
+          onClose={handleDialogClose}
+        />
+      )}
+    </>
   );
 }

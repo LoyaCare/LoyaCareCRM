@@ -1,8 +1,8 @@
-import { LeadTableRowData } from "./model";
+import { LeadTableRowData } from "./types";
 import { Column, currencyFormatter } from "@/features/BaseTable";
 
 // Columns definition for the Leads table.
-export const columns: Column<LeadTableRowData>[] = [
+export const leadTableColumns: Column<LeadTableRowData>[] = [
   {
     key: "title",
     label: "Title",

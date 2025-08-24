@@ -1,3 +1,2 @@
-export * from "./ui/LeadsTable";
+export * from "./ui";
 export * from "./model";
-export * from "./utils";
