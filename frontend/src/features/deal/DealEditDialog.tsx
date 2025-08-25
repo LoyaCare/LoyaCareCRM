@@ -3,7 +3,17 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Box,
+  Typography,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { DealUpsertForm } from "./DealUpsertForm";
 import {
   useGetDealByIdQuery,
@@ -38,7 +48,7 @@ export function DealEditDialog({
   const handleSubmit = React.useCallback(
     async (values: CreateDealDTO | UpdateDealDTO, shouldCreate?: boolean) => {
       if (!id || shouldCreate) {
-        await createDeal({...values, creatorId: user?.id} as CreateDealDTO);
+        await createDeal({ ...values, creatorId: user?.id } as CreateDealDTO);
         dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
         onClose?.();
         return;
@@ -68,18 +78,42 @@ export function DealEditDialog({
   );
 
   if (!open) return null;
-  if (isLoading)
-    return (
-      <Dialog open={open}>
-        <DialogTitle>Loading...</DialogTitle>
-      </Dialog>
-    );
+  // if (isLoading)
+  //   return (
+  //     <Dialog open={open}>
+  //       <DialogTitle>Loading...</DialogTitle>
+  //     </Dialog>
+  //   );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{id ? titleEdit : titleCreate}</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6">{id ? titleEdit : titleCreate}</Typography>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={onClose}
+            disabled={isLoading}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+
       <DialogContent>
-        <DealUpsertForm initialData={data} dealId={id} onSubmit={handleSubmit} />
+        {isLoading && id ? (
+          <Box display="flex" justifyContent="center" my={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <DealUpsertForm
+            initialData={data}
+            dealId={id}
+            onSubmit={handleSubmit}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
