@@ -1,9 +1,8 @@
-// features/auth/LoginForm/LoginForm.tsx
 "use client";
 import { useState, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TextField, Button, Paper, Typography, Box, Alert } from "@mui/material";
+import { useAuth } from "@/features/auth";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");

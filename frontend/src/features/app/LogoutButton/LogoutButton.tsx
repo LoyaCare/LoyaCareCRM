@@ -1,4 +1,3 @@
-// features/app/LogoutButton/LogoutButton.tsx
 "use client";
 import React from "react";
 import { Button, CircularProgress, ButtonProps } from "@mui/material";
