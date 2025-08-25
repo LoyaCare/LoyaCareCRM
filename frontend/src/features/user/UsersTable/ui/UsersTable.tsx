@@ -1,12 +1,18 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
 import {
   BaseTable,
   BaseTableProps,
   SortableFields,
 } from "@/features/BaseTable";
-import { UserExt, UserStatus, useGetUsersQuery } from "@/entities/user";
+import { 
+  UserExt, 
+  UserStatus, 
+  UserStatusFilter,
+  UserViewSwitcher,
+  useGetUsersQuery 
+} from "@/entities/user";
 import { useEntityDialog } from "@/shared/lib";
 import { UserTableRowData } from "../model/types";
 import { userTableColumns } from "../model/columns";
@@ -24,6 +30,13 @@ const UserEditDialog = dynamic(
   { ssr: false }
 );
 
+const headerTitles: Record<UserStatusFilter, string> = {
+  ACTIVE: "Active users",
+  ALL: "All users",
+  BLOCKED: "Blocked users",
+  INACTIVE: "Inactive users"
+};
+
 export interface UsersTableProps
   extends Omit<BaseTableProps<UserExt, UserTableRowData>, "initialData"> {
   initialData?: UserExt[];
@@ -37,6 +50,16 @@ export function UsersTable({
   sx,
   status,
 }: UsersTableProps) {
+  // Local state for status filter
+  const [statusFilter, setStatusFilter] = React.useState<UserStatusFilter>(
+    status || 'ACTIVE'
+  );
+
+  // Update local state when status prop changes
+  React.useEffect(() => {
+    setStatusFilter(status || 'ACTIVE');
+  }, [status]);
+
   // Hooks for handling dialogs and actions
   const {
     entityId: clickedId,
@@ -65,9 +88,17 @@ export function UsersTable({
 
   //  Filtering users by status
   const filteredUsers = React.useMemo(() => {
-    if (!status) return users;
-    return users.filter((user) => user.status === status);
-  }, [users, status]);
+    if (statusFilter === 'ALL') return users;
+    return users.filter((user) => user.status === statusFilter);
+  }, [users, statusFilter]);
+
+  // Handle status filter change
+  const handleStatusFilterChange = React.useCallback((filter: UserStatusFilter) => {
+    setStatusFilter(filter);
+    headerTitles[filter];
+  }, []);
+
+  const headerTitle = useMemo(() => headerTitles[statusFilter], [statusFilter]);
 
   return (
     <>
@@ -78,7 +109,13 @@ export function UsersTable({
         columnsConfig={userTableColumns}
         TableToolbarComponent={({ selected }) => (
           <UsersTableToolbar
-            title="Users"
+            title={
+              <UserViewSwitcher
+                title={headerTitle}
+                value={statusFilter}
+                onChange={handleStatusFilterChange}
+              />
+            }
             selected={selected}
             onCreateClick={handleCreateClick}
             onRefreshClick={handleRefreshData}

@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { ViewSwitcher, ViewSwitcherElement } from "@/shared/ui";
+import { UrlViewSwitcher, UrlViewSwitcherElement } from "@/shared/ui";
 import { Box, Typography } from "@mui/material";
 
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 import TableViewIcon from '@mui/icons-material/TableView';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
-const switcherItems: ViewSwitcherElement[] = [
+const switcherItems: UrlViewSwitcherElement[] = [
   { 
     name: "Table", 
     path: "/deals", 
@@ -41,7 +41,7 @@ export const DealViewSwitcher: React.FC<DealViewSwitcherProps> = ({
 }) => {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <ViewSwitcher elements={switcherItems} sx={{ mr: 2 }} />
+      <UrlViewSwitcher elements={switcherItems} sx={{ mr: 2 }} />
       <Typography variant="h6">{title}</Typography>
     </Box>
   );

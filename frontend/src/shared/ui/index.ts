@@ -1,2 +1,3 @@
 export * from "./SidebarDrawer";
-export * from "./ViewSwitcher";
+export * from "./SimpleViewSwitcher";
+export * from "./UrlViewSwitcher";

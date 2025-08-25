@@ -7,6 +7,9 @@ import {
 
 export { UserRole, UserStatus } from "@/shared/generated/prisma-client";
 
+// Тип для фильтрации пользователей по статусу
+export type UserStatusFilter = UserStatus | 'ALL';
+
 // Базовый тип пользователя
 export type User = PrismaUser;
 
