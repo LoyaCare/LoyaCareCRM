@@ -2,7 +2,7 @@
 "use client";
 import { useState, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/shared/auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TextField, Button, Paper, Typography, Box, Alert } from "@mui/material";
 
 export const LoginForm = () => {

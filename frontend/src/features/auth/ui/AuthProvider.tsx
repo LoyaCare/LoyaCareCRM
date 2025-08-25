@@ -1,10 +1,9 @@
-// shared/auth/AuthProvider.tsx
 "use client";
 import { ReactNode, useReducer, useEffect } from "react";
-import { AuthContext, initialState } from "./model/AuthContext";
-import { LoginCredentials } from "./model/types";
-import { authReducer } from "./model/authReducer";
-import { authApi } from "./api";
+import { AuthContext, initialState } from "../model/AuthContext";
+import { LoginCredentials } from "../model/types";
+import { authReducer } from "../model/authReducer";
+import { authApi } from "../lib";
 
 interface AuthProviderProps {
   children: ReactNode;

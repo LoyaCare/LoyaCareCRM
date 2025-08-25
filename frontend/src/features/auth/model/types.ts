@@ -1,4 +1,3 @@
-// shared/auth/types.ts
 export type UserRole = "ADMIN" | "EMPLOYEE";
 
 export interface User {

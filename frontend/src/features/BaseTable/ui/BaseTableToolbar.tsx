@@ -16,7 +16,7 @@ export interface BaseTableToolbarProps {
   onDeleteClick?: (selected: readonly string[]) => void;
   onCreateClick?: () => void;
   onRefreshClick?: () => void;
-  title?: string | React.ReactElement;
+  title?: string | React.ReactNode;
 }
 
 export function BaseTableToolbar(props: BaseTableToolbarProps) {

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ViewSwitcher, ViewSwitcherElement } from "@/shared";
+import { ViewSwitcher, ViewSwitcherElement } from "@/shared/ui";
 import { Box, Typography } from "@mui/material";
 
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';

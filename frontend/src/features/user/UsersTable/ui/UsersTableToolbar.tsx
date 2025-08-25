@@ -2,7 +2,7 @@ import React from "react";
 import { BaseTableToolbar } from "@/features/BaseTable";
 
 export interface UsersTableToolbarProps {
-  title: React.ReactNode;
+  title: React.ReactNode | string;
   selected: readonly string[];
   onCreateClick: () => void;
   onRefreshClick: () => void;
@@ -16,7 +16,6 @@ export const UsersTableToolbar: React.FC<UsersTableToolbarProps> = ({
   onCreateClick,
   onRefreshClick,
   onDeleteClick,
-  isDeleting = false,
 }) => {
   return (
     <BaseTableToolbar
@@ -25,7 +24,6 @@ export const UsersTableToolbar: React.FC<UsersTableToolbarProps> = ({
       onCreateClick={onCreateClick}
       onRefreshClick={onRefreshClick}
       onDeleteClick={onDeleteClick}
-      isLoading={isDeleting}
     />
   );
 };

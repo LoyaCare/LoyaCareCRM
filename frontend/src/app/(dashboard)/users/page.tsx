@@ -8,7 +8,7 @@ import {
   Tab,
   Tabs,
 } from "@mui/material";
-import { ProtectedRoute } from "@/shared/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/features/auth/ui/ProtectedRoute";
 import { UsersTable } from "@/features/user/UsersTable";
 
 function a11yProps(index: number) {

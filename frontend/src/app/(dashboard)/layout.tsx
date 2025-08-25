@@ -1,6 +1,6 @@
 // app/(dashboard)/layout.tsx
 // "use client";
-import { ProtectedRoute } from "@/shared";
+import { ProtectedRoute } from "@/features/auth";
 
 export default function DashboardLayout({
   children,

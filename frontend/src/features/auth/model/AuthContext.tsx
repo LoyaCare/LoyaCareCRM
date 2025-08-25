@@ -1,9 +1,8 @@
-// shared/auth/AuthContext.tsx
 "use client";
 import { createContext } from "react";
-import {  AuthState, LoginCredentials } from "./types";
+import { AuthState, LoginCredentials } from "./types";
 
-interface AuthContextType extends AuthState {
+export interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -17,7 +16,6 @@ export const initialState: AuthState = {
   error: null,
 };
 
-// Create context
 export const AuthContext = createContext<AuthContextType>({
   ...initialState,
   login: async () => {},

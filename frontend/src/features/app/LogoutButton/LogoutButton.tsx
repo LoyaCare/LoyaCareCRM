@@ -3,7 +3,7 @@
 import React from "react";
 import { Button, CircularProgress, ButtonProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useAuth } from "@/shared";
+import { useAuth } from "@/features/auth";
 
 interface LogoutButtonProps {
   variant?: ButtonProps["variant"];

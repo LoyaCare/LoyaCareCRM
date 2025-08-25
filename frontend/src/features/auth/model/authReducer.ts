@@ -1,6 +1,5 @@
 import { User, AuthState } from "./types";
 
-// Reducer action types
 export type AuthAction =
   | { type: "LOGIN_START" }
   | { type: "LOGIN_SUCCESS"; payload: { user: User; token: string } }
@@ -10,7 +9,6 @@ export type AuthAction =
   | { type: "AUTH_CHECK_SUCCESS"; payload: { user: User } }
   | { type: "AUTH_CHECK_FAILURE" };
 
-// Reducer for managing authentication state
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case "LOGIN_START":

@@ -28,7 +28,7 @@ import {
 } from "@/entities/contact";
 import { UserSelect } from "@/entities/user";
 import { CreateLeadDTO, UpdateLeadDTO, LeadExt } from "@/entities/lead";
-import { useAuth } from "@/shared/auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export type BaseUpsertFormProps<TEntity, TState> = {
   initialData?: TEntity;

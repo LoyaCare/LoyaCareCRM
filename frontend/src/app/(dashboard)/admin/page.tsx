@@ -1,6 +1,6 @@
 // app/(dashboard)/admin/page.tsx
 "use client";
-import { ProtectedRoute } from "@/shared/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/features/auth/ui/ProtectedRoute";
 
 export default function AdminPage() {
   return (

@@ -12,7 +12,7 @@ import {
   dealApi,
 } from "@/entities";
 import type { CreateDealDTO, UpdateDealDTO } from "@/entities";
-import { useAuth } from "@/shared/auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export function DealEditDialog({
   id,

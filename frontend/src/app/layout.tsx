@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { SidebarDrawer } from "@/shared";
 
 import { ThemeRegistry } from "@/shared/theme/ThemeRegistry";
-import { AuthProvider } from "@/shared/auth/AuthProvider";
+import { AuthProvider } from "@/features/auth/ui/AuthProvider";
 
 export default function RootLayout({
   children,
