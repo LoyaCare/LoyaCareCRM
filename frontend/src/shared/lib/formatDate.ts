@@ -4,5 +4,10 @@ export const formatDate = (date: Date | string, locale: string = "de-De") => {
     month: "2-digit",
     year: "numeric",
   });
-return formatter.format(new Date(date)).replace(/\./g, ".");
+  try {
+    return formatter.format(new Date(date)).replace(/\./g, ".");
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return date;
+  }
 }

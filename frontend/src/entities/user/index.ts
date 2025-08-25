@@ -1,3 +1,4 @@
 export { UserSelect } from "./ui/UserSelect";
-export * from "./types";
-export * from "./api";
+export * from "./model/types";
+export * from "./api/userApi";
+export * from "./lib/sanitizers";

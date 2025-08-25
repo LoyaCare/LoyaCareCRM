@@ -22,7 +22,7 @@ import {
   defaultConvertSrcDataToDataRows,
   BaseTableToolbarProps,
 } from "../index";
-import defaultColumnsConfig from "../columns";
+import defaultColumnsConfig from "../model/columns";
 import {
   BaseTableHeadProps,
   Column,
@@ -31,7 +31,7 @@ import {
 import { BaseTablePagination } from "./BaseTablePagination";
 import TableRow from "@mui/material/TableRow";
 import { UnknownAction } from "@reduxjs/toolkit";
-import { TConvertSrcDataToDataRows } from "../utils";
+import { TConvertSrcDataToDataRows } from "../lib/formatters";
 import { useSelection } from "../hooks/useSelection";
 import { ActionCell } from "./ActionCell";
 import { ActionMenu, ActionMenuItemProps, ActionMenuProps } from "./ActionMenu";

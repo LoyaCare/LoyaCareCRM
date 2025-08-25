@@ -26,7 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { use, useEffect, useMemo, useState } from "react";
 import { LogoutButton } from "@/features/app/LogoutButton";
-import { useAuth } from "@/shared/auth/useAuth";
+import { useAuth } from "@/shared/auth/";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";

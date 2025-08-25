@@ -1,7 +1,7 @@
-// shared/auth/useAuth.ts
+// shared/auth/hooks/useAuth.ts
 "use client";
 import { useContext } from "react";
-import { AuthContext } from "./model/AuthContext";
+import { AuthContext } from "../model/AuthContext";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

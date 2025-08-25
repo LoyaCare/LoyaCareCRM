@@ -7,6 +7,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.6",
+    "@hookform/resolvers": "^5.2.1",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
     "@mui/x-data-grid": "^8.10.0",
@@ -15,9 +16,12 @@
     "@types/react-dom": "^18.3.7",
     "dayjs": "^1.11.13",
     "next": "^15.4.6",
+    "notistack": "^3.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-redux": "^9.2.0"
+    "react-hook-form": "^7.62.0",
+    "react-redux": "^9.2.0",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.0",

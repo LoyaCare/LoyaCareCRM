@@ -1,13 +1,13 @@
 // features/app/LogoutButton/LogoutButton.tsx
 "use client";
 import React from "react";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, ButtonProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useAuth } from "@/shared/auth/useAuth";
+import { useAuth } from "@/shared";
 
 interface LogoutButtonProps {
-  variant?: "text" | "outlined" | "contained";
-  color?: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning";
+  variant?: ButtonProps["variant"];
+  color?: ButtonProps["color"];
   fullWidth?: boolean;
 }
 
@@ -23,8 +23,8 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
     setIsLoading(true);
     try {
       await logout();
-      // Перенаправление на страницу входа произойдет автоматически
-      // благодаря AuthProvider и ProtectedRoute
+      // Redirecting to the login page will happen automatically
+      // thanks to AuthProvider and ProtectedRoute
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {

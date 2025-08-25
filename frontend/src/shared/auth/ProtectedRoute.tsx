@@ -1,7 +1,7 @@
 // shared/auth/ProtectedRoute.tsx
 "use client";
 import { useEffect } from "react";
-import { useAuth } from "./useAuth";
+import { useAuth } from "./hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { UserRole } from "./model/types";
 

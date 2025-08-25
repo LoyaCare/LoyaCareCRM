@@ -1,4 +1,4 @@
-import type { Column, BaseTableRowData } from "./model/types";
+import type { Column, BaseTableRowData } from "./types";
 
 // Default columns for the table. This can be imported by BaseTable or overridden by callers.
 export const baseTableColumns: Column<BaseTableRowData>[] = [
