@@ -32,7 +32,7 @@ export function BaseTableHead<T extends TBaseColumnType>(
     () => ({
       position: "sticky",
       top: 0,
-      zIndex: (theme: any) => theme.zIndex.appBar + 6, // header выше body
+      zIndex: (theme: any) => theme.zIndex.appBar + 6, // header higher than body
       background: (theme: any) => theme.palette.background.paper,
     }),
     []
@@ -65,11 +65,12 @@ export function BaseTableHead<T extends TBaseColumnType>(
         {columns?.map((headCell) => {
           const isSticky = !!headCell.isSticky;
           const headCellId = headCell.key as string;
+          const textAlign = headCell.align || "left";
           const cellStyle = {
             width: `${headCell.width}px`,
             minWidth: `${headCell.minWidth}px`,
             maxWidth: `${headCell.maxWidth}px`,
-            textAlign: headCell.align || "left",
+            textAlign: textAlign,
             ...(isSticky && {
               borderLeft: "1px solid rgba(224, 224, 224, 1)",
             })
@@ -91,7 +92,7 @@ export function BaseTableHead<T extends TBaseColumnType>(
                       textOverflow: "clip",
                       boxSizing: "content-box", // Ensures checkbox does not affect width calculation
                     }
-                  : {})
+                  : {}),
               }}
             >
               {headCell.sortable !== false ? (
@@ -99,6 +100,12 @@ export function BaseTableHead<T extends TBaseColumnType>(
                   active={orderBy === headCellId}
                   direction={orderBy === headCellId ? order : "asc"}
                   onClick={createSortHandler(headCellId as keyof T)}
+                  // move sort icon on the left if title is right aligned
+                  sx={[{
+                    'svg': {
+                      order: textAlign === "right" ? -1 : 0
+                    }
+                  }]}
                 >
                   {headCell.label}
                   {orderBy === headCellId ? (
