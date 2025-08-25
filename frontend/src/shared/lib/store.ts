@@ -3,7 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { dealApi } from "@/entities/deal/api";
 import { leadApi } from "@/entities/lead/api";
 import { contactApi } from "@/entities/contact/api";
-import { userApi } from "@/entities/user/api";
+import { userApi } from "@/entities/user";
 import { noteApi } from "@/entities/note/api";
 import { appointmentApi } from "@/entities/appointment/api";
 

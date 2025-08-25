@@ -87,7 +87,7 @@ export function DealsTable<T extends DealExt>({
     }
   );
 
-  const rowActionMenuItems: ActionMenuItemProps[] = React.useMemo(
+    const rowActionMenuItems: ActionMenuItemProps<DealTableRowData>[] = React.useMemo(
     () => [
       {
         element: "Edit",

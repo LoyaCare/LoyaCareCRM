@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import prisma from "../prisma/client";
-import { Role } from "../../generated/prisma-client";
+import { UserRole } from "../../generated/prisma-client";
 
 dotenv.config();
 
-export async function createUser(name = "User", email = "user@example.com", password = "user", role: Role = "ADMIN") {
+export async function createUser(name = "User", email = "user@example.com", password = "user", role: UserRole = "ADMIN") {
   console.log(`Creating user: ${name}, email: ${email}, role: ${role}`);
   try {
     // Check if database connection is successful
@@ -51,7 +51,7 @@ if (require.main === module) {
   const name = args[0] || "User";
   const email = args[1] || "user@example.com";
   const password = args[2] || "user";
-  const role = (args[3] || "EMPLOYEE").toUpperCase() as Role;
+  const role = (args[3] || "EMPLOYEE").toUpperCase() as UserRole;
 
   createUser(name, email, password, role);
 }

@@ -6,7 +6,6 @@ export function useTableActions() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteClick = useCallback((selected: readonly string[]) => {
-    // В реальном приложении здесь был бы запрос на удаление
     setIsDeleting(true);
     
     setTimeout(() => {

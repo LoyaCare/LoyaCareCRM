@@ -36,8 +36,8 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
   const [error, setError] = useState<string | undefined>();
   
   const { enqueueSnackbar } = useSnackbar();
-  
-  // Запросы к API
+
+  // API requests
   const { data: user, isLoading: isLoadingUser } = useGetUserByIdQuery(id || "", {
     skip: !id || !open,
   });
@@ -48,7 +48,7 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
   const isLoading = isLoadingUser || isCreating || isUpdating;
 
   useEffect(() => {
-    // Сбрасываем ошибку при открытии/закрытии диалога
+    // Reset error on dialog open/close
     if (open) {
       setError(undefined);
     }
@@ -57,10 +57,10 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
   const handleSubmit = async (formData: CreateUserDTO | UpdateUserDTO) => {
     try {
       if (isEditing && id) {
-        // Обновление пользователя
+        // User update
         const sanitizedData = sanitizeUserData(formData as UpdateUserDTO);
-        
-        // Если пароль пустой, удаляем его из запроса
+
+        // If password is empty, remove it from the request
         if (sanitizedData.password === "") {
           delete sanitizedData.password;
         }
@@ -72,7 +72,7 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
         
         enqueueSnackbar("User updated successfully", { variant: "success" });
       } else {
-        // Создание нового пользователя
+        // User creation
         await createUser(formData as CreateUserDTO).unwrap();
         enqueueSnackbar("User created successfully", { variant: "success" });
       }

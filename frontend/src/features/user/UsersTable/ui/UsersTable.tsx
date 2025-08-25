@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import dynamic from "next/dynamic";
 import {
   BaseTable,
@@ -25,7 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import BlockIcon from "@mui/icons-material/Block";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 
-// Динамически импортируем диалог редактирования
+// Dynamically import the edit dialog
 const UserEditDialog = dynamic(
   () =>
     import("@/features/user/UserEditDialog").then(
@@ -46,7 +46,7 @@ export function UsersTable({
   sx,
   status,
 }: UsersTableProps) {
-  // Хуки для обработки диалогов и действий
+  // Hooks for handling dialogs and actions
   const {
     entityId: clickedId,
     handleEditClick: handleEditDialogOpen,
@@ -63,43 +63,49 @@ export function UsersTable({
   
   const { handleDeleteClick, isDeleting } = useTableActions();
 
-  // Получение данных пользователей
+  // Get user data
   const { data: users = initialData } = useGetUsersQuery(undefined, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
   });
 
-  // Фильтрация пользователей по статусу
+  //  Filtering users by status
   const filteredUsers = React.useMemo(() => {
     if (!status) return users;
     return users.filter(user => user.status === status);
   }, [users, status]);
 
-  // Формирование элементов меню действий
-  const rowActionMenuItems: ActionMenuItemProps[] = React.useMemo(
-    () => [
+  // Create elements for action menu
+  const rowActionMenuItemsCreator = useCallback(
+    (row: UserTableRowData): ActionMenuItemProps<UserTableRowData>[] => [
       {
         element: "Edit",
         icon: <EditIcon fontSize="small" />,
-        onClick: handleEditDialogOpen,
+        onClick: (e: React.MouseEvent) => {
+          handleEditDialogOpen(e, row.id);
+        },
       },
-      // {
-      //   element: "Block/Unblock",
-      //   icon: (row: UserTableRowData) => 
-      //     row.status === "ACTIVE" 
-      //       ? <BlockIcon fontSize="small" /> 
-      //       : <LockOpenIcon fontSize="small" />,
-      //   onClick: (e: React.MouseEvent, id?: string, row?: UserTableRowData) => {
-      //     if (row?.status === "ACTIVE") {
-      //       handleBlock(e, id);
-      //     } else {
-      //       handleUnblock(e, id);
-      //     }
-      //   },
-      // },
+      {
+        element: row.status === "ACTIVE" ? "Block" : "Unblock",
+        icon:
+          row.status === "ACTIVE" ? (
+            <BlockIcon fontSize="small" />
+          ) : (
+            <LockOpenIcon fontSize="small" />
+          ),
+        onClick: (e: React.MouseEvent) => {
+          const {id, status} = row;
+          if (status === "ACTIVE") {
+            handleBlock(e, id);
+          } else {
+            handleUnblock(e, id);
+          }
+        },
+      },
     ],
-    [handleEditDialogOpen, handleBlock, handleUnblock]
+    [handleBlock, handleUnblock]
   );
+
 
   return (
     <>
@@ -120,7 +126,7 @@ export function UsersTable({
         )}
         TableHeadComponent={UsersTableHead}
         rowMapper={mapUsersToUserRows}
-        rowActionMenuItems={rowActionMenuItems}
+        rowActionMenuItemsCreator={rowActionMenuItemsCreator}
         sx={sx}
       />
       {showDialog && (

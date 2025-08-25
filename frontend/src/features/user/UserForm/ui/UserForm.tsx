@@ -16,8 +16,6 @@ import {
   CircularProgress,
   Grid,
 } from "@mui/material";
-// use Grid2 for simpler/safer TS typings
-// import Grid from "@mui/material/Unstable_Grid2";
 import { CreateUserDTO, UpdateUserDTO, UserExt, UserRole, UserStatus } from "@/entities/user";
 
 interface UserFormProps {
@@ -28,7 +26,7 @@ interface UserFormProps {
   error?: string;
 }
 
-// Схема валидации для новых пользователей
+// Schema of validation for new users
 const createUserSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -46,7 +44,7 @@ const createUserSchema = yup.object().shape({
     .required("Status is required"),
 });
 
-// Схема валидации для обновления пользователей
+// Schema of validation for updating users
 const updateUserSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -77,14 +75,14 @@ export const UserForm: React.FC<UserFormProps> = ({
   error,
 }) => {
   const isEditing = !!user;
-  
-  // Выбираем схему в зависимости от режима (создание/редактирование)
+
+  // Select the schema based on the mode (create/edit)
   const schema = isEditing ? updateUserSchema : createUserSchema;
   
   const defaultValues = {
     name: user?.name || "",
     email: user?.email || "",
-    password: "", // Пароль всегда пустой для безопасности
+    password: "", // Password is always empty for security
     role: user?.role || "EMPLOYEE" as UserRole,
     status: user?.status || "ACTIVE" as UserStatus,
   };

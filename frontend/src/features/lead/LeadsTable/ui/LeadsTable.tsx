@@ -76,7 +76,7 @@ export function LeadsTable<T extends LeadExt>({
     console.log("Delete clicked for selected ids:", selected);
   }, []);
 
-  const rowActionMenuItems: ActionMenuItemProps[] = React.useMemo(
+  const rowActionMenuItems: ActionMenuItemProps<LeadTableRowData>[] = React.useMemo(
     () => [
       {
         element: "Edit",

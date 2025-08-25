@@ -3,24 +3,25 @@ import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ActionMenu, ActionMenuProps, ActionMenuItemProps } from "./ActionMenu";
+import { BaseTableRowData } from "../model";
 
-type Props = {
+type Props<T extends BaseTableRowData> = {
   id: string;
-  // onEdit: (e: React.MouseEvent, id: string) => void; 
   className?: string;
-  MenuComponent?: React.ComponentType<ActionMenuProps>;
-  menuItems?: ActionMenuItemProps[];
+  MenuComponent?: React.ComponentType<ActionMenuProps<T>>;
+  menuItems?: ActionMenuItemProps<T>[];
   cellSx?: any; // additional sx for TableCell
 };
 
-export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
-  id,
-  // onEdit,
-  className,
-  MenuComponent = ActionMenu,
-  menuItems,
-  cellSx,
-}) {
+export const ActionCell = <T extends BaseTableRowData>(props: Props<T>) => {
+  const {
+    id,
+    // onEdit,
+    className,
+    MenuComponent = ActionMenu,
+    menuItems,
+    cellSx,
+  } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -69,4 +70,4 @@ export const ActionCell: React.FC<Props> = React.memo(function ActionCell({
       />
     </TableCell>
   );
-});
+};

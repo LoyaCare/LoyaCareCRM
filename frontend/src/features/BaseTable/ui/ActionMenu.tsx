@@ -3,35 +3,37 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import EditIcon from "@mui/icons-material/Edit";
+import { BaseTableRowData } from "../model";
 
-export type ActionMenuItemProps = {
+export type ActionMenuItemProps<TRowData extends BaseTableRowData> = {
   onClick?: (e: React.MouseEvent, id?: string) => void;
   icon?: React.ReactNode;
-  element: string | React.ReactNode;
+  getIcon?: (row: TRowData) => React.ReactNode;
+  element?: string | React.ReactNode;
+  getElement?: (row: TRowData) => React.ReactNode;
 };
 
-export type ActionMenuProps = {
+export type ActionMenuProps<TRowData extends BaseTableRowData> = {
   id: string;
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  // onEdit: (e: React.MouseEvent) => void;
-
-  menuItems?: ActionMenuItemProps[];
-
+  menuItems?: ActionMenuItemProps<TRowData>[];
+  row?: TRowData;
   compact?: boolean;
 };
 
-export const ActionMenu: React.FC<ActionMenuProps> = ({
-  id,
-  anchorEl,
-  open,
-  onClose,
-  // onEdit,
-  menuItems,
-  compact = true,
-}) => {
+export const ActionMenu = <TRowData extends BaseTableRowData>(
+  {
+    id,
+    anchorEl,
+    open,
+    onClose,
+    menuItems,
+    row,
+    compact = true,
+  }: ActionMenuProps<TRowData>
+) => {
   // menuItems = [
   //   {
   //     onClick: (e) => {
@@ -76,8 +78,12 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
             onClose();
           }}
         >
-          <ListItemIcon>{item.icon}</ListItemIcon>
-          <ListItemText primary={item.element} />
+          <ListItemIcon>
+            {item.icon ? item.icon : row ? item.getIcon?.(row) : null}
+          </ListItemIcon>
+          <ListItemText
+            primary={item.element ? item.element : row ? item.getElement?.(row) : null}
+          />
         </MenuItem>
       ))}
     </Menu>

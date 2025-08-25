@@ -55,15 +55,16 @@ export interface BaseTableProps<T, TTableData extends BaseTableRowData> {
   TableToolbarComponent?: React.FC<BaseTableToolbarProps>;
   TablePaginationComponent?: TablePaginationComponent;
   toolbarTitle?: string | React.ReactElement;
-  rowActionMenuComponent?: React.FC<ActionMenuProps>;
+  rowActionMenuComponent?: React.FC<ActionMenuProps<TTableData>>;
   rowMapper?: TConvertSrcDataToDataRows<T, TTableData>;
-  rowActionMenuItems?: ActionMenuItemProps[];
+  rowActionMenuItems?: ActionMenuItemProps<TTableData>[];
   comparatorBuilder?: (
     order: Order,
     orderBy: SortableFields<TTableData>
   ) => (a: TTableData, b: TTableData) => number;
   onRowDoubleClick?: (e: React.MouseEvent, id: string) => void;
   sx?: SxProps<Theme>;
+  rowActionMenuItemsCreator?: (row: TTableData) => ActionMenuItemProps<TTableData>[];
 }
 
 export function BaseTable<T, TTableData extends BaseTableRowData>({
@@ -82,6 +83,8 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
   rowActionMenuItems,
   onRowDoubleClick,
   sx = {},
+  rowActionMenuItemsCreator: createRowActionMenuItems
+
 }: BaseTableProps<T, TTableData> & { columnsConfig?: Column<TTableData>[] }) {
 
   const columnsConfig: Column<any>[] =
@@ -255,7 +258,9 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                             key={`col-${colIndex}`}
                             id={row.id}
                             MenuComponent={rowActionMenuComponent || null}
-                            menuItems={rowActionMenuItems}
+                            menuItems={
+                              rowActionMenuItems || createRowActionMenuItems?.(row)
+                            }
                             cellSx={{
                               ...stickySx,
                               right: 0,

@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+// "use client";
+// import { useState } from "react";
 import {
   Container,
   Paper,
@@ -8,7 +8,7 @@ import {
   Tab,
   Tabs,
 } from "@mui/material";
-import { ProtectedRoute } from "@/features/auth/ui/ProtectedRoute";
+import { ProtectedRoute } from "@/features/auth/";
 import { UsersTable } from "@/features/user/UsersTable";
 
 function a11yProps(index: number) {
@@ -41,11 +41,11 @@ function TabPanel(props: TabPanelProps) {
 }
 
 function UsersPageContent() {
-  const [tabValue, setTabValue] = useState(0);
+  // const [tabValue, setTabValue] = useState(0);
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  // const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  //   setTabValue(newValue);
+  // };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -59,7 +59,7 @@ function UsersPageContent() {
       </Box>
 
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        {/* <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
@@ -70,9 +70,11 @@ function UsersPageContent() {
             <Tab label="Active Users" {...a11yProps(1)} />
             <Tab label="Blocked Users" {...a11yProps(2)} />
           </Tabs>
-        </Box>
+        </Box> */}
 
-        <TabPanel value={tabValue} index={0}>
+          <UsersTable />
+
+        {/* <TabPanel value={tabValue} index={0}>
           <UsersTable />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
@@ -80,7 +82,7 @@ function UsersPageContent() {
         </TabPanel>
         <TabPanel value={tabValue} index={2}>
           <UsersTable status="BLOCKED" />
-        </TabPanel>
+        </TabPanel> */}
       </Paper>
     </Container>
   );
