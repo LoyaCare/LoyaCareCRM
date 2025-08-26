@@ -23,14 +23,14 @@ export function useUserRowActions({
   const rowActionMenuItemsCreator = useCallback(
     (row: UserTableRowData): ActionMenuItemProps<UserTableRowData>[] => [
       {
-        element: "Edit",
+        title: "Edit",
         icon: <EditIcon fontSize="small" />,
         onClick: (e: React.MouseEvent) => {
           onEdit(e, row.id);
         },
       },
       {
-        element: row.status === "ACTIVE" ? "Block" : "Unblock",
+        title: row.status === "ACTIVE" ? "Block" : "Unblock",
         icon:
           row.status === "ACTIVE" ? (
             <BlockIcon fontSize="small" />

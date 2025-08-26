@@ -10,6 +10,8 @@ export const dealApi = createApi({
     credentials: "include",
   }),
   tagTypes: ["Deals", "Deal"],
+  // Reduce cache time to ensure fresh data but avoid excessive requests
+  keepUnusedDataFor: 30, // 30 seconds
   endpoints: (build) => ({
     getDeals: build.query<DealExt[], { statuses?: DealStatus[], excludeStatuses?: DealStatus[], stages?: DealStage[], excludeStages?: DealStage[] } | undefined | null>({
       query: (params) => ({

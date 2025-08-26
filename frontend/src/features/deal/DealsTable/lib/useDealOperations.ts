@@ -6,7 +6,7 @@ import {
   useUpdateDealMutation,
   DealExt,
   UpdateDealDTO,
-  sanitizeDealData
+  sanitizeDealData,
 } from "@/entities/deal";
 
 export function useDealOperations() {
@@ -16,7 +16,8 @@ export function useDealOperations() {
 
   const invalidateDeals = useCallback(() => {
     dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
-  }, [dispatch]);
+    console.log("Invalidated deals");
+  }, [dispatch, dealApi]);
 
   const update = useCallback(
     async (id: string, updateData: (deal: DealExt) => UpdateDealDTO) => {
@@ -36,9 +37,17 @@ export function useDealOperations() {
       };
       console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
-      invalidateDeals();
     },
-    [triggerGetDealById, updateDeal, invalidateDeals]
+    [triggerGetDealById, updateDeal]
+  );
+
+  const archiveDeal = useCallback(
+    async (id: string) =>
+      await update(id, (deal) => ({
+        ...deal,
+        status: "ARCHIVED",
+      })),
+    [update]
   );
 
   const handleArchive = useCallback(
@@ -46,15 +55,64 @@ export function useDealOperations() {
       e?.stopPropagation();
       if (!id) return;
       try {
-        update(id, (deal) => ({
-          ...deal,
-          status: "ARCHIVED",
-        }));
+        await archiveDeal(id);
+        invalidateDeals();
       } catch (err) {
         console.error("Archive action failed", err);
       }
     },
+    [archiveDeal, invalidateDeals]
+  );
+
+  const handleArchives = useCallback(
+    async (e: React.MouseEvent | undefined, id?: readonly string[]) => {
+      e?.stopPropagation();
+      if (!id || !id.length) return;
+      try {
+        await Promise.all(id.map((id) => archiveDeal(id)));
+        invalidateDeals();
+      } catch (err) {
+        console.error("Archive action failed", err);
+      }
+    },
+    [update, invalidateDeals]
+  );
+
+  const restoreDeal = useCallback(
+    async (id: string) =>
+      await update(id, (deal) => ({
+        ...deal,
+        status: "ACTIVE",
+      })),
     [update]
+  );
+
+  const handleRestore = useCallback(
+    async (e?: React.MouseEvent, id?: string) => {
+      e?.stopPropagation();
+      if (!id) return;
+      try {
+        await restoreDeal(id);
+        invalidateDeals();
+      } catch (err) {
+        console.error("Restore action failed", err);
+      }
+    },
+    [restoreDeal, invalidateDeals]
+  );
+
+  const handleRestores = useCallback(
+    async (e?: React.MouseEvent, id?: readonly string[]) => {
+      e?.stopPropagation();
+      if (!id || !id.length) return;
+      try {
+        await Promise.all(id.map((id) => restoreDeal(id)));
+        invalidateDeals();
+      } catch (err) {
+        console.error("Restore action failed", err);
+      }
+    },
+    [restoreDeal, invalidateDeals]
   );
 
   const handleRefreshData = useCallback(() => {
@@ -64,7 +122,10 @@ export function useDealOperations() {
   return {
     update,
     handleArchive,
+    handleArchives,
+    handleRestore,
+    handleRestores,
     handleRefreshData,
-    invalidateDeals
+    invalidateDeals,
   };
 }

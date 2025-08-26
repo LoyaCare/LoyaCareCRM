@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
 
 import {
   CardsByRestStages,
@@ -10,7 +9,6 @@ import {
 } from "@/entities/kanban/";
 import Container from "@mui/material/Container";
 import {
-  dealApi,
   DealExt,
   sanitizeDealData,
   UpdateDealDTO,
@@ -47,7 +45,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // load data only if needed
   const { data: deals = [] } = useGetDealsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    // Remove refetchOnMountOrArgChange to prevent double requests
+    // RTK Query will automatically refetch when tags are invalidated
     refetchOnFocus: true,
     skip: !needToFetchData,
   }) as { data: DealExt[] };
@@ -64,7 +63,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Local state for working with data
   const [stacksInfo, setStacksInfo] = React.useState<KanbanStackData[]>([]);
-  const dispatch = useDispatch();
   const [triggerGetDealById] = useLazyGetDealByIdQuery();
   const [updateDeal] = useUpdateDealMutation();
 
@@ -99,9 +97,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       };
       console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
-      dispatch(dealApi.util.invalidateTags(["Deals", "Deal"]));
+      // Note: Manual invalidation is not needed here as updateDeal mutation 
+      // already has invalidatesTags configured
     },
-    [triggerGetDealById, updateDeal, dispatch]
+    [triggerGetDealById, updateDeal]
   );
 
   const moveCardToRestStage = useCallback(

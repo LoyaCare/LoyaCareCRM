@@ -9,7 +9,7 @@ export type ActionMenuItemProps<TRowData extends BaseTableRowData> = {
   onClick?: (e: React.MouseEvent, id?: string) => void;
   icon?: React.ReactNode;
   getIcon?: (row: TRowData) => React.ReactNode;
-  element?: string | React.ReactNode;
+  title?: string | React.ReactNode;
   getElement?: (row: TRowData) => React.ReactNode;
 };
 
@@ -34,16 +34,6 @@ export const ActionMenu = <TRowData extends BaseTableRowData>(
     compact = true,
   }: ActionMenuProps<TRowData>
 ) => {
-  // menuItems = [
-  //   {
-  //     onClick: (e) => {
-  //       onEdit(e);
-  //     },
-  //     icon: <EditIcon fontSize="small" />,
-  //     element: "Edit",
-  //   },
-  //   ...(menuItems || []),
-  // ];
   return (
     <Menu
       id={`action-menu-${id}`}
@@ -82,7 +72,7 @@ export const ActionMenu = <TRowData extends BaseTableRowData>(
             {item.icon ? item.icon : row ? item.getIcon?.(row) : null}
           </ListItemIcon>
           <ListItemText
-            primary={item.element ? item.element : row ? item.getElement?.(row) : null}
+            primary={item.title ? item.title : row ? item.getElement?.(row) : null}
           />
         </MenuItem>
       ))}

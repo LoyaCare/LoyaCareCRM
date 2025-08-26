@@ -1,3 +1,5 @@
+import Container from "@mui/material/Container";
+
 export default function DealsLayout({
   children,
 }: {
@@ -12,7 +14,21 @@ export default function DealsLayout({
         alignItems: "stretch",
       }}
     >
-      {children}
+      <Container
+        maxWidth={false}
+        component="main"
+        sx={{
+          pr: 1,
+          pl: 0,
+          pt: 1,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </Container>
     </section>
   );
 }

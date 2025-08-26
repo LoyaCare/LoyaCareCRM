@@ -4,15 +4,19 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
+
+export type ToolbarMenuItem = {
+  title?: string | React.ReactNode;
+  onClick?: (e: React.MouseEvent, id?: string) => void;
+  onClickMultiple?: (e: React.MouseEvent, ids?: readonly string[]) => void;
+  icon?: React.ReactNode;
+  isGroupAction?: boolean;
+};
 
 export interface BaseTableToolbarProps {
   selected: readonly string[];
-  menuItems?: React.ReactNode[];
+  menuItems?: ToolbarMenuItem[];
   onDeleteClick?: (selected: readonly string[]) => void;
   onCreateClick?: () => void;
   onRefreshClick?: () => void;
@@ -22,16 +26,15 @@ export interface BaseTableToolbarProps {
 export function BaseTableToolbar(props: BaseTableToolbarProps) {
   const {
     selected,
-    onDeleteClick,
-    onCreateClick = () => {},
-    onRefreshClick = () => {},
+    menuItems = [],
     title,
   } = props;
 
   const numSelected = React.useMemo(() => selected.length, [selected]);
-  const handleDeleteClick = React.useCallback(() => {
-      onDeleteClick?.(selected);
-  }, [onDeleteClick, selected]);
+
+  // const handleDeleteClick = React.useCallback(() => {
+  //     onDeleteClick?.(selected);
+  // }, [onDeleteClick, selected]);
 
   return (
     <Toolbar
@@ -72,33 +75,49 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
           </Typography>
         )}
         {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton onClick={handleDeleteClick}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          menuItems.filter(item => item.isGroupAction).map((item, index) => (
+            <Tooltip title={item.title} key={index}>
+              <IconButton onClick={(e) => item.onClickMultiple?.(e, selected)}>
+                {item.icon}
+              </IconButton>
+            </Tooltip>
+          ))
         ) : (
-          <>
-            <Tooltip title="Filter list">
-              <IconButton>
-                <FilterListIcon />
+          menuItems.filter(item => !item.isGroupAction).map((item, index) => (
+            <Tooltip title={item.title} key={index}>
+              <IconButton onClick={(e) => item.onClick?.(e)}>
+                {item.icon}
               </IconButton>
             </Tooltip>
-            <Tooltip title="Refresh">
-              <IconButton onClick={onRefreshClick}>
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-          </>
+          ))
+
+        //   <Tooltip title="Delete">
+        //     <IconButton onClick={handleDeleteClick}>
+        //       <DeleteIcon />
+        //     </IconButton>
+        //   </Tooltip>
+        // ) : (
+        //   <>
+        //     <Tooltip title="Filter list">
+        //       <IconButton>
+        //         <FilterListIcon />
+        //       </IconButton>
+        //     </Tooltip>
+        //     <Tooltip title="Refresh">
+        //       <IconButton onClick={onRefreshClick}>
+        //         <RefreshIcon />
+        //       </IconButton>
+        //     </Tooltip>
+        //   </>
         )}
       </Box>
-      <Box>
+      {/* <Box>
         <Tooltip title="Create Lead">
           <IconButton onClick={onCreateClick}>
             <AddIcon />
           </IconButton>
         </Tooltip>
-      </Box>
+      </Box> */}
     </Toolbar>
   );
 }

@@ -73,7 +73,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
   orderBy: defaultOrderBy = "createdAt" as SortableFields<TTableData>,
   getInitData,
   TableHeadComponent = BaseTableHead,
-  TableToolbarComponent = BaseTableToolbar,
+  TableToolbarComponent,
   TablePaginationComponent = BaseTablePagination,
   toolbarTitle,
   comparatorBuilder = getComparator<Order, TTableData>,

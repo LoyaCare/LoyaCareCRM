@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 
 import ArchiveIcon from "@mui/icons-material/Archive";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from "@mui/icons-material/Add";
 import Refresh from "@mui/icons-material/Refresh";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
@@ -31,8 +30,6 @@ import { useEntityDialog } from "@/shared/lib/hooks";
 
 import { DealTableRowData, dealTableColumns } from "../model";
 import { mapDealsToDealRows, useTableActions, useDealOperations } from "../lib";
-// import { DealsTableToolbar } from "./DealsTableToolbar";
-// import { Filter } from "@mui/icons-material";
 
 const DealsTableHead = <TTableData extends BaseTableRowData>(
   props: BaseTableHeadProps<TTableData>
@@ -51,45 +48,32 @@ const EditDialog = dynamic(
   { ssr: false }
 );
 
-export type DealsTableProps<T extends DealExt> = BaseTableProps<
+export type ArchivedDealsTableProps<T extends DealExt> = BaseTableProps<
   T,
   DealTableRowData
-> & {
-  ToolbarComponent?: React.FC<BaseTableToolbarProps>
-  stages?: DealStage[];
-  excludeStages?: DealStage[];
-  statuses?: DealStatus[];
-  excludeStatuses?: DealStatus[];
-};
+> & {};
 
-export function DealsTable<T extends DealExt>({
+export function ArchivedDealsTable<T extends DealExt>({
   initialData,
   order,
-  stages,
-  excludeStages,
-  statuses,
-  excludeStatuses,
   orderBy = "stage" as SortableFields<DealTableRowData>,
   sx,
-  toolbarTitle = <DealViewSwitcher title="Deals" />,
-  ToolbarComponent,
-}: DealsTableProps<T>) {
+}: ArchivedDealsTableProps<T>) {
   const {
     entityId: clickedId,
     handleEditClick,
-    handleCreateClick,
     handleDialogClose,
     showDialog,
   } = useEntityDialog();
 
-  const { handleArchive, handleArchives, handleRefreshData } =
+  const { handleRestore, handleRestores, handleRefreshData } =
     useDealOperations();
 
   const { handleDeleteClick } = useTableActions();
 
   // fetch deals
   const { data: deals = initialData || [] } = useGetDealsQuery(
-    { statuses, stages, excludeStatuses, excludeStages },
+    { statuses: ["ARCHIVED"], excludeStatuses: ["ACTIVE"] },
     {
       // Remove refetchOnMountOrArgChange to prevent double requests
       // RTK Query will automatically refetch when tags are invalidated
@@ -106,12 +90,12 @@ export function DealsTable<T extends DealExt>({
           onClick: handleEditClick,
         },
         {
-          title: "Archive",
+          title: "Restore deal",
           icon: <ArchiveIcon fontSize="small" />,
-          onClick: handleArchive,
+          onClick: handleRestore,
         },
       ],
-      [handleArchive, handleEditClick]
+      [handleRestore, handleEditClick]
     );
 
   const toolbarMenuItems: ToolbarMenuItem[] = React.useMemo(
@@ -126,32 +110,21 @@ export function DealsTable<T extends DealExt>({
         onClick: handleRefreshData,
       },
       {
-        title: "Create deal",
-        icon: <AddIcon fontSize="small" />,
-        onClick: handleCreateClick,
-      },
-      {
-        title: "Archive deals",
+        title: "Restore deals",
         icon: <ArchiveIcon fontSize="small" />,
-        onClickMultiple: handleArchives,
+        onClickMultiple: handleRestores,
         isGroupAction: true,
       },
     ],
-    [handleArchive, handleEditClick, handleCreateClick]
+    [handleRestores, handleRefreshData]
   );
 
-  const TableToolbarComponent = ({ selected }: BaseTableToolbarProps) => (
-    <>
-      {ToolbarComponent ? (
-        <ToolbarComponent selected={selected} />
-      ) : (
-        <BaseTableToolbar
-          title={toolbarTitle}
-          selected={selected}
-          menuItems={toolbarMenuItems}
-        />
-      )}
-    </>
+  const ToolbarComponent = ({ selected }: BaseTableToolbarProps) => (
+    <BaseTableToolbar
+      title={<DealViewSwitcher title="Archived Deals" />}
+      selected={selected}
+      menuItems={toolbarMenuItems}
+    />
   );
 
   return (
@@ -161,7 +134,7 @@ export function DealsTable<T extends DealExt>({
         order={order}
         orderBy={orderBy}
         columnsConfig={dealTableColumns}
-        TableToolbarComponent={TableToolbarComponent}
+        TableToolbarComponent={ToolbarComponent}
         TableHeadComponent={DealsTableHead}
         rowMapper={mapDealsToDealRows}
         rowActionMenuItems={rowActionMenuItems}
