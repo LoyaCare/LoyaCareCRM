@@ -11,20 +11,48 @@ import { KanbanCardData } from "./types";
 export type Props = {
   data: KanbanCardData;
   className?: string;
+  backgroundColor?: string;
 };
 
 export const KanbanCard: React.FC<Props> = React.memo(function KanbanCard({
   data,
   className,
+  backgroundColor,
 }) {
   const formattedValue = currencyFormatter(data.potentialValue);
 
   return (
-    <Card variant="outlined" className={className} sx={{ minWidth: 200 }}>
+    <Card 
+      variant="outlined" 
+      className={className} 
+      sx={{ 
+        minWidth: 200,
+        position: "relative",
+        transition: "background-color 0.2s ease",
+      }}
+    >
+      {/* Цветной оверлей */}
+      {backgroundColor && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            bgcolor: backgroundColor,
+            borderRadius: "inherit",
+            pointerEvents: "none",
+            zIndex: 1,
+          }}
+        />
+      )}
       <CardContent
         sx={{
           py: 1,
           px: 1.25,
+          position: "relative",
+          zIndex: 2,
           "&:last-child": {
             pb: 1,
           },

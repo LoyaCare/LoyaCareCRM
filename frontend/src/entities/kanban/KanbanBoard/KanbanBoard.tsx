@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import {
   DndContext,
   pointerWithin,
+  rectIntersection,
   DragEndEvent,
   DragOverEvent,
   useDroppable,
@@ -55,6 +56,20 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
 
   const sensors = createDndSensors();
 
+  // Кастомный алгоритм обнаружения коллизий для лучшей работы с футер элементами
+  const customCollisionDetection = React.useCallback((args: any) => {
+    const pointerCollisions = pointerWithin(args);
+    const rectCollisions = rectIntersection(args);
+    
+    // Если есть коллизии с pointer, используем их (для обычных элементов)
+    if (pointerCollisions.length > 0) {
+      return pointerCollisions;
+    }
+    
+    // Если нет pointer коллизий, используем rect коллизии (для футер элементов)
+    return rectCollisions;
+  }, []);
+
   const [activeId, setActiveId] = React.useState<string | null>(null);
 
   const pendingOnChangeRef = React.useRef<number | null>(null);
@@ -65,6 +80,19 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
   );
 
   const [currentOverId, setCurrentOverId] = React.useState<string | null>(null);
+
+  // Функция для получения приглушённого цвета фона карточки
+  const getCardOverlayBackground = React.useCallback((overId: string | null) => {
+    // console.log("getCardOverlayBackground called with overId:", overId);
+    if (!overId) return undefined;
+
+    const lowId = overId.toLowerCase();
+    if (lowId.includes("won")) return "rgba(76, 175, 80, 0.15)"; // приглушённо-зелёный
+    if (lowId.includes("lost")) return "rgba(244, 67, 54, 0.15)"; // приглушённо-красный
+    if (lowId.includes("archived")) return "rgba(33, 150, 243, 0.15)"; // приглушённо-голубой
+
+    return "rgba(25, 118, 210, 0.1)"; // для обычных стеков
+  }, []);
 
   const onDragOver = React.useCallback(
     (event: DragOverEvent) => {
@@ -89,7 +117,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={pointerWithin}
+      collisionDetection={customCollisionDetection}
       onDragOver={onDragOver}
       onDragEnd={(e) => {
         setActiveId(null);
@@ -110,6 +138,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
           overflowY: "auto",
           display: "flex",
           flex: 1,
+          cursor: activeId ? "grabbing" : "default",
         }}
       >
         <Stack
@@ -126,13 +155,16 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
         >
           {localStacks.map((s) => (
             <ColumnDroppable key={s.id} stack={s}>
-              <KanbanStack
-                title={s.title}
-                cards={s.cards}
-                renderCard={(card) => (
-                  <DraggableCard key={card.id} id={card.id} card={card} />
-                )}
-              />
+              {(isOver) => (
+                <KanbanStack
+                  title={s.title}
+                  cards={s.cards}
+                  isDropTarget={isOver}
+                  renderCard={(card) => (
+                    <DraggableCard key={card.id} id={card.id} card={card} />
+                  )}
+                />
+              )}
             </ColumnDroppable>
           ))}
         </Stack>
@@ -141,13 +173,14 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
         {footerItems && footerItems.length > 0 && (
           <Box
             sx={{
-              position: "absolute",
+              position: "fixed",
               left: 0,
               right: 0,
-              bottom: 12,
+              bottom: 10,
               display: activeId ? "flex" : "none",
-              justifyContent: "center",
-              gap: 2,
+              justifyContent: "space-evenly",
+              gap: 3,
+              px: 2,
               pointerEvents: activeId ? "auto" : "none",
               zIndex: 1300,
             }}
@@ -159,6 +192,7 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
         )}
 
         <DragOverlay
+          style={{ zIndex: 1400 }}
           modifiers={[
             // Отключаем автоматическое масштабирование
             ({ transform }) => ({
@@ -169,8 +203,8 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
           ]}
         >
           {activeId ? (
-            // Карточка БЕЗ оборачивающего div - ключевое изменение!
             <KanbanCard
+              backgroundColor={getCardOverlayBackground(currentOverId)}
               data={
                 findCardById(localStacks, activeId) ?? {
                   id: activeId!,
@@ -196,7 +230,7 @@ function ColumnDroppable({
   children,
 }: {
   stack: KanbanStackData;
-  children: React.ReactNode;
+  children: (isOver: boolean) => React.ReactNode;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stack.id as string });
   return (
@@ -211,10 +245,13 @@ function ColumnDroppable({
         display: "flex",
         flexDirection: "column",
         overflow: "visible",
-        outline: isOver ? "2px dashed rgba(0,0,0,0.08)" : "none",
+        outline: isOver ? "1px dottted" : "none",
+        outlineColor: isOver ? "primary.main" : "none",
+        borderRadius: isOver ? 1 : 0,
+        transition: "border-radius 0.2s ease",
       }}
     >
-      {children}
+      {children(isOver)}
     </Box>
   );
 }
@@ -224,7 +261,15 @@ function DraggableCard({ id, card }: { id: string; card: KanbanCardData }) {
     createDraggableCardProps(id);
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div 
+      ref={setNodeRef} 
+      style={{
+        ...style,
+        cursor: "grab",
+      }} 
+      {...attributes} 
+      {...listeners}
+    >
       <KanbanCard data={card} />
     </div>
   );
@@ -233,19 +278,52 @@ function DraggableCard({ id, card }: { id: string; card: KanbanCardData }) {
 // simple droppable item for footer
 function BottomDropItem({ id, label }: { id: string; label: string }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  
+  // Семантические цвета для разных действий
+  const getBackgroundColor = () => {
+    const lowId = id.toLowerCase();
+    
+    if (isOver) {
+      // Яркие цвета при hover
+      if (lowId.includes("won")) return "success.main"; // ярко-зелёный
+      if (lowId.includes("lost")) return "error.main"; // ярко-красный
+      if (lowId.includes("archived")) return "info.main"; // ярко-синий
+      return "rgba(25, 118, 210, 0.05)"; //"dropZone.main"; // fallback
+    } else {
+      // Приглушённые цвета в обычном состоянии
+      if (lowId.includes('won')) return "rgba(76, 175, 80, 0.15)";      // приглушённо-зелёный
+      if (lowId.includes('lost')) return "rgba(244, 67, 54, 0.15)";     // приглушённо-красный
+      if (lowId.includes('archived')) return "rgba(33, 150, 243, 0.15)"; // приглушённо-голубой
+      return "background.paper"; // fallback
+    }
+  };
+
   return (
     <Paper
       ref={setNodeRef}
       elevation={isOver ? 3 : 1}
       sx={{
-        width: 160,
-        height: 64,
+        flex: 1,
+        minWidth: 120,
+        height: 53,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: isOver ? "primary.light" : "background.paper",
+        bgcolor: getBackgroundColor(),
         border: "1px dashed rgba(0,0,0,0.08)",
         borderRadius: 1,
+        transition: "background-color 0.2s ease, elevation 0.2s ease",
+        // Increase drop area
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: "-10px",
+          left: "-10px",
+          right: "-10px",
+          bottom: "-10px",
+          pointerEvents: "auto",
+        },
+        position: "relative",
       }}
     >
       {label}

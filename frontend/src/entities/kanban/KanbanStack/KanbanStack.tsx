@@ -14,6 +14,7 @@ export type KanbanStackProps = {
   cards: KanbanCardData[];
   className?: string;
   compact?: boolean;
+  isDropTarget?: boolean;
   // optional renderer - allows wrapping cards in Draggable when used by KanbanBoard
   renderCard?: (card: KanbanCardData, index: number) => React.ReactNode;
 };
@@ -24,6 +25,7 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
     cards,
     className,
     compact = true,
+    isDropTarget = false,
     renderCard,
   }) {
     const total = React.useMemo(
@@ -52,10 +54,13 @@ export const KanbanStack: React.FC<KanbanStackProps> = React.memo(
           p: 1,
           height: "100%",
           boxSizing: "border-box",
-          bgcolor: (theme: any) =>
-            theme.palette.mode === "dark"
-              ? theme.palette.background.paper
-              : theme.palette.grey[100],
+          bgcolor: isDropTarget 
+            ? "rgba(25, 118, 210, 0.05)"
+            : (theme: any) =>
+                theme.palette.mode === "dark"
+                  ? theme.palette.background.paper
+                  : theme.palette.grey[100],
+          transition: "background-color 0.2s ease",
         }}
       >
         <Box sx={{ mb: 1, pl: 1.2 }}>

@@ -1,4 +1,5 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
+import './types'; // Расширение типов для кастомных цветов
 
 // Создаем светлую тему
 export const lightThemeOptions: ThemeOptions = {
@@ -17,6 +18,10 @@ export const lightThemeOptions: ThemeOptions = {
     background: {
       default: '#f5f5f5',
       paper: '#ffffff',
+    },
+    dropZone: {
+      main: 'rgba(25, 118, 210, 0.1)',
+      light: 'rgba(25, 118, 210, 0.05)',
     },
   },
   typography: {
@@ -101,6 +106,10 @@ export const darkThemeOptions: ThemeOptions = {
     background: {
       default: '#121212',
       paper: '#1e1e1e',
+    },
+    dropZone: {
+      main: 'rgba(144, 202, 249, 0.15)',
+      light: 'rgba(144, 202, 249, 0.08)',
     },
   },
   components: {
