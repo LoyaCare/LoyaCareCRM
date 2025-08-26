@@ -125,6 +125,31 @@ export const getArchivedDeals = async (_req: Request, res: Response) => {
   res.json(deals);
 };
 
+export const getWonDeals = async (_req: Request, res: Response) => {
+  const defaultParams = {
+    stages: ["WON"],
+    // excludeStatuses: ["ARCHIVED"],
+  } as DealsBaseParams;
+
+  const params = getDealsParamsFromRequest(_req, defaultParams);
+  const deals = await getAllDealsBase(params);
+
+  res.json(deals);
+};
+
+export const getLostDeals = async (_req: Request, res: Response) => {
+  const defaultParams = {
+    stages: ["LOST"],
+    // excludeStatuses: ["ARCHIVED"],
+  } as DealsBaseParams;
+
+  const params = getDealsParamsFromRequest(_req, defaultParams);
+  const deals = await getAllDealsBase(params);
+
+  res.json(deals);
+};
+
+
 export const getDealByIdBase = async (id: string) =>
   await prisma.deal.findUnique({
     where: { id },

@@ -125,11 +125,12 @@ export function LeadsTable<T extends LeadExt>({
     [handleConverts, handleArchives, handleRefreshData]
   );
 
-  const ToolbarComponent = ({ selected }: BaseTableToolbarProps) => (
+  const ToolbarComponent = ({ selected, clearSelection }: BaseTableToolbarProps) => (
     <BaseTableToolbar
       title="Leads"
       selected={selected}
       menuItems={toolbarMenuItems}
+      clearSelection={clearSelection}
     />
   );
 

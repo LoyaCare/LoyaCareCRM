@@ -140,15 +140,16 @@ export function DealsTable<T extends DealExt>({
     [handleArchive, handleEditClick, handleCreateClick]
   );
 
-  const TableToolbarComponent = ({ selected }: BaseTableToolbarProps) => (
+  const TableToolbarComponent = ({ selected, clearSelection }: BaseTableToolbarProps) => (
     <>
       {ToolbarComponent ? (
-        <ToolbarComponent selected={selected} />
+        <ToolbarComponent selected={selected} clearSelection={clearSelection} />
       ) : (
         <BaseTableToolbar
           title={toolbarTitle}
           selected={selected}
           menuItems={toolbarMenuItems}
+          clearSelection={clearSelection}
         />
       )}
     </>

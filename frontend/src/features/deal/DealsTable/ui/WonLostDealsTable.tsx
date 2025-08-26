@@ -2,15 +2,11 @@
 import React from "react";
 import dynamic from "next/dynamic";
 
-import ArchiveIcon from "@mui/icons-material/Archive";
 import EditIcon from "@mui/icons-material/Edit";
-import RestoreIcon from "@mui/icons-material/Restore";
 import Refresh from "@mui/icons-material/Refresh";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   DealExt,
-  DealStatus,
-  DealStage,
   DealViewSwitcher,
   useGetDealsQuery,
 } from "@/entities/deal";
@@ -32,7 +28,7 @@ import { useEntityDialog } from "@/shared/lib/hooks";
 import { DealTableRowData, dealTableColumns } from "../model";
 import { mapDealsToDealRows, useTableActions, useDealOperations } from "../lib";
 
-const DealsTableHead = <TTableData extends BaseTableRowData>(
+const TableHead = <TTableData extends BaseTableRowData>(
   props: BaseTableHeadProps<TTableData>
 ) => {
   return (
@@ -49,17 +45,20 @@ const EditDialog = dynamic(
   { ssr: false }
 );
 
-export type ArchivedDealsTableProps<T extends DealExt> = BaseTableProps<
+export type WonLostDealsTableProps<T extends DealExt> = BaseTableProps<
   T,
   DealTableRowData
-> & {};
+> & {
+  isWon?: boolean;
+};
 
-export function ArchivedDealsTable<T extends DealExt>({
+export function WonLostDealsTable<T extends DealExt>({
   initialData,
   order,
-  orderBy = "stage" as SortableFields<DealTableRowData>,
+  orderBy = "modupdatedAt" as SortableFields<DealTableRowData>,
+  isWon=true,
   sx,
-}: ArchivedDealsTableProps<T>) {
+}: WonLostDealsTableProps<T>) {
   const {
     entityId: clickedId,
     handleEditClick,
@@ -67,14 +66,13 @@ export function ArchivedDealsTable<T extends DealExt>({
     showDialog,
   } = useEntityDialog();
 
-  const { handleRestore, handleRestores, handleRefreshData } =
-    useDealOperations();
+  const { handleRefreshData } = useDealOperations();
 
   const { handleDeleteClick } = useTableActions();
 
   // fetch deals
   const { data: deals = initialData || [] } = useGetDealsQuery(
-    { statuses: ["ARCHIVED"], excludeStatuses: ["ACTIVE"] },
+    { statuses: ["ACTIVE"], stages: [isWon ? "WON" : "LOST"] },
     {
       refetchOnFocus: true,
     }
@@ -84,17 +82,12 @@ export function ArchivedDealsTable<T extends DealExt>({
     React.useMemo(
       () => [
         {
-          title: "Edit",
+          title: "View",
           icon: <EditIcon fontSize="small" />,
           onClick: handleEditClick,
         },
-        {
-          title: "Restore deal",
-          icon: <RestoreIcon fontSize="small" />,
-          onClick: handleRestore,
-        },
       ],
-      [handleRestore, handleEditClick]
+      [handleEditClick]
     );
 
   const toolbarMenuItems: ToolbarMenuItem[] = React.useMemo(
@@ -104,23 +97,19 @@ export function ArchivedDealsTable<T extends DealExt>({
         icon: <FilterListIcon fontSize="small" />,
       },
       {
-        title: "Refresh deals' list",
+        title: "Refresh list",
         icon: <Refresh fontSize="small" />,
         onClick: handleRefreshData,
       },
-      {
-        title: "Restore deals",
-        icon: <RestoreIcon fontSize="small" />,
-        onClickMultiple: handleRestores,
-        isGroupAction: true,
-      },
     ],
-    [handleRestores, handleRefreshData]
+    [handleRefreshData]
   );
 
   const ToolbarComponent = ({ selected, clearSelection }: BaseTableToolbarProps) => (
     <BaseTableToolbar
-      title={<DealViewSwitcher title="Archived Deals" />}
+      title={
+        <DealViewSwitcher title={isWon ? "Won Deals" : "Lost Deals"} />
+      }
       selected={selected}
       menuItems={toolbarMenuItems}
       clearSelection={clearSelection}
@@ -130,12 +119,12 @@ export function ArchivedDealsTable<T extends DealExt>({
   return (
     <>
       <BaseTable
-        initialData={deals ?? initialData}
+        initialData={deals?.length > 0 ? deals : initialData}
         order={order}
         orderBy={orderBy}
         columnsConfig={dealTableColumns}
         TableToolbarComponent={ToolbarComponent}
-        TableHeadComponent={DealsTableHead}
+        TableHeadComponent={TableHead}
         rowMapper={mapDealsToDealRows}
         rowActionMenuItems={rowActionMenuItems}
         sx={sx}

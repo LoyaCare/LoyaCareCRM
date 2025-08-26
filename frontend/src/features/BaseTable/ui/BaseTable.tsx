@@ -91,7 +91,6 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
     (columnsConfigProp as any) || defaultColumnsConfig;
 
   const data = initialData || (getInitData ? getInitData() : []);
-
   // Initialize rows state with initial data, then update with data from query
   const [rows, setRows] = React.useState<TTableData[]>(() =>
     rowConverter?.((data as T[]) || [])
@@ -100,15 +99,13 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
   const [order, setOrder] = React.useState<Order>(defaultOrder);
   const [orderBy, setOrderBy] =
     React.useState<SortableFields<TTableData>>(defaultOrderBy);
-  const { selected, isSelected, handleClick, handleSelectAll } = useSelection();
+  const { selected, isSelected, handleClick, handleSelectAll, clearSelection } = useSelection();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(50);
 
   // Update rows when data changes
   React.useEffect(() => {
-    if (data && data.length > 0) {
-      setRows(rowConverter?.((data as T[]) || []));
-    }
+      setRows(rowConverter?.((data ?? [] as T[]) || []));
   }, [data]);
 
   const handleRequestSort = useCallback(
@@ -191,6 +188,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
           <TableToolbarComponent
             selected={selected}
             title={toolbarTitle}
+            clearSelection={clearSelection}
           />
         )}
         <TableContainer
@@ -212,6 +210,7 @@ export function BaseTable<T, TTableData extends BaseTableRowData>({
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
                 columns={columnsConfig}
+                
               />
             )}
             <TableBody>

@@ -110,7 +110,7 @@ export function useLeadOperations() {
     [archiveLead, invalidateLeads]
   );
 
-  const handleRefreshData = useCallback(() => {
+  const handleRefreshData = useCallback(async () => {
     invalidateLeads();
   }, [invalidateLeads]);
 

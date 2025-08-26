@@ -31,6 +31,19 @@ export function useUserOperations() {
     [blockUser]
   );
 
+  const handleBlocks = useCallback(
+    async (e: React.MouseEvent | undefined, ids?: readonly string[]) => {
+      e?.stopPropagation();
+      if (!ids?.length) return;
+      try {
+        await Promise.all(ids.map(async (id) => await blockUser(id).unwrap()));
+      } catch (err) {
+        console.error("Block action failed", err);
+      }
+    },
+    [blockUser]
+  );
+
   const handleUnblock = useCallback(
     async (e: React.MouseEvent | undefined, id?: string) => {
       e?.stopPropagation();
@@ -44,7 +57,22 @@ export function useUserOperations() {
     [unblockUser]
   );
 
-  const handleRefreshData = useCallback(() => {
+  const handleUnblocks = useCallback(
+    async (e: React.MouseEvent | undefined, ids?: readonly string[]) => {
+      e?.stopPropagation();
+      if (!ids?.length) return;
+      try {
+        await Promise.all(
+          ids.map(async (id) => await unblockUser(id).unwrap())
+        );
+      } catch (err) {
+        console.error("Unblock action failed", err);
+      }
+    },
+    [unblockUser]
+  );
+
+  const handleRefreshData = useCallback(async () => {
     invalidateUsers();
   }, [invalidateUsers]);
 
@@ -63,8 +91,10 @@ export function useUserOperations() {
   return {
     handleBlock,
     handleUnblock,
+    handleBlocks,
+    handleUnblocks,
     handleRefreshData,
     handleStatusChange,
-    invalidateUsers
+    invalidateUsers,
   };
 }

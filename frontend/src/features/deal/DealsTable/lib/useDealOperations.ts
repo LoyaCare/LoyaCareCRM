@@ -105,7 +105,8 @@ export function useDealOperations() {
       e?.stopPropagation();
       if (!ids || !ids.length) return;
       try {
-        await Promise.all(ids.map((id) => restoreDeal(id)));
+        await Promise.all(ids.map(async (id) => await restoreDeal(id)));
+        console.log("Restored deals:", ids);
         invalidateDeals();
       } catch (err) {
         console.error("Restore action failed", err);
@@ -114,7 +115,7 @@ export function useDealOperations() {
     [restoreDeal, invalidateDeals]
   );
 
-  const handleRefreshData = useCallback(() => {
+  const handleRefreshData = useCallback(async () => {
     invalidateDeals();
   }, [invalidateDeals]);
 

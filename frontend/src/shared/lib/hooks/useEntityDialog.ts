@@ -9,9 +9,9 @@ export interface UseEntityDialogOptions {
 export interface UseEntityDialogReturn {
   entityId: string | null;
   isDialogOpen: boolean;
-  handleEditClick: (e: React.MouseEvent, id?: string) => void;
-  handleCreateClick: () => void;
-  handleDialogClose: () => void;
+  handleEditClick: (e: React.MouseEvent, id?: string) => Promise<void>;
+  handleCreateClick: () => Promise<void>;
+  handleDialogClose: () => Promise<void>;
   showDialog: boolean;
 }
 
@@ -24,19 +24,19 @@ export function useEntityDialog(
   const [entityId, setEntityId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleEditClick = useCallback((e: React.MouseEvent, id?: string) => {
+  const handleEditClick = useCallback(async (e: React.MouseEvent, id?: string) => {
     if (!id) return;
     e.stopPropagation();
     setEntityId(id);
     setIsDialogOpen(true);
   }, []);
 
-  const handleCreateClick = useCallback(() => {
+  const handleCreateClick = useCallback(async () => {
     setEntityId(null);
     setIsDialogOpen(true);
   }, []);
 
-  const handleDialogClose = useCallback(() => {
+  const handleDialogClose = useCallback(async () => {
     setEntityId(null);
     setIsDialogOpen(false);
 

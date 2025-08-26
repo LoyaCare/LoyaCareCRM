@@ -8,8 +8,8 @@ import Box from "@mui/material/Box";
 
 export type ToolbarMenuItem = {
   title?: string | React.ReactNode;
-  onClick?: (e: React.MouseEvent, id?: string) => void;
-  onClickMultiple?: (e: React.MouseEvent, ids?: readonly string[]) => void;
+  onClick?: (e: React.MouseEvent, id?: string) => Promise<void>;
+  onClickMultiple?: (e: React.MouseEvent, ids?: readonly string[]) => Promise<void>;
   icon?: React.ReactNode;
   isGroupAction?: boolean;
 };
@@ -18,6 +18,7 @@ export interface BaseTableToolbarProps {
   selected: readonly string[];
   menuItems?: ToolbarMenuItem[];
   title?: string | React.ReactNode;
+  clearSelection?: () => void;
 }
 
 export function BaseTableToolbar(props: BaseTableToolbarProps) {
@@ -25,9 +26,11 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
     selected,
     menuItems = [],
     title,
+    clearSelection,
   } = props;
 
-  const numSelected = React.useMemo(() => selected.length, [selected]);
+  // const numSelected = React.useMemo(() => selected.length, [selected]);
+  const numSelected = selected.length;
 
   return (
     <Toolbar
@@ -70,7 +73,10 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
         {numSelected > 0 ? (
           menuItems.filter(item => item.isGroupAction).map((item, index) => (
             <Tooltip title={item.title} key={index}>
-              <IconButton onClick={(e) => item.onClickMultiple?.(e, selected)}>
+              <IconButton onClick={async (e) => {
+                await item.onClickMultiple?.(e, selected);
+                clearSelection?.();
+              }}>
                 {item.icon}
               </IconButton>
             </Tooltip>

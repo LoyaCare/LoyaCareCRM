@@ -6,25 +6,39 @@ import { Box, Typography } from "@mui/material";
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 import TableViewIcon from '@mui/icons-material/TableView';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const switcherItems: UrlViewSwitcherElement[] = [
-  { 
-    name: "Table", 
-    path: "/deals", 
-    icon: <TableViewIcon />, 
-    label: "Table View" 
+  {
+    name: "Table",
+    path: "/deals",
+    icon: <TableViewIcon />,
+    label: "Table View",
   },
-  { 
-    name: "Kanban", 
-    path: "/deals/kanban", 
-    icon: <ViewKanbanIcon />, 
-    label: "Kanban View" 
+  {
+    name: "Kanban",
+    path: "/deals/kanban",
+    icon: <ViewKanbanIcon />,
+    label: "Kanban View",
   },
-  { 
-    name: "Archived", 
-    path: "/deals/archived", 
-    icon: <ArchiveIcon />, 
-    label: "Show archived deals" 
+  {
+    name: "Won",
+    path: "/deals/won",
+    icon: <CheckCircleIcon />,
+    label: "Won Deals",
+  },
+  {
+    name: "Lost",
+    path: "/deals/lost",
+    icon: <CancelIcon />,
+    label: "Lost Deals",
+  },
+  {
+    name: "Archived",
+    path: "/deals/archived",
+    icon: <ArchiveIcon />,
+    label: "Show archived deals",
   },
 ];
 

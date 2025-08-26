@@ -21,9 +21,9 @@ export const UsersTableToolbar: React.FC<UsersTableToolbarProps> = ({
     <BaseTableToolbar
       title={title}
       selected={selected}
-      onCreateClick={onCreateClick}
-      onRefreshClick={onRefreshClick}
-      onDeleteClick={onDeleteClick}
+      // onCreateClick={onCreateClick}
+      // onRefreshClick={onRefreshClick}
+      // onDeleteClick={onDeleteClick}
     />
   );
 };
