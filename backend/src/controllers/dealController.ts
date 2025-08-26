@@ -12,87 +12,117 @@ export const shouldAllLinkedDatelsIncluded = {
   appointments: true,
 };
 
-export const getAllLeadsBase = async (
-  _req: Request,
-  res: Response,
-  stages?: DealStage[],
-  statuses?: DealStatus[]
-) => {
-  const leads = await prisma.deal.findMany({
+// export const getAllLeadsBase = async (
+//   _req: Request,
+//   res: Response,
+//   stages?: DealStage[],
+//   statuses?: DealStatus[]
+// ) => {
+//   const leads = await prisma.deal.findMany({
+//     where: {
+//       stage: stages ? { in: stages } : undefined,
+//       status: statuses ? { in: statuses } : undefined,
+//     },
+//     include: shouldAllLinkedDatelsIncluded,
+//   });
+//   res.json(leads);
+// };
+
+export type DealsBaseParams = {
+  excludeStatuses?: DealStatus[] | string[];
+  excludeStages?: DealStage[] | string[];
+  statuses?: DealStatus[] | string;
+  stages?: DealStage[] | string;
+};
+
+export const getDealsParamsFromRequest = (_req: Request, defaultParams: DealsBaseParams) => {
+  const { excludeStatuses, excludeStages, statuses, stages } =
+    _req.query as DealsBaseParams;
+
+  return {
+    excludeStatuses: excludeStatuses || defaultParams.excludeStatuses,
+    excludeStages: excludeStages || defaultParams.excludeStages,
+    statuses: statuses || defaultParams.statuses,
+    stages: stages || defaultParams.stages,
+  };
+};
+
+export const prepareParams = async ({
+  excludeStatuses,
+  excludeStages,
+  statuses,
+  stages,
+}: DealsBaseParams) => {
+  const finalStatuses: DealStatus[] | undefined = statuses
+    ? (Array.isArray(statuses)
+        ? statuses
+        : (statuses as string).split(",")
+      ).map((s) => s as DealStatus)
+    : undefined;
+
+  const finalStages: DealStage[] | undefined = stages
+    ? (Array.isArray(stages) ? stages : (stages as string).split(",")).map(
+        (s) => s as DealStage
+      )
+    : undefined;
+
+  const filteredStatuses = finalStatuses
+    ? excludeStatuses ? finalStatuses.filter(
+        (s) => !(excludeStatuses).includes(s)
+      ) : finalStatuses
+    : undefined;
+
+  const filteredStages: DealStage[] | undefined = finalStages
+    ? excludeStages ? finalStages.filter(
+        (s) => !(excludeStages).includes(s)
+      ) : finalStages
+    : undefined;
+
+  return { statuses: filteredStatuses, stages: filteredStages };
+};
+
+export const getAllDealsBase = async (params: DealsBaseParams) => {
+  const { statuses, stages } = await prepareParams(params);
+
+  return prisma.deal.findMany({
     where: {
-      stage: stages ? { in: stages } : undefined,
       status: statuses ? { in: statuses } : undefined,
+      stage: stages ? { in: stages } : undefined,
     },
     include: shouldAllLinkedDatelsIncluded,
   });
-  res.json(leads);
-};
-
-export const getArchivedDeals = async (_req: Request, res: Response) => {
-  const {
-    stages: defaultStages = [
-      "LEAD",
-      "WON",
-      "LOST",
-      "CONTACTED",
-      "QUALIFIED",
-      "PROPOSAL_SENT",
-      "NEGOTIATION",
-      "DEMO_SCHEDULED",
-    ],
-  } = _req.query;
-
-  return getAllLeadsBase(
-    _req,
-    res,
-    (defaultStages && Array.isArray(defaultStages)
-      ? defaultStages
-      : (defaultStages ? (defaultStages as string) : "")
-          .split(",")
-          .map((s) => s as DealStage)) as DealStage[],
-    ["ARCHIVED"]
-  );
 };
 
 export const getAllDeals = async (_req: Request, res: Response) => {
-  const {
-    excludeStatuses = ["ARCHIVED"],
-    excludeStages = ["LEAD", "WON", "LOST"],
-    statuses: defaultStatuses = ["ACTIVE", "ARCHIVED"],
-    stages: defaultStages = [
-      "LEAD",
-      "WON",
-      "LOST",
+  const defaultParams = {
+    excludeStatuses: ["ARCHIVED"],
+    excludeStages: ["LEAD", "WON", "LOST"],
+    statuses: ["ACTIVE", "ARCHIVED"],
+    stages: [
       "CONTACTED",
       "QUALIFIED",
       "PROPOSAL_SENT",
       "NEGOTIATION",
       "DEMO_SCHEDULED",
     ],
-  } = _req.query as {
-    excludeStatuses?: DealStatus[] | string[];
-    excludeStages?: DealStage[] | string[];
-    statuses?: DealStatus[] | string;
-    stages?: DealStage[] | string;
-  };
+  } as DealsBaseParams;
 
-  const statuses: DealStatus[] = (
-    Array.isArray(defaultStatuses)
-      ? defaultStatuses
-      : defaultStatuses.split(",")
-  )
-    .map((s) => s as DealStatus)
-    .filter(
-      (s) => !(excludeStatuses as DealStatus[]).includes(s as DealStatus)
-    );
+  const params = getDealsParamsFromRequest(_req, defaultParams);
+  const deals = await getAllDealsBase(params);
 
-  const stages: DealStage[] = (
-    Array.isArray(defaultStages) ? defaultStages : defaultStages.split(",")
-  )
-    .map((s) => s as DealStage)
-    .filter((s) => !(excludeStages as DealStage[]).includes(s as DealStage));
+  res.json(deals);
+};
 
-  return getAllLeadsBase(_req, res, stages, statuses);
+export const getArchivedDeals = async (_req: Request, res: Response) => {
+  const defaultParams = {
+    excludeStages: ["LEAD", "WON", "LOST"],
+    statuses: ["ARCHIVED"],
+  } as DealsBaseParams;
+
+  const params = getDealsParamsFromRequest(_req, defaultParams);
+  const deals = await getAllDealsBase(params);
+
+  res.json(deals);
 };
 
 export const getDealByIdBase = async (id: string) =>
@@ -168,6 +198,7 @@ export const updateDeal = async (req: Request, res: Response) => {
     ...dealData
   } = req.body;
   console.log("Updating deal assigneeId:", assigneeId);
+  console.log("Updating deal with id:", req.params.id, " data:", dealData);
 
   // Split notes into update and create
   const notesToUpdate = notes

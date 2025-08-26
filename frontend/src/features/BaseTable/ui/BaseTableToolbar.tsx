@@ -17,9 +17,6 @@ export type ToolbarMenuItem = {
 export interface BaseTableToolbarProps {
   selected: readonly string[];
   menuItems?: ToolbarMenuItem[];
-  onDeleteClick?: (selected: readonly string[]) => void;
-  onCreateClick?: () => void;
-  onRefreshClick?: () => void;
   title?: string | React.ReactNode;
 }
 
@@ -31,10 +28,6 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
   } = props;
 
   const numSelected = React.useMemo(() => selected.length, [selected]);
-
-  // const handleDeleteClick = React.useCallback(() => {
-  //     onDeleteClick?.(selected);
-  // }, [onDeleteClick, selected]);
 
   return (
     <Toolbar
@@ -90,34 +83,8 @@ export function BaseTableToolbar(props: BaseTableToolbarProps) {
               </IconButton>
             </Tooltip>
           ))
-
-        //   <Tooltip title="Delete">
-        //     <IconButton onClick={handleDeleteClick}>
-        //       <DeleteIcon />
-        //     </IconButton>
-        //   </Tooltip>
-        // ) : (
-        //   <>
-        //     <Tooltip title="Filter list">
-        //       <IconButton>
-        //         <FilterListIcon />
-        //       </IconButton>
-        //     </Tooltip>
-        //     <Tooltip title="Refresh">
-        //       <IconButton onClick={onRefreshClick}>
-        //         <RefreshIcon />
-        //       </IconButton>
-        //     </Tooltip>
-        //   </>
         )}
       </Box>
-      {/* <Box>
-        <Tooltip title="Create Lead">
-          <IconButton onClick={onCreateClick}>
-            <AddIcon />
-          </IconButton>
-        </Tooltip>
-      </Box> */}
     </Toolbar>
   );
 }

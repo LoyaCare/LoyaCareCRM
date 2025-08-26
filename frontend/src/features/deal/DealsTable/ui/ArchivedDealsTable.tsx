@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 
 import ArchiveIcon from "@mui/icons-material/Archive";
 import EditIcon from "@mui/icons-material/Edit";
+import RestoreIcon from "@mui/icons-material/Restore";
 import Refresh from "@mui/icons-material/Refresh";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
@@ -75,8 +76,6 @@ export function ArchivedDealsTable<T extends DealExt>({
   const { data: deals = initialData || [] } = useGetDealsQuery(
     { statuses: ["ARCHIVED"], excludeStatuses: ["ACTIVE"] },
     {
-      // Remove refetchOnMountOrArgChange to prevent double requests
-      // RTK Query will automatically refetch when tags are invalidated
       refetchOnFocus: true,
     }
   );
@@ -91,7 +90,7 @@ export function ArchivedDealsTable<T extends DealExt>({
         },
         {
           title: "Restore deal",
-          icon: <ArchiveIcon fontSize="small" />,
+          icon: <RestoreIcon fontSize="small" />,
           onClick: handleRestore,
         },
       ],
@@ -111,7 +110,7 @@ export function ArchivedDealsTable<T extends DealExt>({
       },
       {
         title: "Restore deals",
-        icon: <ArchiveIcon fontSize="small" />,
+        icon: <RestoreIcon fontSize="small" />,
         onClickMultiple: handleRestores,
         isGroupAction: true,
       },

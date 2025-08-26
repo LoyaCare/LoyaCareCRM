@@ -12,6 +12,9 @@ import {
   SortableFields,
   BaseTableHead,
   Column,
+  BaseTableToolbar,
+  BaseTableToolbarProps,
+  ToolbarMenuItem,
 } from "@/features/BaseTable";
 import {
   useGetLeadsQuery,
@@ -27,7 +30,8 @@ import {
   mapLeadsToLeadRows,
 } from "../model";
 import { useLeadOperations } from "../lib";
-import { LeadsTableToolbar } from "./LeadsTableToolbar";
+import Refresh from "@mui/icons-material/Refresh";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 const EditDialog = dynamic(
   () => import("@/features/lead/ui/LeadEditDialog").then(
@@ -60,12 +64,8 @@ export function LeadsTable<T extends LeadExt>({
     handleDialogClose,
     showDialog,
   } = useEntityDialog();
-  
-  const { 
-    handleConvert, 
-    handleArchive, 
-    invalidateLeads 
-  } = useLeadOperations();
+
+  const { handleConvert, handleConverts, handleArchive, handleArchives, handleRefreshData } = useLeadOperations();
 
   const { data: leads = initialData || [] } = useGetLeadsQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -76,25 +76,61 @@ export function LeadsTable<T extends LeadExt>({
     console.log("Delete clicked for selected ids:", selected);
   }, []);
 
-  const rowActionMenuItems: ActionMenuItemProps<LeadTableRowData>[] = React.useMemo(
+  const rowActionMenuItems: ActionMenuItemProps<LeadTableRowData>[] =
+    React.useMemo(
+      () => [
+        {
+          title: "Edit",
+          icon: <EditIcon fontSize="small" />,
+          onClick: handleEditClick,
+        },
+        {
+          title: "Convert to deal",
+          icon: <SwapHorizIcon fontSize="small" />,
+          onClick: handleConvert,
+        },
+        {
+          title: "Archive",
+          icon: <ArchiveIcon fontSize="small" />,
+          onClick: handleArchive,
+        },
+      ],
+      [handleEditClick, handleConvert, handleArchive]
+    );
+
+  const toolbarMenuItems: ToolbarMenuItem[] = React.useMemo(
     () => [
       {
-        element: "Edit",
-        icon: <EditIcon fontSize="small" />,
-        onClick: handleEditClick,
+        title: "Filter",
+        icon: <FilterListIcon fontSize="small" />,
       },
       {
-        element: "Convert to deal",
+        title: "Refresh deals' list",
+        icon: <Refresh fontSize="small" />,
+        onClick: handleRefreshData,
+      },
+      {
+        title: "Convert to deal",
         icon: <SwapHorizIcon fontSize="small" />,
-        onClick: handleConvert,
+        onClickMultiple: handleConverts,
+        isGroupAction: true,
       },
       {
-        element: "Archive",
+        title: "Archive",
         icon: <ArchiveIcon fontSize="small" />,
-        onClick: handleArchive,
+        onClickMultiple: handleArchives,
+        isGroupAction: true,
       },
     ],
-    [handleEditClick, handleConvert, handleArchive]
+    [handleConverts, handleArchives, handleRefreshData]
+  );
+
+  const ToolbarComponent = ({ selected }: BaseTableToolbarProps) => (
+    <BaseTableToolbar
+      title="Leads"
+      selected={selected}
+      menuItems={toolbarMenuItems}
+    />
   );
 
   return (
@@ -103,15 +139,7 @@ export function LeadsTable<T extends LeadExt>({
         initialData={leads}
         order={order}
         orderBy={orderBy}
-        TableToolbarComponent={({ selected }) => (
-          <LeadsTableToolbar
-            title="Leads"
-            selected={selected}
-            onCreateClick={handleCreateClick}
-            onRefreshClick={invalidateLeads}
-            onDeleteClick={handleDeleteClick}
-          />
-        )}
+        TableToolbarComponent={ToolbarComponent}
         toolbarTitle="Leads"
         TableHeadComponent={LeadsTableHead}
         columnsConfig={leadTableColumns}

@@ -35,7 +35,6 @@ export function useDealOperations() {
       const body: UpdateDealDTO = {
         ...preparedUpdate,
       };
-      console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
     },
     [triggerGetDealById, updateDeal]
@@ -65,11 +64,11 @@ export function useDealOperations() {
   );
 
   const handleArchives = useCallback(
-    async (e: React.MouseEvent | undefined, id?: readonly string[]) => {
+    async (e: React.MouseEvent | undefined, ids?: readonly string[]) => {
       e?.stopPropagation();
-      if (!id || !id.length) return;
+      if (!ids || !ids.length) return;
       try {
-        await Promise.all(id.map((id) => archiveDeal(id)));
+        await Promise.all(ids.map((id) => archiveDeal(id)));
         invalidateDeals();
       } catch (err) {
         console.error("Archive action failed", err);
@@ -102,11 +101,11 @@ export function useDealOperations() {
   );
 
   const handleRestores = useCallback(
-    async (e?: React.MouseEvent, id?: readonly string[]) => {
+    async (e?: React.MouseEvent, ids?: readonly string[]) => {
       e?.stopPropagation();
-      if (!id || !id.length) return;
+      if (!ids || !ids.length) return;
       try {
-        await Promise.all(id.map((id) => restoreDeal(id)));
+        await Promise.all(ids.map((id) => restoreDeal(id)));
         invalidateDeals();
       } catch (err) {
         console.error("Restore action failed", err);

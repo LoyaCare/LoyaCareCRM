@@ -30,6 +30,7 @@ const startServer = async () => {
   } finally {
     // Обработка закрытия соединений при завершении работы
     process.on('beforeExit', async () => {
+      console.log("Disconnecting from database...");
       await prisma.$disconnect();
     });
   }

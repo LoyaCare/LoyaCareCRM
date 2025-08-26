@@ -95,10 +95,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       const body: UpdateDealDTO = {
         ...preparedUpdate,
       };
-      console.log("Updating deal with id:", id, "and body:", body);
       await updateDeal({ id, body }).unwrap();
-      // Note: Manual invalidation is not needed here as updateDeal mutation 
-      // already has invalidatesTags configured
     },
     [triggerGetDealById, updateDeal]
   );

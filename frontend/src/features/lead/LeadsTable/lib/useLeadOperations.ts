@@ -6,7 +6,7 @@ import {
   useLazyGetLeadByIdQuery,
   UpdateLeadDTO,
   LeadExt,
-  prepareToUpdate
+  prepareToUpdate,
 } from "@/entities/lead";
 
 export function useLeadOperations() {
@@ -34,37 +34,60 @@ export function useLeadOperations() {
       const body: UpdateLeadDTO = {
         ...preparedUpdate,
       };
+      console.log("Updating lead with id:", id, " body:", body);
       await updateLead({ id, body }).unwrap();
-      invalidateLeads();
     },
     [triggerGetLeadById, updateLead, invalidateLeads]
   );
+
+  const convertLead = async (id: string) =>
+    await update(id, (lead) => ({
+      ...lead,
+      stage: "QUALIFIED",
+    }));
 
   const handleConvert = useCallback(
     async (e: React.MouseEvent | undefined, id?: string) => {
       e?.stopPropagation();
       if (!id) return;
       try {
-        update(id, (lead) => ({
-          ...lead,
-          stage: "QUALIFIED",
-        }));
+        await convertLead(id);
+        invalidateLeads();
       } catch (err) {
         console.error("Convert action failed", err);
       }
     },
-    [update]
+    [convertLead]
   );
 
+  const handleConverts = useCallback(
+    async (e?: React.MouseEvent, selectedIds?: readonly string[]) => {
+      e?.stopPropagation();
+      if (!selectedIds?.length) return;
+      try {
+        await Promise.all(selectedIds.map(convertLead));
+        invalidateLeads();
+      } catch (err) {
+        console.error("Convert action failed", err);
+      }
+    },
+    [update, invalidateLeads]
+  );
+
+  const archiveLead = async (id: string) =>
+    await update(id, (lead) => ({
+      ...lead,
+      archivedAt: new Date(),
+      status: "ARCHIVED",
+    }));
+
   const handleArchive = useCallback(
-    async (e: React.MouseEvent | undefined, id?: string) => {
+    async (e?: React.MouseEvent, id?: string) => {
       e?.stopPropagation();
       if (!id) return;
       try {
-        update(id, (lead) => ({
-          ...lead,
-          status: "ARCHIVED",
-        }));
+        await archiveLead(id);
+        invalidateLeads();
       } catch (err) {
         console.error("Archive action failed", err);
       }
@@ -72,9 +95,31 @@ export function useLeadOperations() {
     [update]
   );
 
+  const handleArchives = useCallback(
+    async (e?: React.MouseEvent, selectedIds?: readonly string[]) => {
+      e?.stopPropagation();
+      console.log("Selected ids for archive:", selectedIds);
+      if (!selectedIds?.length) return;
+      try {
+        await Promise.all(selectedIds.map(archiveLead));
+        invalidateLeads();
+      } catch (err) {
+        console.error("Archive action failed", err);
+      }
+    },
+    [archiveLead, invalidateLeads]
+  );
+
+  const handleRefreshData = useCallback(() => {
+    invalidateLeads();
+  }, [invalidateLeads]);
+
   return {
     handleConvert,
+    handleConverts,
     handleArchive,
-    invalidateLeads
+    handleArchives,
+    invalidateLeads,
+    handleRefreshData,
   };
 }
