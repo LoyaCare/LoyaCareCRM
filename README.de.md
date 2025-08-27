@@ -1,10 +1,10 @@
-# LoayCareCRM
+# LoyaCareCRM
 
 *🇩🇪 Deutsch | [🇺🇸 English](README.md)*
 
 ## 📋 Projektbeschreibung
 
-LoayCareCRM ist ein modernes Customer Relationship Management (CRM) System, das auf modularer Architektur basiert. Das System ist für die Verwaltung von Leads, Deals, Kontakten und Benutzern mit einer intuitiven Benutzeroberfläche basierend auf Kanban-Boards und Tabellen konzipiert.
+LoyaCareCRM ist ein modernes Customer Relationship Management (CRM) System, das auf modularer Architektur basiert. Das System ist für die Verwaltung von Leads, Deals, Kontakten und Benutzern mit einer intuitiven Benutzeroberfläche basierend auf Kanban-Boards und Tabellen konzipiert.
 
 ## 🏗️ Projektarchitektur
 
