@@ -15,6 +15,7 @@ export type UrlViewSwitcherElement = {
 export type UrlViewSwitcherProps = {
   elements: UrlViewSwitcherElement[];
   size?: "small" | "medium" | "large";
+  isStrictPathFinding?: boolean;
   ariaLabel?: string;
   sx?: SxProps<Theme>;
   className?: string;
@@ -27,6 +28,7 @@ export type UrlViewSwitcherProps = {
 export const UrlViewSwitcher: React.FC<UrlViewSwitcherProps> = ({
   elements = [],
   size = "small",
+  isStrictPathFinding = false,
   ariaLabel = "view mode",
   sx,
   className,
@@ -51,7 +53,7 @@ export const UrlViewSwitcher: React.FC<UrlViewSwitcherProps> = ({
     const activeElement = elements.find((element) =>
       pathname?.endsWith(element.path.split("/").pop() || "")
     );
-    return activeElement ? activeElement.name : elements[0]?.name || "";
+    return activeElement ? activeElement.name : (!isStrictPathFinding && elements[0]?.name ) || "";
   }, [elements, pathname]);
 
   const currentView = React.useMemo(getCurrentView, [getCurrentView]);

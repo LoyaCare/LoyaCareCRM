@@ -9,7 +9,7 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-const switcherItems: UrlViewSwitcherElement[] = [
+const viewSwitcherItems: UrlViewSwitcherElement[] = [
   {
     name: "Table",
     path: "/deals",
@@ -21,7 +21,10 @@ const switcherItems: UrlViewSwitcherElement[] = [
     path: "/deals/kanban",
     icon: <ViewKanbanIcon />,
     label: "Kanban View",
-  },
+  }
+]
+
+const statusSwitcherItems: UrlViewSwitcherElement[] = [
   {
     name: "Won",
     path: "/deals/won",
@@ -55,7 +58,8 @@ export const DealViewSwitcher: React.FC<DealViewSwitcherProps> = ({
 }) => {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <UrlViewSwitcher elements={switcherItems} sx={{ mr: 2 }} />
+      <UrlViewSwitcher elements={viewSwitcherItems} sx={{ mr: 2 }} isStrictPathFinding/>
+      <UrlViewSwitcher elements={statusSwitcherItems} isStrictPathFinding ariaLabel="status switcher" sx={{ mr: 2 }} />
       <Typography variant="h6">{title}</Typography>
     </Box>
   );

@@ -19,7 +19,7 @@ export default async function KanbanDealsPage() {
       }}
       style={{ paddingLeft: "0 !important" }}
     >
-      {/* Фиксированный заголовок */}
+      {/* Fixed header */}
       <Box
         sx={{
           p: 0,

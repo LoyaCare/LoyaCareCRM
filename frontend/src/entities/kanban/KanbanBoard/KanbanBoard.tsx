@@ -56,17 +56,17 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
 
   const sensors = createDndSensors();
 
-  // Кастомный алгоритм обнаружения коллизий для лучшей работы с футер элементами
+  // Custom collision detection algorithm for better handling of footer elements
   const customCollisionDetection = React.useCallback((args: any) => {
     const pointerCollisions = pointerWithin(args);
     const rectCollisions = rectIntersection(args);
-    
-    // Если есть коллизии с pointer, используем их (для обычных элементов)
+
+    // If there are pointer collisions, use them (for regular elements)
     if (pointerCollisions.length > 0) {
       return pointerCollisions;
     }
-    
-    // Если нет pointer коллизий, используем rect коллизии (для футер элементов)
+
+    // If there are no pointer collisions, use rect collisions (for footer elements)
     return rectCollisions;
   }, []);
 
@@ -81,17 +81,20 @@ export const KanbanBoard: React.FC<Props> = React.memo(function KanbanBoard({
 
   const [currentOverId, setCurrentOverId] = React.useState<string | null>(null);
 
-  // Функция для получения приглушённого цвета фона карточки
+  // Function to get the muted background color of the card
   const getCardOverlayBackground = React.useCallback((overId: string | null) => {
     // console.log("getCardOverlayBackground called with overId:", overId);
-    if (!overId) return undefined;
+    
+    if (overId) {
+      const lowId = overId.toLowerCase();
+      if (lowId.includes("won")) return "rgba(76, 175, 80, 0.15)"; // muted green
+      if (lowId.includes("lost")) return "rgba(244, 67, 54, 0.15)"; // muted red
+      if (lowId.includes("archived")) return "rgba(33, 150, 243, 0.15)"; // muted blue
+      return "rgba(25, 118, 210, 0.1)"; // for regular stacks
+    }
 
-    const lowId = overId.toLowerCase();
-    if (lowId.includes("won")) return "rgba(76, 175, 80, 0.15)"; // приглушённо-зелёный
-    if (lowId.includes("lost")) return "rgba(244, 67, 54, 0.15)"; // приглушённо-красный
-    if (lowId.includes("archived")) return "rgba(33, 150, 243, 0.15)"; // приглушённо-голубой
-
-    return "rgba(25, 118, 210, 0.1)"; // для обычных стеков
+    // Default darker background when not over any dropItem
+    return "rgba(0, 0, 0, 0.08)"; // slightly darker than background
   }, []);
 
   const onDragOver = React.useCallback(
@@ -278,22 +281,22 @@ function DraggableCard({ id, card }: { id: string; card: KanbanCardData }) {
 // simple droppable item for footer
 function BottomDropItem({ id, label }: { id: string; label: string }) {
   const { setNodeRef, isOver } = useDroppable({ id });
-  
-  // Семантические цвета для разных действий
+
+  // Semantic colors for different actions
   const getBackgroundColor = () => {
     const lowId = id.toLowerCase();
     
     if (isOver) {
-      // Яркие цвета при hover
-      if (lowId.includes("won")) return "success.main"; // ярко-зелёный
-      if (lowId.includes("lost")) return "error.main"; // ярко-красный
-      if (lowId.includes("archived")) return "info.main"; // ярко-синий
+      // Bright colors on hover
+      if (lowId.includes("won")) return "success.main"; // bright green
+      if (lowId.includes("lost")) return "error.main"; // bright red
+      if (lowId.includes("archived")) return "info.main"; // bright blue
       return "rgba(25, 118, 210, 0.05)"; //"dropZone.main"; // fallback
     } else {
-      // Приглушённые цвета в обычном состоянии
-      if (lowId.includes('won')) return "rgba(76, 175, 80, 0.15)";      // приглушённо-зелёный
-      if (lowId.includes('lost')) return "rgba(244, 67, 54, 0.15)";     // приглушённо-красный
-      if (lowId.includes('archived')) return "rgba(33, 150, 243, 0.15)"; // приглушённо-голубой
+      // Muted colors in normal state
+      if (lowId.includes('won')) return "rgba(76, 175, 80, 0.15)";      // muted green
+      if (lowId.includes('lost')) return "rgba(244, 67, 54, 0.15)";     // muted red
+      if (lowId.includes('archived')) return "rgba(33, 150, 243, 0.15)"; // muted blue
       return "background.paper"; // fallback
     }
   };
